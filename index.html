@@ -1,12 +1,12 @@
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>나에게 맞는 업종 찾기 상세 설문</title>
+    <title>함께창업소 예비창업자 성향분석</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap');
         body {
@@ -158,7 +158,7 @@
 <body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
 
 <div class="container">
-    <h1 class="text-4xl font-bold text-center mb-12 text-gray-900">나에게 맞는 업종 찾기 상세 설문</h1>
+    <h1 class="text-4xl font-bold text-center mb-12 text-gray-900">함께창업소 예비창업자 성향분석</h1>
     <div id="survey-questions">
         <!-- 1부: 개인의 성향과 가치관 -->
         <div class="section-title">1부: 개인의 성향과 가치관</div>
@@ -402,7 +402,7 @@
         answers[questionId] = selectedValue;
     }
 
-    function showResult() {
+    async function showResult() {
         if (Object.keys(answers).length < questionCount) {
             alert('모든 문항에 답변해주세요.');
             return;
@@ -411,13 +411,13 @@
         surveyQuestions.style.display = 'none';
         surveyResult.classList.remove('hidden');
 
-        // Simulate a delay for a "processing" effect
-        setTimeout(() => {
-            analyzeResults();
-        }, 1500);
+        // Delay to show loading spinner
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
+        await analyzeResults();
     }
 
-    function analyzeResults() {
+    async function analyzeResults() {
         const scores = {
             '서비스 지향성': 0,
             '창의적 독립성': 0,
@@ -471,14 +471,14 @@
         const dominantType = sortedPercentages[0][0];
 
         const chartColors = [
-            'rgba(59, 130, 246, 0.7)',  // blue for Service-oriented
-            'rgba(245, 158, 11, 0.7)',  // yellow for Creative-independent
-            'rgba(16, 185, 129, 0.7)',  // green for Stable-traditional
-            'rgba(239, 68, 68, 0.7)'    // red for Trend-innovator
+            'rgba(59, 130, 246, 0.7)',  // 파란색 (서비스)
+            'rgba(245, 158, 11, 0.7)',  // 주황색 (창의)
+            'rgba(16, 185, 129, 0.7)',  // 녹색 (안정)
+            'rgba(239, 68, 68, 0.7)'    // 빨간색 (혁신)
         ];
-        
+
         const chartData = {
-            labels: sortedPercentages.map(item => `${item[0]} (${item[1].toFixed(1)}%)`),
+            labels: sortedPercentages.map(item => `${item[0]}`), // Remove percentage from label
             datasets: [{
                 data: sortedPercentages.map(item => item[1]),
                 backgroundColor: sortedPercentages.map(item => {
@@ -497,57 +497,34 @@
         if (spinner) spinner.style.display = 'none';
         resultContent.classList.remove('hidden');
 
-        const canvas = document.createElement('canvas');
-        canvas.id = 'pie-chart';
-        const chartContainer = document.createElement('div');
-        chartContainer.id = 'chart-container';
-        chartContainer.appendChild(canvas);
-        resultContent.appendChild(chartContainer);
-
-        new Chart(canvas, {
-            type: 'pie',
-            data: chartData,
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            font: { size: 14, family: 'Noto Sans KR' },
-                            color: '#4b5563',
-                            boxWidth: 20
-                        }
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: (context) => {
-                                const label = context.label || '';
-                                return label;
-                            }
-                        }
-                    }
-                }
-            }
-        });
-
-        let analysisText = `
-            <div class="analysis-item">
+        // Create HTML for chart and analysis
+        let resultHTML = `
+            <div class="analysis-item text-center">
                 <h4 class="text-2xl font-bold mb-4">종합 분석: 당신의 비즈니스 DNA</h4>
                 <p>위 원그래프는 당신의 비즈니스 성향을 네 가지 핵심 지표로 분석한 결과입니다. 각 영역이 차지하는 비율은 당신의 내재된 강점과 가장 잘 맞는 업종을 보여줍니다.</p>
             </div>
             
             <div class="analysis-item">
                 <h4 class="text-2xl font-bold mb-4">핵심 성향 분석</h4>
-                <p>당신의 설문 답변을 종합한 결과, 가장 두드러지는 특성은 바로 **${dominantType}**입니다. 당신의 **${dominantType}** 성향은 전체 성향 중 **${percentages[dominantType].toFixed(1)}%**를 차지합니다.</p>
-                <ul class="list-disc list-inside space-y-2 mt-4">
-                    ${sortedPercentages.filter((item, index) => index > 0).map(item => {
-                        const otherTrait = item[0];
-                        const otherPercentage = item[1];
-                        const difference = percentages[dominantType] - otherPercentage;
-                        return `<li>**${dominantType}**은(는) **${otherTrait}**보다 **${difference.toFixed(1)}%** 더 높습니다.</li>`;
-                    }).join('')}
-                </ul>
+                <div class="flex flex-col md:flex-row items-center justify-center space-y-8 md:space-y-0 md:space-x-8">
+                    <div class="w-full md:w-1/2 flex justify-center items-center">
+                        <canvas id="pie-chart" class="max-w-xs max-h-xs"></canvas>
+                    </div>
+                    <div class="w-full md:w-1/2">
+                        <p class="text-lg mb-4">
+                            당신의 설문 답변을 종합한 결과, 가장 두드러지는 특성은 바로 ${dominantType}입니다.<br>
+                            당신의 ${dominantType} 성향은 전체 성향 중 ${percentages[dominantType].toFixed(1)}%를 차지합니다.
+                        </p>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            ${sortedPercentages.filter((item, index) => index > 0).map(item => {
+                                const otherTrait = item[0];
+                                const otherPercentage = item[1];
+                                const difference = percentages[dominantType] - otherPercentage;
+                                return `<li>${dominantType}은(는) ${otherTrait}보다 ${difference.toFixed(1)}% 더 높습니다.</li>`;
+                            }).join('')}
+                        </ul>
+                    </div>
+                </div>
             </div>
 
             <div class="analysis-section">
@@ -570,7 +547,49 @@
                 </div>
             </div>
         `;
-        resultContent.innerHTML = analysisText;
+        resultContent.innerHTML = resultHTML;
+
+        // Ensure canvas is in the DOM before rendering chart
+        const canvas = document.getElementById('pie-chart');
+        if (canvas) {
+            new Chart(canvas, {
+                type: 'pie',
+                data: chartData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                font: { size: 14, family: 'Noto Sans KR' },
+                                color: '#4b5563',
+                                boxWidth: 20
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => {
+                                    const label = context.label || '';
+                                    return label;
+                                }
+                            }
+                        },
+                        datalabels: {
+                            color: '#fff',
+                            formatter: (value, context) => {
+                                return value.toFixed(1) + '%';
+                            },
+                            font: {
+                                weight: 'bold',
+                                size: 14
+                            },
+                        }
+                    }
+                },
+                plugins: [ChartDataLabels]
+            });
+        }
     }
 
     function resetSurvey() {
@@ -582,10 +601,9 @@
         resultContent.classList.add('hidden');
         resultTitle.textContent = '설문 결과 분석 중...';
         
-        // Remove the chart container
-        const chartContainer = document.getElementById('chart-container');
-        if (chartContainer) {
-            chartContainer.remove();
+        const chartCanvas = document.getElementById('pie-chart');
+        if (chartCanvas) {
+            chartCanvas.remove();
         }
     }
     
