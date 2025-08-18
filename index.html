@@ -153,6 +153,43 @@
             width: 100%;
             margin-bottom: 3rem;
         }
+        /* Mobile-specific adjustments */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1.5rem;
+            }
+            .question-card {
+                padding: 1.5rem;
+            }
+            .question-title {
+                font-size: 1.2rem;
+            }
+            .answer-option {
+                font-size: 1rem;
+                padding: 1rem;
+            }
+            .result-box {
+                padding: 2rem;
+            }
+            .result-box h3 {
+                font-size: 1.75rem;
+            }
+            .result-box p {
+                font-size: 1rem;
+            }
+            .analysis-item {
+                padding: 1.5rem;
+            }
+            .analysis-section h4 {
+                font-size: 1.5rem;
+            }
+            .analysis-item h5 {
+                font-size: 1.1rem;
+            }
+            .analysis-item p {
+                font-size: 0.95rem;
+            }
+        }
     </style>
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
@@ -380,6 +417,9 @@
 </div>
 
 <script>
+    // Register Chart.js datalabels plugin
+    Chart.register(ChartDataLabels);
+
     const surveyQuestions = document.getElementById('survey-questions');
     const surveyResult = document.getElementById('survey-result');
     const resultTitle = document.getElementById('result-title');
@@ -478,7 +518,7 @@
         ];
 
         const chartData = {
-            labels: sortedPercentages.map(item => `${item[0]}`), // Remove percentage from label
+            labels: sortedPercentages.map(item => `${item[0]}`),
             datasets: [{
                 data: sortedPercentages.map(item => item[1]),
                 backgroundColor: sortedPercentages.map(item => {
