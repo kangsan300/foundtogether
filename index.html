@@ -488,6 +488,7 @@
                     return;
                 }
 
+                // If some questions are not answered, select the first option
                 for (let i = 1; i <= questionCount; i++) {
                     const qId = String(i);
                     if (!answers[qId]) {
@@ -789,12 +790,12 @@
                         return;
                     }
 
-                    const listItems = dataList.map((item, index) => `${index + 1}. 이름: ${item.user_name}, 전화번호: ${item.user_phone}, 저장 시간: ${new Date(item.created_at).toLocaleString()}`).join('\n');
-                    const selection = prompt(`불러올 항목을 선택해주세요:\n\n${listItems}\n\n번호를 입력하세요.`);
+                    const listItems = dataList.map((item, index) => `${item.id}. 이름: ${item.user_name}, 전화번호: ${item.user_phone}, 저장 시간: ${new Date(item.created_at).toLocaleString()}`).join('\n');
+                    const selection = prompt(`불러올 항목의 UUID를 입력하세요:\n\n${listItems}`);
 
-                    const selectedIndex = parseInt(selection, 10) - 1;
-                    if (selectedIndex >= 0 && selectedIndex < dataList.length) {
-                        const selectedData = dataList[selectedIndex];
+                    const selectedData = dataList.find(item => item.id === selection);
+
+                    if (selectedData) {
                         answers = JSON.parse(selectedData.answers);
                         document.getElementById('userName').value = selectedData.user_name || '';
                         document.getElementById('userPhone').value = selectedData.user_phone || '';
@@ -815,7 +816,7 @@
                         showResult();
                         alert('선택된 설문 결과를 성공적으로 불러왔습니다!');
                     } else {
-                        alert('잘못된 번호를 입력했습니다.');
+                        alert('잘못된 UUID를 입력했습니다.');
                     }
 
                 } catch (e) {
@@ -823,7 +824,6 @@
                     alert('데이터를 불러오는 중 오류가 발생했습니다.');
                 }
             }
-
 
             function resetSurvey() {
                 answers = {};
