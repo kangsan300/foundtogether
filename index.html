@@ -448,7 +448,7 @@
     </div>
     
     <script>
-        const NETLIFY_FUNCTIONS_URL = '/netlify/functions/';
+        const NETLIFY_FUNCTIONS_URL = 'https://foundtogether.netlify.app/.netlify/functions/';
         let myChart = null;
         let answers = {};
         const questionCount = 30;
@@ -696,7 +696,6 @@
                      return;
                 }
                 
-                // 분석 결과를 생성합니다.
                 const scores = {
                     '서비스 지향성': 0,
                     '창의적 독립성': 0,
@@ -752,7 +751,6 @@
                     dominantType: dominantType
                 };
 
-                // Call Netlify Function to save data
                 try {
                     const response = await fetch(NETLIFY_FUNCTIONS_URL + 'save-survey', {
                         method: 'POST',
@@ -826,7 +824,6 @@
                     alert('데이터를 불러오는 중 오류가 발생했습니다.');
                 }
             }
-
 
             function resetSurvey() {
                 answers = {};
