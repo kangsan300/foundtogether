@@ -750,7 +750,6 @@
                     dominantType: dominantType
                 };
 
-                // Call Netlify Function to save data
                 try {
                     const response = await fetch(NETLIFY_FUNCTIONS_URL + 'save-survey', {
                         method: 'POST',
