@@ -772,7 +772,7 @@
                 };
 
                 try {
-                    const response = await fetch(NETLIFY_FUNCTIONS_URL + 'save-survey', {
+                    const response = await fetch('/.netlify/functions/save-survey', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ 
@@ -802,7 +802,7 @@
                 }
 
                 try {
-                    const response = await fetch(NETLIFY_FUNCTIONS_URL + 'load-survey');
+                    const response = await fetch('/.netlify/functions/load-survey');
                     const dataList = await response.json();
 
                     if (dataList.length === 0) {
@@ -844,6 +844,7 @@
                     alert('데이터를 불러오는 중 오류가 발생했습니다.');
                 }
             }
+
 
             function resetSurvey() {
                 answers = {};
