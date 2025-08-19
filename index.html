@@ -833,7 +833,7 @@
                             }
                         }
                         
-                        showResult();
+                        await analyzeAndRenderResults(answers, JSON.parse(selectedData.analysis_result));
                         alert('선택된 설문 결과를 성공적으로 불러왔습니다!');
                     } else {
                         alert('잘못된 UUID를 입력했습니다.');
