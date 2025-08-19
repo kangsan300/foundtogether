@@ -211,6 +211,7 @@
         <div class="header-section">
             <h1 class="text-4xl font-bold text-gray-900">함께창업소 예비창업자 성향분석</h1>
             <div id="load-button" class="button bg-gray-500 hover:bg-gray-700 !m-0">불러오기</div>
+            <div id="submit-button-header" class="button ml-4">결과 보기</div>
         </div>
         <div id="survey-questions">
             <!-- User Info Section -->
@@ -463,6 +464,7 @@
             const resultTitle = document.getElementById('result-title');
             const resultContent = document.getElementById('result-content');
             const submitButton = document.getElementById('submit-button');
+            const submitButtonHeader = document.getElementById('submit-button-header');
             const surveyResetButton = document.getElementById('survey-reset');
             const saveButton = document.getElementById('save-button');
             const loadButton = document.getElementById('load-button');
@@ -488,7 +490,6 @@
                     return;
                 }
 
-                // If some questions are not answered, select the first option
                 for (let i = 1; i <= questionCount; i++) {
                     const qId = String(i);
                     if (!answers[qId]) {
@@ -843,7 +844,6 @@
                 option.addEventListener('click', handleAnswerClick);
             });
             submitButton.addEventListener('click', showResult);
-            surveyResetButton.addEventListener('click', resetSurvey);
             saveButton.addEventListener('click', saveData);
             loadButton.addEventListener('click', loadData);
         };
