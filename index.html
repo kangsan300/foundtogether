@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>함께창업소 예비창업자 성향분석</title>
-    <script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
-    <script src="[https://cdn.jsdelivr.net/npm/chart.js](https://cdn.jsdelivr.net/npm/chart.js)"></script>
-    <script src="[https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels](https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels)"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
     <style>
-        @import url('[https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap](https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap)');
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap');
         body {
             font-family: 'Noto Sans KR', sans-serif;
             background-color: #f0f4f8;
@@ -210,8 +210,10 @@
     <div class="container">
         <div class="header-section">
             <h1 class="text-4xl font-bold text-gray-900">함께창업소 예비창업자 성향분석</h1>
-            <div id="load-button" class="button bg-gray-500 hover:bg-gray-700 !m-0">불러오기</div>
-            <div id="submit-button-header" class="button ml-4">결과 보기</div>
+            <div class="flex space-x-4">
+                <div id="load-button" class="button bg-gray-500 hover:bg-gray-700">불러오기</div>
+                <div id="submit-button-header" class="button">결과 보기</div>
+            </div>
         </div>
         <div id="survey-questions">
             <!-- User Info Section -->
