@@ -1,13 +1,18 @@
 const { Client } = require('pg');
 
-exports.handler = async (event) => {
+exports.handler = async (event, context) => {
   const client = new Client({
-    connectionString: process.env.NETLIFY_DATABASE_URL
+    connectionString: process.env.DATABASE_URL
   });
 
   try {
     await client.connect();
-    const query = 'SELECT user_name, user_phone, answers, analysis_result, created_at FROM user_survey ORDER BY created_at DESC';
+    
+    const query = `
+      SELECT id, user_name, user_phone, answers, analysis_result, created_at 
+      FROM user_survey 
+      ORDER BY created_at DESC
+    `;
     const res = await client.query(query);
 
     return {
@@ -18,7 +23,7 @@ exports.handler = async (event) => {
     console.error('Database error:', error);
     return {
       statusCode: 500,
-      body: JSON.stringify({ message: 'Failed to load survey data.' })
+      body: JSON.stringify({ message: 'Failed to load survey data.', error: error.message })
     };
   } finally {
     await client.end();
