@@ -448,13 +448,11 @@
     </div>
     
     <script>
-        // Netlify Functions URL for API calls
-        const NETLIFY_FUNCTIONS_URL = '/.netlify/functions/';
+        const NETLIFY_FUNCTIONS_URL = '/netlify/functions/';
         let myChart = null;
         let answers = {};
         const questionCount = 30;
 
-        // Chart.js datalabels plugin.
         if (typeof Chart !== 'undefined' && typeof ChartDataLabels !== 'undefined') {
             Chart.register(ChartDataLabels);
         }
@@ -490,11 +488,14 @@
                     return;
                 }
 
-                if (Object.keys(answers).length < questionCount) {
-                    alert('모든 문항에 답변해주세요.');
-                    return;
+                // If some questions are not answered, select the first option
+                for (let i = 1; i <= questionCount; i++) {
+                    const qId = String(i);
+                    if (!answers[qId]) {
+                        answers[qId] = 'A';
+                    }
                 }
-                
+
                 surveyQuestions.style.display = 'none';
                 surveyResult.classList.remove('hidden');
 
@@ -690,23 +691,77 @@
                     return;
                 }
                 
-                if (Object.keys(answers).length < questionCount) {
+                if (Object.keys(answers).length < 30) {
                      alert('설문지를 모두 작성해야 저장할 수 있습니다.');
                      return;
                 }
+                
+                // 분석 결과를 생성합니다.
+                const scores = {
+                    '서비스 지향성': 0,
+                    '창의적 독립성': 0,
+                    '안정성 추구': 0,
+                    '트렌드 혁신성': 0
+                };
+                
+                const scoreMapping = {
+                    '1': {A: 2, B: 0, C: 1}, '2': {A: 2, B: 0, C: 1}, '3': {A: 1, B: 1, C: 1}, '4': {A: 1, B: 0, C: 2}, '5': {A: 1, B: 0, C: 2}, '6': {A: 2, B: 1, C: 1},
+                    '7': {A: 1, B: 2, C: 1}, '8': {A: 1, B: 2, C: 1}, '9': {A: 1, B: 2, C: 1}, '10': {A: 1, B: 0, C: 1}, '11': {A: 1, B: 2, C: 1}, '12': {A: 1, B: 2, C: 1}, '13': {A: 1, B: 2, C: 1}, '14': {A: 1, B: 2, C: 1}, '15': {A: 1, B: 2, C: 1},
+                    '16': {A: 2, B: 1, C: 1}, '17': {A: 2, B: 1, C: 1}, '18': {A: 2, B: 1, C: 1}, '19': {A: 2, B: 1, C: 1}, '20': {A: 2, B: 1, C: 1},
+                    '21': {A: 1, B: 1, C: 2}, '22': {A: 1, B: 1, C: 2}, '23': {A: 1, B: 2, C: 1}, '24': {A: 2, B: 1, C: 2}, '25': {A: 1, B: 1, C: 2}, '26': {A: 1, B: 2, C: 1}, '27': {A: 1, B: 1, C: 2}, '28': {A: 1, B: 1, C: 2}, '29': {A: 1, B: 1, C: 2}, '30': {A: 1, B: 1, C: 2}
+                };
+
+                for (let i = 1; i <= questionCount; i++) {
+                    const qId = String(i);
+                    const answer = answers[qId];
+                    if (answer && scoreMapping[qId] && scoreMapping[qId][answer]) {
+                        const score = scoreMapping[qId][answer];
+                        if (i <= 6) { 
+                            if (answer === 'A') scores['서비스 지향성'] += score;
+                            else if (answer === 'B') scores['창의적 독립성'] += score;
+                            else if (answer === 'C') scores['트렌드 혁신성'] += score;
+                        } else if (i <= 10) { 
+                            if (answer === 'A' || answer === 'C') scores['안정성 추구'] += score;
+                            else if (answer === 'B') scores['창의적 독립성'] += score;
+                        } else if (i <= 15) {
+                            if (answer === 'A' || answer === 'C') scores['서비스 지향성'] += score;
+                            else if (answer === 'B') scores['창의적 독립성'] += score;
+                        } else if (i <= 20) { 
+                            if (answer === 'A') scores['안정성 추구'] += score;
+                            else if (answer === 'B') scores['트렌드 혁신성'] += score;
+                            else if (answer === 'C') scores['안정성 추구'] += score;
+                        } else if (i <= 24) { 
+                             if (answer === 'A' || answer === 'C') scores['트렌드 혁신성'] += score;
+                             else if (answer === 'B') scores['창의적 독립성'] += score;
+                        } else if (i <= 30) { 
+                            if (answer === 'A') scores['안정성 추구'] += score;
+                            else if (answer === 'B' || answer === 'C') scores['트렌드 혁신성'] += score;
+                        }
+                    }
+                }
+                const totalScore = Object.values(scores).reduce((a, b) => a + b, 0);
+                const percentages = {};
+                for (const key in scores) {
+                    percentages[key] = totalScore > 0 ? (scores[key] / totalScore) * 100 : 0;
+                }
+                const sortedPercentages = Object.entries(percentages).sort(([, a], [, b]) => b - a);
+                const dominantType = sortedPercentages[0][0];
+
+                const analysisResult = {
+                    scores: scores,
+                    dominantType: dominantType
+                };
 
                 // Call Netlify Function to save data
                 try {
-                    const response = await fetch('/.netlify/functions/save-survey', {
+                    const response = await fetch(NETLIFY_FUNCTIONS_URL + 'save-survey', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ 
                             userName, 
                             userPhone, 
                             answers, 
-                            analysisResult: {
-                                // 분석 결과 데이터를 여기에 추가
-                            }
+                            analysisResult
                         })
                     });
                     const result = await response.json();
@@ -729,7 +784,7 @@
                 }
 
                 try {
-                    const response = await fetch('/.netlify/functions/load-survey');
+                    const response = await fetch(NETLIFY_FUNCTIONS_URL + 'load-survey');
                     const dataList = await response.json();
 
                     if (dataList.length === 0) {
@@ -743,7 +798,7 @@
                     const selectedIndex = parseInt(selection, 10) - 1;
                     if (selectedIndex >= 0 && selectedIndex < dataList.length) {
                         const selectedData = dataList[selectedIndex];
-                        answers = selectedData.answers;
+                        answers = JSON.parse(selectedData.answers);
                         document.getElementById('userName').value = selectedData.user_name || '';
                         document.getElementById('userPhone').value = selectedData.user_phone || '';
                         
@@ -781,9 +836,6 @@
                 allOptions.forEach(opt => opt.classList.remove('selected'));
                 surveyQuestions.style.display = 'block';
                 surveyResult.classList.add('hidden');
-                resultContent.classList.add('hidden');
-                resultTitle.textContent = '설문 결과 분석 중...';
-                
                 const chartCanvas = document.getElementById('pie-chart');
                 if (chartCanvas) {
                     chartCanvas.remove();
