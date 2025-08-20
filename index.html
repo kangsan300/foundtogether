@@ -470,6 +470,12 @@
             const surveyResetButton = document.getElementById('survey-reset');
             const saveButton = document.getElementById('save-button');
             const loadButton = document.getElementById('load-button');
+            
+            submitButtonHeader.addEventListener('click', showResult);
+            submitButton.addEventListener('click', showResult);
+            surveyResetButton.addEventListener('click', resetSurvey);
+            saveButton.addEventListener('click', saveData);
+            loadButton.addEventListener('click', loadData);
 
             function handleAnswerClick(event) {
                 const option = event.target;
@@ -637,22 +643,17 @@
 
                     <div class="analysis-section">
                         <h4>당신에게 추천하는 업종</h4>
-                        <p class="text-lg text-gray-700 mb-6">당신의 복합적인 성향을 고려하여, 아래의 세 가지 업종을 추천해 드립니다.</p>
-                        
-                        <div class="analysis-item">
-                            <h5 class="text-xl font-bold text-blue-800 mb-2">1. 온/오프라인 결합형 카페/공방</h5>
-                            <p>강점 활용: '서비스 지향성'과 '창의적 독립성'을 동시에 활용할 수 있는 분야입니다. 오프라인 매장에서 친절한 고객 서비스를 제공하며, 당신만의 독특한 메뉴나 수제 제품을 기획하여 차별점을 둘 수 있습니다. 온라인 채널을 통해 마케팅을 전개하고 제품을 판매하는 것도 가능합니다.</p>
-                        </div>
+                        <p>강점 활용: '서비스 지향성'과 '창의적 독립성'을 동시에 활용할 수 있는 분야입니다. 오프라인 매장에서 친절한 고객 서비스를 제공하며, 당신만의 독특한 메뉴나 수제 제품을 기획하여 차별점을 둘 수 있습니다. 온라인 채널을 통해 마케팅을 전개하고 제품을 판매하는 것도 가능합니다.</p>
+                    </div>
 
-                        <div class="analysis-item">
-                            <h5 class="text-xl font-bold text-blue-800 mb-2">2. 맞춤형 펫/반려동물 서비스</h5>
-                            <p>강점 활용: '서비스 지향성'과 '트렌드 혁신성'이 조화를 이룹니다. 반려동물을 사랑하는 사람들과의 소통은 물론, 펫 푸드, 펫 용품, 펫 유치원 등 끊임없이 변화하는 트렌드를 빠르게 파악하여 새로운 맞춤형 서비스를 제공할 수 있습니다.</p>
-                        </div>
+                    <div class="analysis-item">
+                        <h5 class="text-xl font-bold text-blue-800 mb-2">2. 맞춤형 펫/반려동물 서비스</h5>
+                        <p>강점 활용: '서비스 지향성'과 '트렌드 혁신성'이 조화를 이룹니다. 반려동물을 사랑하는 사람들과의 소통은 물론, 펫 푸드, 펫 용품, 펫 유치원 등 끊임없이 변화하는 트렌드를 빠르게 파악하여 새로운 맞춤형 서비스를 제공할 수 있습니다.</p>
+                    </div>
 
-                        <div class="analysis-item">
-                            <h5 class="text-xl font-bold text-blue-800 mb-2">3. 데이터 기반의 소규모 컨설팅/교육</h5>
-                            <p>강점 활용: '창의적 독립성'과 '안정성 추구'가 결합된 업종입니다. 당신의 전문 지식을 바탕으로 고객에게 고가치 컨설팅을 제공합니다. 꼼꼼한 계획과 데이터 분석 능력으로 리스크를 최소화하며, 안정적인 수익을 창출하는 데 적합합니다. 온라인 강의나 콘텐츠 판매로도 사업을 확장할 수 있습니다.</p>
-                        </div>
+                    <div class="analysis-item">
+                        <h5 class="text-xl font-bold text-blue-800 mb-2">3. 데이터 기반의 소규모 컨설팅/교육</h5>
+                        <p>강점 활용: '창의적 독립성'과 '안정성 추구'가 결합된 업종입니다. 당신의 전문 지식을 바탕으로 고객에게 고가치 컨설팅을 제공합니다. 꼼꼼한 계획과 데이터 분석 능력으로 리스크를 최소화하며, 안정적인 수익을 창출하는 데 적합합니다. 온라인 강의나 콘텐츠 판매로도 사업을 확장할 수 있습니다.</p>
                     </div>
                 `;
                 resultContent.innerHTML = resultHTML;
@@ -772,7 +773,7 @@
                 };
 
                 try {
-                    const response = await fetch(NETLIFY_FUNCTIONS_URL + 'save-survey', {
+                    const response = await fetch('/.netlify/functions/save-survey', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ 
@@ -802,7 +803,7 @@
                 }
 
                 try {
-                    const response = await fetch(NETLIFY_FUNCTIONS_URL + 'load-survey');
+                    const response = await fetch('/.netlify/functions/load-survey');
                     const dataList = await response.json();
 
                     if (dataList.length === 0) {
@@ -844,6 +845,7 @@
                     alert('데이터를 불러오는 중 오류가 발생했습니다.');
                 }
             }
+
 
             function resetSurvey() {
                 answers = {};
