@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>함께창업소 예비창업자 성향분석</title>
+    <title>함께창업소 예비창업자 성향분석1</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
@@ -471,11 +471,11 @@
             const saveButton = document.getElementById('save-button');
             const loadButton = document.getElementById('load-button');
             
-            submitButtonHeader.addEventListener('click', showResult);
-            submitButton.addEventListener('click', showResult);
-            surveyResetButton.addEventListener('click', resetSurvey);
-            saveButton.addEventListener('click', saveData);
-            loadButton.addEventListener('click', loadData);
+            if(submitButtonHeader) submitButtonHeader.addEventListener('click', showResult);
+            if(submitButton) submitButton.addEventListener('click', showResult);
+            if(surveyResetButton) surveyResetButton.addEventListener('click', resetSurvey);
+            if(saveButton) saveButton.addEventListener('click', saveData);
+            if(loadButton) loadButton.addEventListener('click', loadData);
 
             function handleAnswerClick(event) {
                 const option = event.target;
@@ -773,7 +773,7 @@
                 };
 
                 try {
-                    const response = await fetch('/.netlify/functions/save-survey', {
+                    const response = await fetch(NETLIFY_FUNCTIONS_URL + 'save-survey', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ 
@@ -787,11 +787,12 @@
                     if (response.ok) {
                         alert('설문 결과가 성공적으로 저장되었습니다!');
                     } else {
-                        alert('결과 저장 중 오류가 발생했습니다: ' + result.message);
+                        // 서버에서 반환한 상세 오류 메시지를 포함하도록 수정
+                        alert(`결과 저장 중 오류가 발생했습니다: ${result.message}\n상세: ${result.error || '알 수 없는 오류'}`);
                     }
                 } catch (e) {
                     console.error("Error saving data: ", e);
-                    alert('결과 저장 중 오류가 발생했습니다.');
+                    alert(`결과 저장 중 오류가 발생했습니다.\n상세: ${e.message}`);
                 }
             }
 
@@ -803,7 +804,7 @@
                 }
 
                 try {
-                    const response = await fetch('/.netlify/functions/load-survey');
+                    const response = await fetch(NETLIFY_FUNCTIONS_URL + 'load-survey');
                     const dataList = await response.json();
 
                     if (dataList.length === 0) {
