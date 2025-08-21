@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>함께창업소 예비창업자 성향분석 v1.0.9</title>
+    <title>함께창업소 예비창업자 성향분석 v1.0.10</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
@@ -169,7 +169,7 @@
         }
         /* 모달 스타일 */
         .modal {
-            display: none; /* 기본적으로 숨김 */
+            display: none;
             position: fixed;
             z-index: 100;
             left: 0;
@@ -256,7 +256,7 @@
                 </div>
             </div>
             
-            <!-- 설문 항목 1부: 개인의 성향과 가치관 -->
+            <!-- 1부: 개인의 성향과 가치관 -->
             <div class="section-title">1부: 개인의 성향과 가치관</div>
             
             <div class="question-card" data-question="1">
@@ -718,6 +718,7 @@
                 resultContent.classList.remove('hidden');
                 resultTitle.textContent = '설문 결과 분석';
 
+                // 분석 결과를 HTML에 렌더링하는 부분입니다.
                 let resultHTML = `
                     <div class="analysis-item text-center">
                         <h4 class="text-2xl font-bold mb-4">종합 분석: 당신의 비즈니스 DNA</h4>
@@ -749,7 +750,10 @@
 
                     <div class="analysis-section">
                         <h4>당신에게 추천하는 업종</h4>
-                        <p>강점 활용: '서비스 지향성'과 '창의적 독립성'을 동시에 활용할 수 있는 분야입니다. 오프라인 매장에서 친절한 고객 서비스를 제공하며, 당신만의 독특한 메뉴나 수제 제품을 기획하여 차별점을 둘 수 있습니다. 온라인 채널을 통해 마케팅을 전개하고 제품을 판매하는 것도 가능합니다.</p>
+                        <p>
+                          <strong>1. 온/오프라인 결합형 카페/공방</strong><br>
+                          강점 활용: '서비스 지향성'과 '창의적 독립성'을 동시에 활용할 수 있는 분야입니다. 오프라인 매장에서 친절한 고객 서비스를 제공하며, 당신만의 독특한 메뉴나 수제 제품을 기획하여 차별점을 둘 수 있습니다. 온라인 채널을 통해 마케팅을 전개하고 제품을 판매하는 것도 가능합니다.
+                        </p>
                     </div>
 
                     <div class="analysis-item">
@@ -934,6 +938,7 @@
                     dataListBody.innerHTML = '';
                     dataList.forEach(item => {
                         const row = document.createElement('tr');
+                        row.dataset.uuid = item.id;
                         row.innerHTML = `
                             <td>${item.id}</td>
                             <td>${item.user_name}</td>
