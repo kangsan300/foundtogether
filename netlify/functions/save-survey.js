@@ -37,7 +37,6 @@ exports.handler = async (event, context) => {
   
   try {
     // 환경 변수 NETLIFY_DATABASE_URL이 설정되었는지 확인합니다.
-    // 이 변수가 없으면 데이터베이스에 연결할 수 없으므로 에러를 발생시킵니다.
     if (!process.env.NETLIFY_DATABASE_URL) {
       throw new Error('NETLIFY_DATABASE_URL 환경 변수가 설정되지 않았습니다.');
     }
@@ -55,10 +54,8 @@ exports.handler = async (event, context) => {
     }
 
     // Netlify 환경 변수 NETLIFY_DATABASE_URL을 사용하여 PostgreSQL 클라이언트를 생성합니다.
-    // 이 환경 변수는 Netlify 프로젝트 설정에서 직접 등록해야 합니다.
     client = new Client({
       connectionString: process.env.NETLIFY_DATABASE_URL,
-      // Netlify 환경에서 SSL 연결 문제를 해결하기 위한 설정입니다.
       ssl: {
         rejectUnauthorized: false
       }
@@ -67,15 +64,28 @@ exports.handler = async (event, context) => {
     // 데이터베이스에 연결합니다.
     await client.connect();
     
-    // user_survey 테이블에 데이터를 삽입하는 SQL 쿼리입니다.
-    // $1, $2, $3, $4는 SQL 인젝션을 방지하기 위한 매개변수입니다.
+    // `user_survey` 테이블이 존재하는지 확인하고, 없으면 새로 생성합니다.
+    // `id`는 1부터 시작하는 일련번호(INTEGER)로, UUID 대신 사용합니다.
+    const createTableIfNotExists = `
+      CREATE TABLE IF NOT EXISTS user_survey (
+        id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+        user_name VARCHAR(100) NOT NULL,
+        user_phone VARCHAR(20) NOT NULL,
+        answers JSONB NOT NULL,
+        analysis_result JSONB NOT NULL,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      );
+    `;
+    
+    await client.query(createTableIfNotExists);
+    
+    // 설문 데이터를 `user_survey` 테이블에 삽입하는 SQL 쿼리입니다.
     const query = `
       INSERT INTO user_survey (user_name, user_phone, answers, analysis_result)
       VALUES ($1, $2, $3, $4)
       RETURNING id, created_at
     `;
     
-    // INSERT 쿼리에 들어갈 값들을 배열로 정의합니다.
     const values = [
       userName, 
       userPhone, 
@@ -83,10 +93,8 @@ exports.handler = async (event, context) => {
       JSON.stringify(analysisResult)
     ];
     
-    // 쿼리를 실행하여 데이터를 저장합니다.
     const result = await client.query(query, values);
 
-    // 데이터 저장 성공 시 200 상태 코드와 성공 메시지를 반환합니다.
     return {
       statusCode: 200,
       headers,
@@ -98,7 +106,6 @@ exports.handler = async (event, context) => {
     };
     
   } catch (error) {
-    // 데이터베이스 작업 중 오류가 발생하면 상세 에러를 기록하고 실패 메시지를 반환합니다.
     console.error('Function error:', error);
     
     return {
@@ -106,12 +113,11 @@ exports.handler = async (event, context) => {
       headers,
       body: JSON.stringify({
         message: '데이터 저장 중 오류가 발생했습니다.',
-        error: error.message, // 상세 오류 메시지를 반환하여 디버깅을 돕습니다.
+        error: error.message,
         code: error.code || 'UNKNOWN'
       })
     };
   } finally {
-    // try-catch 블록이 끝나면 데이터베이스 연결을 항상 종료합니다.
     if (client) {
       try {
         await client.end();
