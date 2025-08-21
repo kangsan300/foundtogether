@@ -1,17 +1,22 @@
 // netlify/functions/load-survey.js
+/**
+ * @file Netlify Function - 설문 데이터 불러오기
+ * @description Netlify DB(PostgreSQL)에 저장된 설문 데이터를 불러오는 역할을 합니다.
+ * GET 요청을 받아 user_survey 테이블의 모든 데이터를 최신순으로 반환합니다.
+ */
+
 // PostgreSQL 클라이언트 라이브러리를 불러옵니다.
 const { Client } = require('pg');
 
 /**
  * Netlify Functions의 메인 핸들러 함수입니다.
- * HTTP GET 요청을 처리하여 user_survey 테이블에 저장된 데이터를 불러옵니다.
- * @description 데이터베이스에서 설문 데이터를 최신 순으로 가져와 JSON 배열 형태로 반환합니다.
- * @param {object} event - HTTP 요청에 대한 정보를 담고 있는 객체
- * @param {object} context - Netlify Functions의 실행 환경에 대한 정보를 담고 있는 객체
+ * @description HTTP GET 요청을 처리하여 user_survey 테이블에 저장된 데이터를 불러옵니다.
+ * @param {object} event - HTTP 요청 정보를 담고 있는 객체입니다.
+ * @param {object} context - Netlify Functions의 실행 환경 정보를 담고 있는 객체입니다.
  * @returns {object} - HTTP 응답 객체 (데이터 또는 실패 메시지 포함)
  */
 exports.handler = async (event, context) => {
-  // CORS 요청을 위한 헤더 설정입니다.
+  // CORS(Cross-Origin Resource Sharing)를 위한 헤더를 설정합니다.
   const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type',
@@ -33,7 +38,7 @@ exports.handler = async (event, context) => {
   try {
     // 환경 변수 NETLIFY_DATABASE_URL이 설정되었는지 확인합니다.
     if (!process.env.NETLIFY_DATABASE_URL) {
-      throw new Error('NETLIFY_DATABASE_URL environment variable is not set');
+      throw new Error('NETLIFY_DATABASE_URL 환경 변수가 설정되지 않았습니다.');
     }
 
     // Netlify 환경 변수를 사용하여 PostgreSQL 클라이언트를 생성합니다.
@@ -49,6 +54,7 @@ exports.handler = async (event, context) => {
     await client.connect();
     
     // user_survey 테이블에서 모든 데이터를 생성일(created_at) 기준으로 최신 순으로 가져옵니다.
+    // id, user_name, user_phone, answers, analysis_result, created_at 필드를 모두 포함합니다.
     const query = `
       SELECT id, user_name, user_phone, answers, analysis_result, created_at 
       FROM user_survey 
@@ -80,4 +86,3 @@ exports.handler = async (event, context) => {
       }
     }
   }
-};
