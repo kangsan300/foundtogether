@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>함께창업소 예비창업자 성향분석 v1.0.4</title>
+    <title>함께창업소 예비창업자 성향분석 v1.0.5</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
@@ -66,11 +66,6 @@
             transition: all 0.3s ease-in-out;
             color: #4a5568;
             border: 2px solid transparent;
-        }
-        .answer-option:hover {
-            background-color: #e2e8f0;
-            transform: translateY(-3px);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
         .answer-option.selected {
             background-color: #3b82f6;
@@ -216,7 +211,6 @@
                 <div id="submit-button-header" class="button">결과 보기</div>
             </div>
         </div>
-
         <div id="survey-questions">
             <!-- 기본 정보 입력 섹션 -->
             <div class="section-title">기본 정보 입력</div>
@@ -838,6 +832,7 @@
                     if (response.ok) {
                         alert('설문 결과가 성공적으로 저장되었습니다!');
                     } else {
+                        // 서버에서 반환한 상세 오류 메시지를 포함하도록 수정
                         alert(`결과 저장 중 오류가 발생했습니다: ${result.message}\n상세: ${result.error || '알 수 없는 오류'}`);
                     }
                 } catch (e) {
@@ -928,6 +923,7 @@
                 }
             }
             
+            // 모든 답변 옵션에 이벤트 리스너를 추가합니다.
             document.querySelectorAll('.answer-option').forEach(option => {
                 option.addEventListener('click', handleAnswerClick);
             });
