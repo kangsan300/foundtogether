@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>함께창업소 예비창업자 성향분석 v1.0.2</title>
+    <title>함께창업소 예비창업자 성향분석 v1.0.4</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
@@ -210,7 +210,7 @@
     <div class="container">
         <!-- 상단 헤더 섹션 -->
         <div class="header-section">
-            <h1 class="text-4xl font-bold text-gray-900">함께창업소 예비창업자 성향분석 <span class="text-gray-500 text-base">v1.0.2</span></h1>
+            <h1 class="text-4xl font-bold text-gray-900">함께창업소 예비창업자 성향분석 <span class="text-gray-500 text-base">v1.0.4</span></h1>
             <div class="flex space-x-4">
                 <div id="load-button" class="button bg-gray-500 hover:bg-gray-700">불러오기</div>
                 <div id="submit-button-header" class="button">결과 보기</div>
@@ -232,7 +232,7 @@
                 </div>
             </div>
             
-            <!-- 설문 항목 1부: 개인의 성향과 가치관 -->
+            <!-- 1부: 개인의 성향과 가치관 -->
             <div class="section-title">1부: 개인의 성향과 가치관</div>
             
             <div class="question-card" data-question="1">
@@ -749,10 +749,9 @@
 
             /**
              * 설문 결과를 Netlify DB에 저장하는 비동기 함수입니다.
-             * 1. 사용자 입력(이름, 전화번호) 및 설문 답변을 검증합니다.
-             * 2. 설문 답변을 기반으로 성향 분석 결과를 생성합니다.
-             * 3. `/.netlify/functions/save-survey` 경로로 POST 요청을 보냅니다.
-             * 4. 서버 응답을 처리하여 성공 또는 상세 오류 메시지를 알림창으로 표시합니다.
+             * @description 사용자 입력(이름, 전화번호) 및 설문 답변을 검증한 후,
+             * Netlify Functions를 호출하여 데이터를 DB에 저장합니다.
+             * 저장에 실패하면 상세 오류 메시지를 포함한 알림창을 띄웁니다.
              * @returns {Promise<void>}
              */
             async function saveData() {
@@ -839,7 +838,6 @@
                     if (response.ok) {
                         alert('설문 결과가 성공적으로 저장되었습니다!');
                     } else {
-                        // 서버에서 반환한 상세 오류 메시지를 포함하도록 수정
                         alert(`결과 저장 중 오류가 발생했습니다: ${result.message}\n상세: ${result.error || '알 수 없는 오류'}`);
                     }
                 } catch (e) {
@@ -850,10 +848,8 @@
 
             /**
              * 저장된 설문 결과를 불러오는 비동기 함수입니다.
-             * 1. 사용자에게 비밀번호를 확인합니다.
-             * 2. `/.netlify/functions/load-survey` 경로로 GET 요청을 보냅니다.
-             * 3. 서버 응답을 처리하여 저장된 데이터 목록을 보여줍니다.
-             * 4. 사용자가 선택한 UUID에 해당하는 데이터를 찾아 화면에 렌더링합니다.
+             * @description 사용자에게 비밀번호를 확인하고, Netlify Functions를 호출하여 저장된 데이터 목록을 가져옵니다.
+             * 사용자가 선택한 UUID를 기반으로 특정 데이터를 화면에 불러와 표시합니다.
              */
             async function loadData() {
                 const password = prompt("비밀번호를 입력하세요. (250501)");
@@ -932,18 +928,13 @@
                 }
             }
             
-            // 모든 답변 옵션에 이벤트 리스너를 추가합니다.
             document.querySelectorAll('.answer-option').forEach(option => {
                 option.addEventListener('click', handleAnswerClick);
             });
-            // '결과 보기' 버튼 이벤트 리스너를 추가합니다.
             if(submitButtonHeader) submitButtonHeader.addEventListener('click', showResult);
             if(submitButton) submitButton.addEventListener('click', showResult);
-            // '다시 시작하기' 버튼 이벤트 리스너를 추가합니다.
             if(surveyResetButton) surveyResetButton.addEventListener('click', resetSurvey);
-            // '결과 저장하기' 버튼 이벤트 리스너를 추가합니다.
             if(saveButton) saveButton.addEventListener('click', saveData);
-            // '불러오기' 버튼 이벤트 리스너를 추가합니다.
             if(loadButton) loadButton.addEventListener('click', loadData);
         };
     </script>
