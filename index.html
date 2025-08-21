@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>함께창업소 예비창업자 성향분석 v1.0.6</title>
+    <title>함께창업소 예비창업자 성향분석 v1.0.8</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
@@ -167,43 +167,6 @@
             width: 100%;
             margin-bottom: 3rem;
         }
-        /* Mobile-specific adjustments */
-        @media (max-width: 768px) {
-            .container {
-                padding: 1.5rem;
-            }
-            .question-card {
-                padding: 1.5rem;
-            }
-            .question-title {
-                font-size: 1.2rem;
-            }
-            .answer-option {
-                font-size: 1rem;
-                padding: 1rem;
-            }
-            .result-box {
-                padding: 2rem;
-            }
-            .result-box h3 {
-                font-size: 1.75rem;
-            }
-            .result-box p {
-                font-size: 1rem;
-            }
-            .analysis-item {
-                padding: 1.5rem;
-            }
-            .analysis-section h4 {
-                font-size: 1.5rem;
-            }
-            .analysis-item h5 {
-                font-size: 1.1rem;
-            }
-            .analysis-item p {
-                font-size: 0.95rem;
-            }
-        }
         /* 모달 스타일 */
         .modal {
             display: none; /* 기본적으로 숨김 */
@@ -272,7 +235,7 @@
     <div class="container">
         <!-- 상단 헤더 섹션 -->
         <div class="header-section">
-            <h1 class="text-4xl font-bold text-gray-900">함께창업소 예비창업자 성향분석 <span class="text-gray-500 text-base">v1.0.6</span></h1>
+            <h1 class="text-4xl font-bold text-gray-900">함께창업소 예비창업자 성향분석 <span class="text-gray-500 text-base">v1.0.8</span></h1>
             <div class="flex space-x-4">
                 <div id="load-button" class="button bg-gray-500 hover:bg-gray-700">불러오기</div>
                 <div id="submit-button-header" class="button">결과 보기</div>
@@ -513,12 +476,35 @@
         </div>
     </div>
     
+    <div id="modal-load" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4>저장된 설문 결과 불러오기</h4>
+                <span class="modal-close">&times;</span>
+            </div>
+            <div id="data-list-container">
+                <table class="data-list-table">
+                    <thead>
+                        <tr>
+                            <th>ID (더블클릭)</th>
+                            <th>이름</th>
+                            <th>전화번호</th>
+                            <th>저장 시간</th>
+                        </tr>
+                    </thead>
+                    <tbody id="data-list-body">
+                        <!-- Data will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
     <script>
         /**
          * @file 함께창업소 예비창업자 성향분석 웹페이지 스크립트
          * @description 이 스크립트는 Netlify DB를 활용한 설문 시스템의 클라이언트 측 로직을 담당합니다.
          * Netlify Functions를 호출하여 데이터를 저장하고 불러오며, 설문 결과를 시각화하여 보여줍니다.
-         * 이 버전은 오류 메시지를 상세하게 표시하고, 불러오기 로직을 개선했습니다.
          */
 
         // Netlify Functions의 기본 URL 경로를 상수로 정의합니다.
@@ -550,6 +536,9 @@
             const surveyResetButton = document.getElementById('survey-reset');
             const saveButton = document.getElementById('save-button');
             const loadButton = document.getElementById('load-button');
+            const modalLoad = document.getElementById('modal-load');
+            const modalClose = document.querySelector('.modal-close');
+            const dataListBody = document.getElementById('data-list-body');
             
             // 모든 답변 옵션에 이벤트 리스너를 추가합니다.
             document.querySelectorAll('.answer-option').forEach(option => {
@@ -564,6 +553,13 @@
             if(saveButton) saveButton.addEventListener('click', saveData);
             // '불러오기' 버튼에 이벤트 리스너를 추가합니다.
             if(loadButton) loadButton.addEventListener('click', loadData);
+            // 모달 닫기 버튼 이벤트 리스너를 추가합니다.
+            if(modalClose) modalClose.addEventListener('click', () => modalLoad.style.display = 'none');
+            window.addEventListener('click', (event) => {
+                if (event.target === modalLoad) {
+                    modalLoad.style.display = 'none';
+                }
+            });
 
             /**
              * 설문 문항의 답변을 클릭했을 때 실행되는 함수입니다.
@@ -599,7 +595,6 @@
                     return;
                 }
 
-                // 답변하지 않은 항목은 첫 번째 옵션으로 자동 선택합니다.
                 for (let i = 1; i <= questionCount; i++) {
                     const qId = String(i);
                     if (!answers[qId]) {
@@ -613,7 +608,6 @@
                 const spinner = surveyResult.querySelector('.loading-spinner');
                 if (spinner) spinner.style.display = 'block';
 
-                // 분석 결과를 렌더링하기 전에 잠시 대기합니다. (UX 개선)
                 await new Promise(resolve => setTimeout(resolve, 1500));
                 
                 await analyzeAndRenderResults();
@@ -637,7 +631,6 @@
                         '트렌드 혁신성': 0
                     };
                     
-                    // 점수 매핑 로직을 활용하여 각 성향별 점수를 계산합니다.
                     const scoreMapping = {
                         '1': {A: 2, B: 0, C: 1}, '2': {A: 2, B: 0, C: 1}, '3': {A: 1, B: 1, C: 1}, '4': {A: 1, B: 0, C: 2}, '5': {A: 1, B: 0, C: 2}, '6': {A: 2, B: 1, C: 1},
                         '7': {A: 1, B: 2, C: 1}, '8': {A: 1, B: 2, C: 1}, '9': {A: 1, B: 2, C: 1}, '10': {A: 1, B: 0, C: 1}, '11': {A: 1, B: 2, C: 1}, '12': {A: 1, B: 2, C: 1}, '13': {A: 1, B: 2, C: 1}, '14': {A: 1, B: 2, C: 1}, '15': {A: 1, B: 2, C: 1},
@@ -915,8 +908,8 @@
 
             /**
              * 저장된 설문 결과를 불러오는 비동기 함수입니다.
-             * @description 사용자에게 비밀번호를 확인하고, Netlify Functions를 호출하여 저장된 데이터 목록을 가져옵니다.
-             * 사용자가 선택한 UUID를 기반으로 특정 데이터를 화면에 불러와 표시합니다.
+             * @description 사용자에게 비밀번호를 확인하고, Netlify Functions를 호출하여 저장된 데이터 목록을 가져와
+             * 테이블 형태의 모달 창에 표시합니다. 사용자는 이 테이블에서 항목을 더블클릭하여 데이터를 불러올 수 있습니다.
              */
             async function loadData() {
                 const password = prompt("비밀번호를 입력하세요. (250501)");
@@ -926,7 +919,7 @@
                 }
 
                 try {
-                    const response = await fetch(NETLIFY_FUNCTIONS_URL + 'load-survey');
+                    const response = await fetch('/.netlify/functions/load-survey');
                     
                     if (!response.ok) {
                         const errorResult = await response.json();
@@ -940,47 +933,60 @@
                         alert('저장된 결과가 없습니다. 설문을 진행해주세요.');
                         return;
                     }
-
-                    const listItems = dataList.map((item, index) => `UUID: ${item.id}\n이름: ${item.user_name}\n전화번호: ${item.user_phone}\n저장 시간: ${new Date(item.created_at).toLocaleString()}`).join('\n\n');
-                    const selection = prompt(`불러올 항목의 UUID를 입력하세요:\n\n${listItems}`);
-
-                    const selectedData = dataList.find(item => item.id === selection);
-
-                    if (selectedData) {
-                        answers = JSON.parse(selectedData.answers);
-                        document.getElementById('userName').value = selectedData.user_name || '';
-                        document.getElementById('userPhone').value = selectedData.user_phone || '';
-                        
-                        resetSurvey();
-                        const allOptions = document.querySelectorAll('.answer-option');
-                        for (const qId in answers) {
-                            const selectedValue = answers[qId];
-                            const questionCard = document.querySelector(`[data-question="${qId}"]`);
-                            if (questionCard) {
-                                const option = questionCard.querySelector(`[data-value="${selectedValue}"]`);
-                                if (option) {
-                                    option.classList.add('selected');
-                                }
-                            }
-                        }
-                        
-                        await analyzeAndRenderResults(answers, JSON.parse(selectedData.analysis_result));
-                        alert('선택된 설문 결과를 성공적으로 불러왔습니다!');
-                    } else {
-                        alert('잘못된 UUID를 입력했습니다.');
-                    }
+                    
+                    // 모달 창에 데이터를 테이블 형태로 표시합니다.
+                    dataListBody.innerHTML = ''; // 기존 데이터 초기화
+                    dataList.forEach(item => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${item.id}</td>
+                            <td>${item.user_name}</td>
+                            <td>${item.user_phone}</td>
+                            <td>${new Date(item.created_at).toLocaleString()}</td>
+                        `;
+                        // 더블클릭 이벤트 리스너를 추가하여 해당 데이터를 불러옵니다.
+                        row.addEventListener('dblclick', () => {
+                            loadSelectedData(item);
+                            modalLoad.style.display = 'none';
+                        });
+                        dataListBody.appendChild(row);
+                    });
+                    
+                    modalLoad.style.display = 'flex';
 
                 } catch (e) {
                     console.error("Error loading documents: ", e);
                     alert(`데이터를 불러오는 중 오류가 발생했습니다.\n네트워크 오류 또는 서버 응답 문제일 수 있습니다.\n상세: ${e.message}`);
                 }
             }
-
-
+            
             /**
-             * 설문 초기화 함수입니다.
-             * @description 답변 상태를 초기화하고, 화면 요소를 원래 상태로 되돌립니다.
+             * 선택된 데이터를 화면에 렌더링하는 함수입니다.
+             * @param {object} selectedData - 사용자가 선택한 데이터 객체
              */
+            async function loadSelectedData(selectedData) {
+                answers = JSON.parse(selectedData.answers);
+                document.getElementById('userName').value = selectedData.user_name || '';
+                document.getElementById('userPhone').value = selectedData.user_phone || '';
+                
+                resetSurvey();
+                const allOptions = document.querySelectorAll('.answer-option');
+                for (const qId in answers) {
+                    const selectedValue = answers[qId];
+                    const questionCard = document.querySelector(`[data-question="${qId}"]`);
+                    if (questionCard) {
+                        const option = questionCard.querySelector(`[data-value="${selectedValue}"]`);
+                        if (option) {
+                            option.classList.add('selected');
+                        }
+                    }
+                }
+                
+                await analyzeAndRenderResults(answers, JSON.parse(selectedData.analysis_result));
+                alert('선택된 설문 결과를 성공적으로 불러왔습니다!');
+            }
+
+
             function resetSurvey() {
                 answers = {};
                 document.getElementById('userName').value = '';
