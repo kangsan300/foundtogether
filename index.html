@@ -67,6 +67,11 @@
             color: #4a5568;
             border: 2px solid transparent;
         }
+        .answer-option:hover {
+            background-color: #e2e8f0;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
         .answer-option.selected {
             background-color: #3b82f6;
             color: #ffffff;
@@ -205,12 +210,13 @@
     <div class="container">
         <!-- 상단 헤더 섹션 -->
         <div class="header-section">
-            <h1 class="text-4xl font-bold text-gray-900">함께창업소 예비창업자 성향분석 <span class="text-gray-500 text-base">v1.0.4</span></h1>
+            <h1 class="text-4xl font-bold text-gray-900">함께창업소 예비창업자 성향분석 <span class="text-gray-500 text-base">v1.0.5</span></h1>
             <div class="flex space-x-4">
                 <div id="load-button" class="button bg-gray-500 hover:bg-gray-700">불러오기</div>
                 <div id="submit-button-header" class="button">결과 보기</div>
             </div>
         </div>
+
         <div id="survey-questions">
             <!-- 기본 정보 입력 섹션 -->
             <div class="section-title">기본 정보 입력</div>
@@ -923,7 +929,6 @@
                 }
             }
             
-            // 모든 답변 옵션에 이벤트 리스너를 추가합니다.
             document.querySelectorAll('.answer-option').forEach(option => {
                 option.addEventListener('click', handleAnswerClick);
             });
@@ -936,3 +941,119 @@
     </script>
 </body>
 </html>
+```
+
+---
+
+### `save-survey.js` (Netlify Functions)
+
+```javascript
+// netlify/functions/save-survey.js
+// PostgreSQL 클라이언트 라이브러리를 불러옵니다.
+const { Client } = require('pg');
+
+/**
+ * Netlify Functions의 메인 핸들러 함수입니다.
+ * @description HTTP POST 요청을 처리하여 설문 데이터를 데이터베이스에 저장합니다.
+ * @param {object} event - HTTP 요청에 대한 정보를 담고 있는 객체
+ * @param {object} context - Netlify Functions의 실행 환경에 대한 정보를 담고 있는 객체
+ * @returns {object} - HTTP 응답 객체 (성공 또는 실패 메시지 포함)
+ */
+exports.handler = async (event, context) => {
+  // CORS 요청을 위한 헤더 설정입니다.
+  const headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS'
+  };
+
+  // OPTIONS 요청(사전 요청)에 대한 응답을 처리합니다.
+  if (event.httpMethod === 'OPTIONS') {
+    return { statusCode: 200, headers, body: '' };
+  }
+
+  // POST 요청이 아니면 405 Method Not Allowed 에러를 반환합니다.
+  if (event.httpMethod !== 'POST') {
+    return { 
+      statusCode: 405, 
+      headers,
+      body: JSON.stringify({ message: 'Method Not Allowed' })
+    };
+  }
+
+  let client;
+  
+  try {
+    // 환경 변수 NETLIFY_DATABASE_URL이 설정되었는지 확인합니다.
+    if (!process.env.NETLIFY_DATABASE_URL) {
+      throw new Error('NETLIFY_DATABASE_URL environment variable is not set');
+    }
+
+    // 요청 본문(body)의 JSON 데이터를 파싱하여 변수에 할당합니다.
+    const { userName, userPhone, answers, analysisResult } = JSON.parse(event.body);
+    
+    // 필수 데이터가 누락되었는지 확인하고, 누락 시 400 에러를 반환합니다.
+    if (!userName || !userPhone || !answers || !analysisResult) {
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({ message: '필수 데이터가 누락되었습니다.' })
+      };
+    }
+
+    // Netlify 환경 변수 NETLIFY_DATABASE_URL을 사용하여 PostgreSQL 클라이언트를 생성합니다.
+    // 이 환경 변수는 Netlify 프로젝트 설정에서 직접 등록해야 합니다.
+    client = new Client({
+      connectionString: process.env.NETLIFY_DATABASE_URL,
+      // Netlify 환경에서 SSL 연결 문제를 해결하기 위한 설정입니다.
+      ssl: {
+        rejectUnauthorized: false
+      }
+    });
+
+    // 데이터베이스에 연결합니다.
+    await client.connect();
+    
+    // user_survey 테이블에 데이터를 삽입합니다.
+    const query = `
+      INSERT INTO user_survey (user_name, user_phone, answers, analysis_result)
+      VALUES ($1, $2, $3, $4)
+      RETURNING id, created_at
+    `;
+    const values = [userName, userPhone, JSON.stringify(answers), JSON.stringify(analysisResult)];
+    const result = await client.query(query, values);
+
+    // 데이터 저장 성공 시 200 상태 코드와 성공 메시지를 반환합니다.
+    return {
+      statusCode: 200,
+      headers,
+      body: JSON.stringify({
+        message: '설문 데이터가 성공적으로 저장되었습니다!',
+        id: result.rows[0].id,
+        timestamp: result.rows[0].created_at
+      })
+    };
+  } catch (error) {
+    // 데이터베이스 작업 중 오류가 발생하면 상세 에러를 기록하고 실패 메시지를 반환합니다.
+    console.error('Function error:', error);
+    
+    return {
+      statusCode: 500,
+      headers,
+      body: JSON.stringify({
+        message: '데이터 저장 중 오류가 발생했습니다.',
+        error: error.message, // 상세 오류 메시지를 반환
+        code: error.code || 'UNKNOWN'
+      })
+    };
+  } finally {
+    // try-catch 블록이 끝나면 데이터베이스 연결을 항상 종료합니다.
+    if (client) {
+      try {
+        await client.end();
+      } catch (closeError) {
+        console.error('Error closing connection:', closeError);
+      }
+    }
+  }
+};
