@@ -58,4 +58,66 @@ exports.handler = async (event, context) => {
     // 이 환경 변수는 Netlify 프로젝트 설정에서 직접 등록해야 합니다.
     client = new Client({
       connectionString: process.env.NETLIFY_DATABASE_URL,
-      // Netlify 환경에서 SSL 연결 문제를
+      // Netlify 환경에서 SSL 연결 문제를 해결하기 위한 설정입니다.
+      ssl: {
+        rejectUnauthorized: false
+      }
+    });
+
+    // 데이터베이스에 연결합니다.
+    await client.connect();
+    
+    // user_survey 테이블에 데이터를 삽입하는 SQL 쿼리입니다.
+    // $1, $2, $3, $4는 SQL 인젝션을 방지하기 위한 매개변수입니다.
+    const query = `
+      INSERT INTO user_survey (user_name, user_phone, answers, analysis_result)
+      VALUES ($1, $2, $3, $4)
+      RETURNING id, created_at
+    `;
+    
+    // INSERT 쿼리에 들어갈 값들을 배열로 정의합니다.
+    const values = [
+      userName, 
+      userPhone, 
+      JSON.stringify(answers), 
+      JSON.stringify(analysisResult)
+    ];
+    
+    // 쿼리를 실행하여 데이터를 저장합니다.
+    const result = await client.query(query, values);
+
+    // 데이터 저장 성공 시 200 상태 코드와 성공 메시지를 반환합니다.
+    return {
+      statusCode: 200,
+      headers,
+      body: JSON.stringify({
+        message: '설문 데이터가 성공적으로 저장되었습니다!',
+        id: result.rows[0].id,
+        timestamp: result.rows[0].created_at
+      })
+    };
+    
+  } catch (error) {
+    // 데이터베이스 작업 중 오류가 발생하면 상세 에러를 기록하고 실패 메시지를 반환합니다.
+    console.error('Function error:', error);
+    
+    return {
+      statusCode: 500,
+      headers,
+      body: JSON.stringify({
+        message: '데이터 저장 중 오류가 발생했습니다.',
+        error: error.message, // 상세 오류 메시지를 반환하여 디버깅을 돕습니다.
+        code: error.code || 'UNKNOWN'
+      })
+    };
+  } finally {
+    // try-catch 블록이 끝나면 데이터베이스 연결을 항상 종료합니다.
+    if (client) {
+      try {
+        await client.end();
+      } catch (closeError) {
+        console.error('Error closing connection:', closeError);
+      }
+    }
+  }
+};
