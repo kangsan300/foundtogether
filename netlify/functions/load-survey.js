@@ -1,104 +1,80 @@
+// netlify/functions/load-survey.js
+// PostgreSQL 클라이언트 라이브러리를 불러옵니다.
 const { Client } = require('pg');
 
+/**
+ * Netlify Functions의 메인 핸들러 함수입니다.
+ * HTTP GET 요청을 처리하여 user_survey 테이블에 저장된 데이터를 불러옵니다.
+ * @description 데이터베이스에서 설문 데이터를 최신 순으로 가져와 JSON 배열 형태로 반환합니다.
+ * @param {object} event - HTTP 요청에 대한 정보를 담고 있는 객체
+ * @param {object} context - Netlify Functions의 실행 환경에 대한 정보를 담고 있는 객체
+ * @returns {object} - HTTP 응답 객체 (데이터 또는 실패 메시지 포함)
+ */
 exports.handler = async (event, context) => {
-  console.log('Load function called:', event.httpMethod);
-  
+  // CORS 요청을 위한 헤더 설정입니다.
   const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type',
     'Access-Control-Allow-Methods': 'GET, OPTIONS'
   };
 
+  // OPTIONS 요청(사전 요청)에 대한 응답을 처리합니다.
   if (event.httpMethod === 'OPTIONS') {
     return { statusCode: 200, headers, body: '' };
   }
 
-  let client;
+  // GET 요청이 아니면 405 Method Not Allowed 에러를 반환합니다.
+  if (event.httpMethod !== 'GET') {
+    return { statusCode: 405, headers, body: 'Method Not Allowed' };
+  }
   
+  let client;
+
   try {
-    // 환경 변수 확인
-    if (!process.env.DATABASE_URL) {
-      throw new Error('DATABASE_URL environment variable is not set');
+    // 환경 변수 NETLIFY_DATABASE_URL이 설정되었는지 확인합니다.
+    if (!process.env.NETLIFY_DATABASE_URL) {
+      throw new Error('NETLIFY_DATABASE_URL environment variable is not set');
     }
-    
-    console.log('Connecting to database...');
+
+    // Netlify 환경 변수를 사용하여 PostgreSQL 클라이언트를 생성합니다.
     client = new Client({
-      connectionString: process.env.DATABASE_URL,
-      ssl: { rejectUnauthorized: false }
+      connectionString: process.env.NETLIFY_DATABASE_URL,
+      // Netlify 환경에서 SSL 연결 문제를 해결하기 위한 설정입니다.
+      ssl: {
+        rejectUnauthorized: false
+      }
     });
 
+    // 데이터베이스에 연결합니다.
     await client.connect();
-    console.log('Database connected successfully');
     
-    // 먼저 테이블 존재 여부 확인
-    const tableCheck = `
-      SELECT EXISTS (
-        SELECT FROM information_schema.tables 
-        WHERE table_schema = 'public' 
-        AND table_name = 'user_survey'
-      );
-    `;
-    
-    const tableExists = await client.query(tableCheck);
-    console.log('Table exists:', tableExists.rows[0].exists);
-    
-    if (!tableExists.rows[0].exists) {
-      // 테이블이 없으면 생성
-      const createTable = `
-        CREATE TABLE user_survey (
-          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-          user_name VARCHAR(100) NOT NULL,
-          user_phone VARCHAR(20) NOT NULL,
-          answers JSONB NOT NULL,
-          analysis_result JSONB NOT NULL,
-          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        );
-      `;
-      await client.query(createTable);
-      console.log('Table created successfully');
-    }
-    
-    // 데이터 조회
+    // user_survey 테이블에서 모든 데이터를 생성일(created_at) 기준으로 최신 순으로 가져옵니다.
     const query = `
       SELECT id, user_name, user_phone, answers, analysis_result, created_at 
       FROM user_survey 
       ORDER BY created_at DESC
-      LIMIT 100
     `;
-    
-    console.log('Executing query...');
     const res = await client.query(query);
-    console.log('Data loaded successfully, rows:', res.rows.length);
 
+    // 성공적으로 데이터를 불러오면 JSON 형태로 반환합니다.
     return {
       statusCode: 200,
       headers,
       body: JSON.stringify(res.rows)
     };
-    
   } catch (error) {
-    console.error('Load function error:', error);
-    console.error('Error details:', {
-      message: error.message,
-      code: error.code,
-      detail: error.detail,
-      stack: error.stack
-    });
-    
+    // 데이터베이스 작업 중 오류가 발생하면 에러를 기록하고 실패 메시지를 반환합니다.
+    console.error('Database error:', error);
     return {
       statusCode: 500,
       headers,
-      body: JSON.stringify({ 
-        message: 'Failed to load survey data.', 
-        error: error.message,
-        code: error.code
-      })
+      body: JSON.stringify({ message: 'Failed to load survey data.', error: error.message })
     };
   } finally {
+    // try-catch 블록이 끝나면 데이터베이스 연결을 항상 종료합니다.
     if (client) {
       try {
         await client.end();
-        console.log('Database connection closed');
       } catch (closeError) {
         console.error('Error closing connection:', closeError);
       }
