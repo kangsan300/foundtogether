@@ -204,13 +204,75 @@
                 font-size: 0.95rem;
             }
         }
+        /* 모달 스타일 */
+        .modal {
+            display: none; /* 기본적으로 숨김 */
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 800px;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .modal-header h4 {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .modal-close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .modal-close:hover,
+        .modal-close:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .data-list-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .data-list-table th, .data-list-table td {
+            border: 1px solid #e2e8f0;
+            padding: 12px;
+            text-align: left;
+            word-break: break-all;
+        }
+        .data-list-table th {
+            background-color: #f7fafc;
+        }
+        .data-list-table tr:hover {
+            background-color: #f0f4f8;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <!-- 상단 헤더 섹션 -->
         <div class="header-section">
-            <h1 class="text-4xl font-bold text-gray-900">함께창업소 예비창업자 성향분석 <span class="text-gray-500 text-base">v1.0.5</span></h1>
+            <h1 class="text-4xl font-bold text-gray-900">함께창업소 예비창업자 성향분석 <span class="text-gray-500 text-base">v1.0.6</span></h1>
             <div class="flex space-x-4">
                 <div id="load-button" class="button bg-gray-500 hover:bg-gray-700">불러오기</div>
                 <div id="submit-button-header" class="button">결과 보기</div>
@@ -231,7 +293,7 @@
                 </div>
             </div>
             
-            <!-- 1부: 개인의 성향과 가치관 -->
+            <!-- 설문 항목 1부: 개인의 성향과 가치관 -->
             <div class="section-title">1부: 개인의 성향과 가치관</div>
             
             <div class="question-card" data-question="1">
@@ -456,6 +518,7 @@
          * @file 함께창업소 예비창업자 성향분석 웹페이지 스크립트
          * @description 이 스크립트는 Netlify DB를 활용한 설문 시스템의 클라이언트 측 로직을 담당합니다.
          * Netlify Functions를 호출하여 데이터를 저장하고 불러오며, 설문 결과를 시각화하여 보여줍니다.
+         * 이 버전은 오류 메시지를 상세하게 표시하고, 불러오기 로직을 개선했습니다.
          */
 
         // Netlify Functions의 기본 URL 경로를 상수로 정의합니다.
@@ -488,6 +551,10 @@
             const saveButton = document.getElementById('save-button');
             const loadButton = document.getElementById('load-button');
             
+            // 모든 답변 옵션에 이벤트 리스너를 추가합니다.
+            document.querySelectorAll('.answer-option').forEach(option => {
+                option.addEventListener('click', handleAnswerClick);
+            });
             // '결과 보기' 버튼 두 개에 모두 이벤트 리스너를 추가합니다.
             if(submitButtonHeader) submitButtonHeader.addEventListener('click', showResult);
             if(submitButton) submitButton.addEventListener('click', showResult);
@@ -823,7 +890,7 @@
                 };
 
                 try {
-                    const response = await fetch('/.netlify/functions/save-survey', {
+                    const response = await fetch(NETLIFY_FUNCTIONS_URL + 'save-survey', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ 
@@ -837,6 +904,7 @@
                     if (response.ok) {
                         alert('설문 결과가 성공적으로 저장되었습니다!');
                     } else {
+                        // 서버에서 반환한 상세 오류 메시지를 포함하도록 수정
                         alert(`결과 저장 중 오류가 발생했습니다: ${result.message}\n상세: ${result.error || '알 수 없는 오류'}`);
                     }
                 } catch (e) {
@@ -845,6 +913,11 @@
                 }
             }
 
+            /**
+             * 저장된 설문 결과를 불러오는 비동기 함수입니다.
+             * @description 사용자에게 비밀번호를 확인하고, Netlify Functions를 호출하여 저장된 데이터 목록을 가져옵니다.
+             * 사용자가 선택한 UUID를 기반으로 특정 데이터를 화면에 불러와 표시합니다.
+             */
             async function loadData() {
                 const password = prompt("비밀번호를 입력하세요. (250501)");
                 if (password !== '250501') {
@@ -853,7 +926,7 @@
                 }
 
                 try {
-                    const response = await fetch('/.netlify/functions/load-survey');
+                    const response = await fetch(NETLIFY_FUNCTIONS_URL + 'load-survey');
                     
                     if (!response.ok) {
                         const errorResult = await response.json();
