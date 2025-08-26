@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>함께창업소 예비창업자 성향분석 v1.0.17</title>
+    <title>함께창업소 예비창업자 성향분석 v1.0.19</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
@@ -235,7 +235,7 @@
     <div class="container">
         <!-- 상단 헤더 섹션 -->
         <div class="header-section">
-            <h1 class="text-4xl font-bold text-gray-900">함께창업소 예비창업자 성향분석 <span class="text-gray-500 text-base">v1.0.17</span></h1>
+            <h1 class="text-4xl font-bold text-gray-900">함께창업소 예비창업자 성향분석 <span class="text-gray-500 text-base">v1.0.19</span></h1>
             <div class="flex space-x-4">
                 <div id="load-button" class="button bg-gray-500 hover:bg-gray-700">불러오기</div>
                 <div id="submit-button-header" class="button">결과 보기</div>
@@ -486,7 +486,7 @@
                 <table class="data-list-table">
                     <thead>
                         <tr>
-                            <th>UUID (더블클릭)</th>
+                            <th>ID (더블클릭)</th>
                             <th>이름</th>
                             <th>전화번호</th>
                             <th>저장 시간</th>
@@ -884,7 +884,7 @@
                 };
 
                 try {
-                    const response = await fetch(NETLIFY_FUNCTIONS_URL + 'save-survey', {
+                    const response = await fetch('/.netlify/functions/save-survey', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ 
@@ -914,17 +914,17 @@
                 }
 
                 try {
-                    const response = await fetch(NETLIFY_FUNCTIONS_URL + 'load-survey');
+                    const response = await fetch('/.netlify/functions/load-survey');
                     
                     if (!response.ok) {
                         const errorText = await response.text();
                         let errorMessage = '알 수 없는 오류';
-                        try {
-                            const errorResult = JSON.parse(errorText);
-                            errorMessage = errorResult.error || errorResult.message || errorMessage;
-                        } catch (jsonError) {
-                            errorMessage = errorText;
-                        }
+                         try {
+                           const errorResult = JSON.parse(errorText);
+                           errorMessage = errorResult.error || errorResult.message || errorMessage;
+                         } catch (jsonError) {
+                           errorMessage = errorText;
+                         }
                         alert(`데이터를 불러오는 중 오류가 발생했습니다.\n상세: ${errorMessage}`);
                         return;
                     }
@@ -980,7 +980,6 @@
                         }
                     }
                     
-                    // 분석 결과를 HTML에 렌더링
                     await analyzeAndRenderResults(answers, JSON.parse(selectedData.analysis_result));
                     alert('선택된 설문 결과를 성공적으로 불러왔습니다!');
                 } catch (e) {
