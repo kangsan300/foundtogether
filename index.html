@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>함께창업소 예비창업자 성향분석 v1.0.15</title>
+    <title>함께창업소 예비창업자 성향분석 v1.0.16</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
@@ -235,7 +235,7 @@
     <div class="container">
         <!-- 상단 헤더 섹션 -->
         <div class="header-section">
-            <h1 class="text-4xl font-bold text-gray-900">함께창업소 예비창업자 성향분석 <span class="text-gray-500 text-base">v1.0.5</span></h1>
+            <h1 class="text-4xl font-bold text-gray-900">함께창업소 예비창업자 성향분석 <span class="text-gray-500 text-base">v1.0.16</span></h1>
             <div class="flex space-x-4">
                 <div id="load-button" class="button bg-gray-500 hover:bg-gray-700">불러오기</div>
                 <div id="submit-button-header" class="button">결과 보기</div>
@@ -669,7 +669,7 @@
                     const totalScore = Object.values(scores).reduce((a, b) => a + b, 0);
                     const percentages = {};
                     for (const key in scores) {
-                        percentages[key] = totalScore > 0 ? (scores[key] / totalScore) * 100 : 0;
+                        percentages[key] = totalScore > 0 ? (analysisResult.scores[key] / totalScore) * 100 : 0;
                     }
                     const sortedPercentages = Object.entries(percentages).sort(([, a], [, b]) => b - a);
                     const dominantType = sortedPercentages[0][0];
@@ -884,7 +884,7 @@
                 };
 
                 try {
-                    const response = await fetch(NETLIFY_FUNCTIONS_URL + 'save-survey', {
+                    const response = await fetch('/.netlify/functions/save-survey', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ 
@@ -914,7 +914,7 @@
                 }
 
                 try {
-                    const response = await fetch(NETLIFY_FUNCTIONS_URL + 'load-survey');
+                    const response = await fetch('/.netlify/functions/load-survey');
                     
                     if (!response.ok) {
                         const errorResult = await response.json();
@@ -932,7 +932,7 @@
                     dataListBody.innerHTML = '';
                     dataList.forEach(item => {
                         const row = document.createElement('tr');
-                        row.dataset.uuid = item.id;
+                        row.dataset.id = item.id;
                         row.innerHTML = `
                             <td>${item.id}</td>
                             <td>${item.user_name}</td>
