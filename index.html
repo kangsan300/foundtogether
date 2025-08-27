@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>함께창업소 예비창업자 성향분석 v1.1.2</title>
+    <title>함께창업소 예비창업자 성향분석 v1.1.3</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
@@ -807,13 +807,6 @@
                 }
             }
 
-            /**
-             * 설문 결과를 Netlify DB에 저장하는 비동기 함수입니다.
-             * @description 사용자 입력(이름, 전화번호) 및 설문 답변을 검증한 후,
-             * Netlify Functions를 호출하여 데이터를 DB에 저장합니다.
-             * 저장에 실패하면 상세 오류 메시지를 포함한 알림창을 띄웁니다.
-             * @returns {Promise<void>}
-             */
             async function saveData() {
                 const userName = document.getElementById('userName').value;
                 const userPhone = document.getElementById('userPhone').value;
