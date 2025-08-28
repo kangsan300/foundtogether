@@ -512,6 +512,7 @@
          */
 
         // Netlify Functions의 기본 URL 경로를 상수로 정의합니다.
+        // 이 경로는 Netlify 배포 환경에서 Functions에 접근하는 표준 경로입니다.
         const NETLIFY_FUNCTIONS_URL = '/.netlify/functions/';
         
         let myChart = null; // Chart.js 인스턴스를 저장할 변수입니다.
@@ -943,11 +944,26 @@
 
             async function loadSelectedData(selectedData) {
                 try {
-                    answers = typeof selectedData.answers === 'string' ? JSON.parse(selectedData.answers) : selectedData.answers;
+                    // answers와 analysis_result가 이미 객체 형태인지 확인하고 파싱을 한 번만 진행합니다.
+                    const answersToLoad = typeof selectedData.answers === 'string' ? JSON.parse(selectedData.answers) : selectedData.answers;
+                    const analysisToLoad = typeof selectedData.analysis_result === 'string' ? JSON.parse(selectedData.analysis_result) : selectedData.analysis_result;
+
+                    answers = answersToLoad;
                     document.getElementById('userName').value = selectedData.user_name || '';
                     document.getElementById('userPhone').value = selectedData.user_phone || '';
                     
+                    // resetSurvey를 호출하기 전에 답변을 저장해둡니다.
+                    const tempAnswers = { ...answers };
+                    const tempUserName = document.getElementById('userName').value;
+                    const tempUserPhone = document.getElementById('userPhone').value;
+
                     resetSurvey();
+
+                    // resetSurvey로 초기화된 필드에 다시 값을 채워넣습니다.
+                    document.getElementById('userName').value = tempUserName;
+                    document.getElementById('userPhone').value = tempUserPhone;
+                    
+                    // 설문 문항에 답변 상태를 복원합니다.
                     const allOptions = document.querySelectorAll('.answer-option');
                     for (const qId in answers) {
                         const selectedValue = answers[qId];
@@ -960,7 +976,7 @@
                         }
                     }
                     
-                    await analyzeAndRenderResults(answers, typeof selectedData.analysis_result === 'string' ? JSON.parse(selectedData.analysis_result) : selectedData.analysis_result);
+                    await analyzeAndRenderResults(answers, analysisToLoad);
                     alert('선택된 설문 결과를 성공적으로 불러왔습니다!');
                 } catch (e) {
                     console.error("Error parsing loaded data:", e);
