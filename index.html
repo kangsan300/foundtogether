@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>함께창업소 예비창업자 성향분석 v1.1.0</title>
+    <title>함께창업소 예비창업자 성향분석 v1.1.5</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
@@ -229,13 +229,17 @@
             background-color: #f0f4f8;
             cursor: pointer;
         }
+        #data-list-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <!-- 상단 헤더 섹션 -->
         <div class="header-section">
-            <h1 class="text-4xl font-bold text-gray-900">함께창업소 예비창업자 성향분석 <span class="text-gray-500 text-base">v1.1.4</span></h1>
+            <h1 class="text-4xl font-bold text-gray-900">함께창업소 예비창업자 성향분석 <span class="text-gray-500 text-base">v1.1.5</span></h1>
             <div class="flex space-x-4">
                 <div id="load-button" class="button bg-gray-500 hover:bg-gray-700">불러오기</div>
                 <div id="submit-button-header" class="button">결과 보기</div>
@@ -486,7 +490,7 @@
                 <table class="data-list-table">
                     <thead>
                         <tr>
-                            <th>ID (더블클릭)</th>
+                            <th>UUID (더블클릭)</th>
                             <th>이름</th>
                             <th>전화번호</th>
                             <th>저장 시간</th>
@@ -508,15 +512,12 @@
          */
 
         // Netlify Functions의 기본 URL 경로를 상수로 정의합니다.
-        // 이 경로는 Netlify 배포 환경에서 Functions에 접근하는 표준 경로입니다.
         const NETLIFY_FUNCTIONS_URL = '/.netlify/functions/';
         
-        let myChart = null; // Chart.js 인스턴스를 저장할 변수입니다.
-        let answers = {};   // 사용자의 설문 답변을 저장하는 객체입니다.
-        const questionCount = 30; // 설문 문항의 총 개수입니다.
+        let myChart = null;
+        let answers = {};
+        const questionCount = 30;
 
-        // Chart.js 데이터 레이블 플러그인을 등록합니다.
-        // HTML 파일의 <script> 태그로 라이브러리가 이미 로드된 후 실행됩니다.
         if (typeof Chart !== 'undefined' && typeof ChartDataLabels !== 'undefined') {
             Chart.register(ChartDataLabels);
         }
@@ -526,7 +527,6 @@
          * 모든 버튼에 이벤트 리스너를 연결하여 사용자 상호작용을 처리합니다.
          */
         window.onload = function() {
-            // DOM 요소들을 변수에 할당하여 스크립트에서 쉽게 접근할 수 있도록 합니다.
             const surveyQuestions = document.getElementById('survey-questions');
             const surveyResult = document.getElementById('survey-result');
             const resultTitle = document.getElementById('result-title');
@@ -540,20 +540,14 @@
             const modalClose = document.querySelector('.modal-close');
             const dataListBody = document.getElementById('data-list-body');
             
-            // 모든 답변 옵션에 이벤트 리스너를 추가합니다.
             document.querySelectorAll('.answer-option').forEach(option => {
                 option.addEventListener('click', handleAnswerClick);
             });
-            // '결과 보기' 버튼 두 개에 모두 이벤트 리스너를 추가합니다.
             if(submitButtonHeader) submitButtonHeader.addEventListener('click', showResult);
             if(submitButton) submitButton.addEventListener('click', showResult);
-            // '다시 시작하기' 버튼에 이벤트 리스너를 추가합니다.
             if(surveyResetButton) surveyResetButton.addEventListener('click', resetSurvey);
-            // '결과 저장하기' 버튼에 이벤트 리스너를 추가합니다.
             if(saveButton) saveButton.addEventListener('click', saveData);
-            // '불러오기' 버튼에 이벤트 리스너를 추가합니다.
             if(loadButton) loadButton.addEventListener('click', loadData);
-            // 모달 닫기 버튼 이벤트 리스너를 추가합니다.
             if(modalClose) modalClose.addEventListener('click', () => modalLoad.style.display = 'none');
             window.addEventListener('click', (event) => {
                 if (event.target === modalLoad) {
@@ -561,31 +555,18 @@
                 }
             });
 
-            /**
-             * 설문 문항의 답변을 클릭했을 때 실행되는 함수입니다.
-             * @description 선택된 답변에 'selected' 클래스를 추가하여 시각적으로 표시하고, 답변을 answers 객체에 저장합니다.
-             * @param {Event} event - 클릭 이벤트 객체
-             */
             function handleAnswerClick(event) {
                 const option = event.target;
                 const questionCard = option.closest('.question-card');
                 const questionId = questionCard.dataset.question;
                 const selectedValue = option.dataset.value;
 
-                // 같은 문항의 다른 옵션에서 'selected' 클래스를 제거합니다.
                 const allOptionsInQuestion = questionCard.querySelectorAll('.answer-option');
                 allOptionsInQuestion.forEach(opt => opt.classList.remove('selected'));
-                // 현재 선택된 옵션에 'selected' 클래스를 추가합니다.
                 option.classList.add('selected');
-                // answers 객체에 답변을 저장합니다.
                 answers[questionId] = selectedValue;
             }
 
-            /**
-             * 설문 결과를 보여주는 함수입니다.
-             * @description 사용자가 설문지를 모두 작성했는지 확인하고, 로딩 화면을 표시한 후
-             * 분석 및 결과 렌더링 함수를 호출합니다.
-             */
             async function showResult() {
                 const userName = document.getElementById('userName').value;
                 const userPhone = document.getElementById('userPhone').value;
@@ -613,12 +594,6 @@
                 await analyzeAndRenderResults();
             }
 
-            /**
-             * 설문 답변을 분석하고 결과를 화면에 렌더링하는 함수입니다.
-             * @description 설문 답변을 기반으로 성향 점수와 추천 업종을 계산하고, Chart.js를 사용하여 원 그래프를 그립니다.
-             * @param {object} loadedAnswers - 불러온 답변 데이터 (선택 사항)
-             * @param {object} loadedAnalysis - 불러온 분석 결과 데이터 (선택 사항)
-             */
             async function analyzeAndRenderResults(loadedAnswers = null, loadedAnalysis = null) {
                 const currentAnswers = loadedAnswers || answers;
                 let analysisResult = loadedAnalysis;
@@ -807,13 +782,6 @@
                 }
             }
 
-            /**
-             * 설문 결과를 Netlify DB에 저장하는 비동기 함수입니다.
-             * @description 사용자 입력(이름, 전화번호) 및 설문 답변을 검증한 후,
-             * Netlify Functions를 호출하여 데이터를 DB에 저장합니다.
-             * 저장에 실패하면 상세 오류 메시지를 포함한 알림창을 띄웁니다.
-             * @returns {Promise<void>}
-             */
             async function saveData() {
                 const userName = document.getElementById('userName').value;
                 const userPhone = document.getElementById('userPhone').value;
@@ -914,7 +882,7 @@
                 }
 
                 try {
-                    const response = await fetch('/.netlify/functions/load-survey');
+                    const response = await fetch(NETLIFY_FUNCTIONS_URL + 'load-survey');
                     
                     if (!response.ok) {
                         const errorText = await response.text();
