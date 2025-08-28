@@ -490,7 +490,7 @@
                 <table class="data-list-table">
                     <thead>
                         <tr>
-                            <th>UUID (더블클릭)</th>
+                            <th>ID (더블클릭)</th>
                             <th>이름</th>
                             <th>전화번호</th>
                             <th>저장 시간</th>
@@ -514,10 +514,11 @@
         // Netlify Functions의 기본 URL 경로를 상수로 정의합니다.
         const NETLIFY_FUNCTIONS_URL = '/.netlify/functions/';
         
-        let myChart = null;
-        let answers = {};
-        const questionCount = 30;
+        let myChart = null; // Chart.js 인스턴스를 저장할 변수입니다.
+        let answers = {};   // 사용자의 설문 답변을 저장하는 객체입니다.
+        const questionCount = 30; // 설문 문항의 총 개수입니다.
 
+        // Chart.js 데이터 레이블 플러그인을 등록합니다.
         if (typeof Chart !== 'undefined' && typeof ChartDataLabels !== 'undefined') {
             Chart.register(ChartDataLabels);
         }
@@ -852,7 +853,7 @@
                 };
 
                 try {
-                    const response = await fetch('/.netlify/functions/save-survey', {
+                    const response = await fetch(NETLIFY_FUNCTIONS_URL + 'save-survey', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ 
@@ -931,11 +932,7 @@
 
             async function loadSelectedData(selectedData) {
                 try {
-                    // answers와 analysis_result가 이미 객체 형태인지 확인하고 파싱을 한 번만 진행합니다.
-                    const answersToLoad = typeof selectedData.answers === 'string' ? JSON.parse(selectedData.answers) : selectedData.answers;
-                    const analysisToLoad = typeof selectedData.analysis_result === 'string' ? JSON.parse(selectedData.analysis_result) : selectedData.analysis_result;
-
-                    answers = answersToLoad;
+                    answers = typeof selectedData.answers === 'string' ? JSON.parse(selectedData.answers) : selectedData.answers;
                     document.getElementById('userName').value = selectedData.user_name || '';
                     document.getElementById('userPhone').value = selectedData.user_phone || '';
                     
@@ -952,7 +949,7 @@
                         }
                     }
                     
-                    await analyzeAndRenderResults(answers, analysisToLoad);
+                    await analyzeAndRenderResults(answers, typeof selectedData.analysis_result === 'string' ? JSON.parse(selectedData.analysis_result) : selectedData.analysis_result);
                     alert('선택된 설문 결과를 성공적으로 불러왔습니다!');
                 } catch (e) {
                     console.error("Error parsing loaded data:", e);
