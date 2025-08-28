@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>함께창업소 예비창업자 성향분석 v1.1.5</title>
+    <title>함께창업소 예비창업자 성향분석 v1.1.6</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
@@ -514,19 +514,14 @@
         // Netlify Functions의 기본 URL 경로를 상수로 정의합니다.
         const NETLIFY_FUNCTIONS_URL = '/.netlify/functions/';
         
-        let myChart = null; // Chart.js 인스턴스를 저장할 변수입니다.
-        let answers = {};   // 사용자의 설문 답변을 저장하는 객체입니다.
-        const questionCount = 30; // 설문 문항의 총 개수입니다.
+        let myChart = null;
+        let answers = {};
+        const questionCount = 30;
 
-        // Chart.js 데이터 레이블 플러그인을 등록합니다.
         if (typeof Chart !== 'undefined' && typeof ChartDataLabels !== 'undefined') {
             Chart.register(ChartDataLabels);
         }
 
-        /**
-         * 페이지가 완전히 로드된 후에 실행되는 초기화 함수입니다.
-         * 모든 버튼에 이벤트 리스너를 연결하여 사용자 상호작용을 처리합니다.
-         */
         window.onload = function() {
             const surveyQuestions = document.getElementById('survey-questions');
             const surveyResult = document.getElementById('survey-result');
@@ -909,11 +904,22 @@
                     dataList.forEach(item => {
                         const row = document.createElement('tr');
                         row.dataset.id = item.id;
+                        
+                        // 이름 마스킹 처리: 첫 글자만 남기고 나머지를 *로 대체
+                        const maskedName = item.user_name.charAt(0) + '**';
+
+                        // 전화번호 뒷자리만 남기기
+                        const maskedPhone = '****' + item.user_phone.substring(item.user_phone.length - 4);
+                        
+                        // 날짜 포맷 변경
+                        const date = new Date(item.created_at);
+                        const formattedDate = `${date.getFullYear().toString().slice(-2)}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+                        
                         row.innerHTML = `
                             <td>${item.id}</td>
-                            <td>${item.user_name}</td>
-                            <td>${item.user_phone}</td>
-                            <td>${new Date(item.created_at).toLocaleString()}</td>
+                            <td>${maskedName}</td>
+                            <td>${maskedPhone}</td>
+                            <td>${formattedDate}</td>
                         `;
                         row.addEventListener('dblclick', () => {
                             loadSelectedData(item);
