@@ -239,7 +239,7 @@
     <div class="container">
         <!-- 상단 헤더 섹션 -->
         <div class="header-section">
-            <h1 class="text-4xl font-bold text-gray-900">함께창업소 예비창업자 성향분석 <span class="text-gray-500 text-base">v1.1.5</span></h1>
+            <h1 class="text-4xl font-bold text-gray-900">함께창업소 예비창업자 성향분석 <span class="text-gray-500 text-base">v1.1.6</span></h1>
             <div class="flex space-x-4">
                 <div id="load-button" class="button bg-gray-500 hover:bg-gray-700">불러오기</div>
                 <div id="submit-button-header" class="button">결과 보기</div>
@@ -514,14 +514,19 @@
         // Netlify Functions의 기본 URL 경로를 상수로 정의합니다.
         const NETLIFY_FUNCTIONS_URL = '/.netlify/functions/';
         
-        let myChart = null;
-        let answers = {};
-        const questionCount = 30;
+        let myChart = null; // Chart.js 인스턴스를 저장할 변수입니다.
+        let answers = {};   // 사용자의 설문 답변을 저장하는 객체입니다.
+        const questionCount = 30; // 설문 문항의 총 개수입니다.
 
+        // Chart.js 데이터 레이블 플러그인을 등록합니다.
         if (typeof Chart !== 'undefined' && typeof ChartDataLabels !== 'undefined') {
             Chart.register(ChartDataLabels);
         }
 
+        /**
+         * 페이지가 완전히 로드된 후에 실행되는 초기화 함수입니다.
+         * 모든 버튼에 이벤트 리스너를 연결하여 사용자 상호작용을 처리합니다.
+         */
         window.onload = function() {
             const surveyQuestions = document.getElementById('survey-questions');
             const surveyResult = document.getElementById('survey-result');
