@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>함께창업소 예비창업자 성향분석 v1.1.7</title>
+    <title>함께창업소 예비창업자 성향분석 v2.0.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
@@ -222,6 +222,9 @@
             text-align: left;
             word-break: break-all;
         }
+        .data-list-table th {
+            background-color: #f7fafc;
+        }
         .data-list-table tr:hover {
             background-color: #f0f4f8;
             cursor: pointer;
@@ -236,7 +239,7 @@
     <div class="container">
         <!-- 상단 헤더 섹션 -->
         <div class="header-section">
-            <h1 class="text-4xl font-bold text-gray-900">함께창업소 예비창업자 성향분석 <span class="text-gray-500 text-base">v1.1.6</span></h1>
+            <h1 class="text-4xl font-bold text-gray-900">함께창업소 예비창업자 성향분석 <span class="text-gray-500 text-base">v2.0.0</span></h1>
             <div class="flex space-x-4">
                 <div id="load-button" class="button bg-gray-500 hover:bg-gray-700">불러오기</div>
                 <div id="submit-button-header" class="button">결과 보기</div>
@@ -257,208 +260,410 @@
                 </div>
             </div>
             
-            <!-- 1부: 개인의 성향과 가치관 -->
-            <div class="section-title">1부: 개인의 성향과 가치관</div>
+            <!-- 설문 항목 1부: 개인의 성향 분석 -->
+            <div class="section-title">개인 성향 분석</div>
             
-            <div class="question-card" data-question="1">
-                <h2 class="question-title">1. 당신은 어떤 업무 환경에서 가장 집중을 잘 하시나요?</h2>
-                <div class="answer-option" data-value="A">활기차고 사람들의 에너지를 느낄 수 있는 곳</div>
-                <div class="answer-option" data-value="B">조용하고 차분한 분위기 속에서 나만의 시간에 집중할 수 있는 곳</div>
-                <div class="answer-option" data-value="C">변화무쌍한 외부 공간</div>
+            <div class="question-card" data-question="1" data-scale="1">
+                <h2 class="question-title">1. 나는 새로운 것에 도전하는 것을 즐긴다.</h2>
+                <div class="flex justify-around mt-4">
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                </div>
             </div>
-            <div class="question-card" data-question="2">
-                <h2 class="question-title">2. 새로운 사람을 만나는 것을 즐기시나요, 아니면 부담스럽게 느끼시나요?</h2>
-                <div class="answer-option" data-value="A">즐기는 편입니다.</div>
-                <div class="answer-option" data-value="B">부담스러운 편입니다.</div>
-                <div class="answer-option" data-value="C">상황에 따라 다릅니다.</div>
+            <div class="question-card" data-question="2" data-scale="1">
+                <h2 class="question-title">2. 달성하기 힘든 목표라도 필요하면 이를 실행한다.</h2>
+                <div class="flex justify-around mt-4">
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                </div>
             </div>
-            <div class="question-card" data-question="3">
-                <h2 class="question-title">3. 당신에게 '성공'이란 무엇을 의미하나요?</h2>
-                <div class="answer-option" data-value="A">재정적 성공과 안정적인 수익</div>
-                <div class="answer-option" data-value="B">자아실현 및 개인의 성장</div>
-                <div class="answer-option" data-value="C">사회에 기여하고 긍정적인 영향을 미치는 것</div>
+            <div class="question-card" data-question="3" data-scale="2">
+                <h2 class="question-title">3. 나는 과감하게 위험을 감수하는 것을 즐긴다.</h2>
+                <div class="flex justify-around mt-4">
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                </div>
             </div>
-            <div class="question-card" data-question="4">
-                <h2 class="question-title">4. 스트레스 해소를 위해 주로 무엇을 하시나요?</h2>
-                <div class="answer-option" data-value="A">운동이나 활동적인 취미</div>
-                <div class="answer-option" data-value="B">명상이나 혼자만의 시간</div>
-                <div class="answer-option" data-value="C">사람들과의 만남</div>
+            <div class="question-card" data-question="4" data-scale="3">
+                <h2 class="question-title">4. 나는 돈을 대할 때 신중한 편이다.</h2>
+                <div class="flex justify-around mt-4">
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                </div>
             </div>
-            <div class="question-card" data-question="5">
-                <h2 class="question-title">5. 당신에게 일의 의미는 무엇인가요?</h2>
-                <div class="answer-option" data-value="A">자아실현의 수단</div>
-                <div class="answer-option" data-value="B">생계를 위한 수단</div>
-                <div class="answer-option" data-value="C">사회적 관계 형성의 장</div>
+            <div class="question-card" data-question="5" data-scale="3">
+                <h2 class="question-title">5. 사업 성공의 핵심은 시장 감각이라고 생각한다.</h2>
+                <div class="flex justify-around mt-4">
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                </div>
             </div>
-            <div class="question-card" data-question="6">
-                <h2 class="question-title">6. 삶에서 가장 중요하다고 생각하는 가치는 무엇인가요?</h2>
-                <div class="answer-option" data-value="A">안정성</div>
-                <div class="answer-option" data-value="B">자유</div>
-                <div class="answer-option" data-value="C">성장</div>
+            <div class="question-card" data-question="6" data-scale="2">
+                <h2 class="question-title">6. 나는 경쟁 속에서 희열을 느낀다.</h2>
+                <div class="flex justify-around mt-4">
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                </div>
             </div>
-    
-            <!-- 2부: 업무 방식 및 능력 -->
-            <div class="section-title">2부: 업무 방식 및 능력</div>
-            
-            <div class="question-card" data-question="7">
-                <h2 class="question-title">7. 당신의 가장 큰 강점은 무엇이라고 생각하시나요?</h2>
-                <div class="answer-option" data-value="A">문제 해결 능력</div>
-                <div class="answer-option" data-value="B">창의성</div>
-                <div class="answer-option" data-value="C">계획성</div>
+            <div class="question-card" data-question="7" data-scale="3">
+                <h2 class="question-title">7. 나는 재무 기록표를 꼼꼼하게 작성한다.</h2>
+                <div class="flex justify-around mt-4">
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                </div>
             </div>
-            <div class="question-card" data-question="8">
-                <h2 class="question-title">8. 업무 시, 세부적인 규칙을 따르는 편인가요, 아니면 자신만의 방식을 선호하나요?</h2>
-                <div class="answer-option" data-value="A">정해진 규칙을 따릅니다.</div>
-                <div class="answer-option" data-value="B">자신만의 방식을 선호합니다.</div>
-                <div class="answer-option" data-value="C">상황에 맞춰 유연하게 대처합니다.</div>
+            <div class="question-card" data-question="8" data-scale="1">
+                <h2 class="question-title">8. 나는 사업과 관련해 무엇을 배워야 할지 안다.</h2>
+                <div class="flex justify-around mt-4">
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                </div>
             </div>
-            <div class="question-card" data-question="9">
-                <h2 class="question-title">9. 지금까지 가장 즐겁게 임했던 일은 어떤 것이었나요?</h2>
-                <div class="answer-option" data-value="A">사람들과 함께 협력하여 목표를 달성한 일</div>
-                <div class="answer-option" data-value="B">혼자서 프로젝트를 기획하고 완성한 일</div>
-                <div class="answer-option" data-value="C">새로운 아이디어를 내고 현실화한 일</div>
+            <div class="question-card" data-question="9" data-scale="1">
+                <h2 class="question-title">9. 나는 업무를 잘 할 수 있는 사람들과 역할을 나누어 일을 진행한다.</h2>
+                <div class="flex justify-around mt-4">
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                </div>
             </div>
-            <div class="question-card" data-question="10">
-                <h2 class="question-title">10. 당신은 변화에 빠르게 적응하는 편인가요?</h2>
-                <div class="answer-option" data-value="A">네, 새로운 것을 배우고 도전하는 것을 좋아합니다.</div>
-                <div class="answer-option" data-value="B">아니요, 익숙한 환경에서 안정감을 느낍니다.</div>
-                <div class="answer-option" data-value="C">변화 자체보다는 변화의 이유를 이해하는 것이 중요합니다.</div>
+            <div class="question-card" data-question="10" data-scale="4">
+                <h2 class="question-title">10. 나는 시스템과 데이터를 활용해 사업을 관리할 수 있다.</h2>
+                <div class="flex justify-around mt-4">
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                </div>
             </div>
-    
-            <!-- 3부: 사업에 대한 관점 -->
-            <div class="section-title">3부: 사업에 대한 관점</div>
-    
-            <div class="question-card" data-question="11">
-                <h2 class="question-title">11. 만약 사업을 시작한다면, 가장 중요하게 생각하는 요소는 무엇인가요?</h2>
-                <div class="answer-option" data-value="A">고객과의 소통 및 신뢰 구축</div>
-                <div class="answer-option" data-value="B">뛰어난 기술력과 제품의 품질</div>
-                <div class="answer-option" data-value="C">독특하고 창의적인 마케팅</div>
+            <div class="question-card" data-question="11" data-scale="3">
+                <h2 class="question-title">11. 나는 효율적인 운영을 위해 늘 새로운 기술을 시도한다.</h2>
+                <div class="flex justify-around mt-4">
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                </div>
             </div>
-            <div class="question-card" data-question="12">
-                <h2 class="question-title">12. 사업의 수익 모델로 어떤 방식을 선호하나요?</h2>
-                <div class="answer-option" data-value="A">많은 고객을 대상으로 회전율을 높여 수익을 내는 방식</div>
-                <div class="answer-option" data-value="B">소수의 고객에게 높은 가치를 제공하여 수익을 내는 방식</div>
-                <div class="answer-option" data-value="C">유행과 트렌드를 주도하여 새로운 수익을 창출하는 방식</div>
+            <div class="question-card" data-question="12" data-scale="3">
+                <h2 class="question-title">12. 나는 고객이 항상 옳다고 생각한다.</h2>
+                <div class="flex justify-around mt-4">
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                </div>
             </div>
-            <div class="question-card" data-question="13">
-                <h2 class="question-title">13. 경쟁이 치열한 시장에 진입해야 한다면, 당신의 전략은 무엇인가요?</h2>
-                <div class="answer-option" data-value="A">고객 서비스로 차별화합니다.</div>
-                <div class="answer-option" data-value="B">기술력과 품질을 압도적으로 높입니다.</div>
-                <div class="answer-option" data-value="C">상황에 맞춰 유연하게 대처합니다.</div>
+            <div class="question-card" data-question="13" data-scale="1">
+                <h2 class="question-title">13. 나는 낯선 사람과도 쉽게 관계를 형성한다.</h2>
+                <div class="flex justify-around mt-4">
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                </div>
             </div>
-            <div class="question-card" data-question="14">
-                <h2 class="question-title">14. 당신이 직원을 고용한다면, 가장 중요하게 보는 자질은 무엇인가요?</h2>
-                <div class="answer-option" data-value="A">책임감과 성실함</div>
-                <div class="answer-option" data-value="B">창의성과 독창성</div>
-                <div class="answer-option" data-value="C">협동심과 소통 능력</div>
+            <div class="question-card" data-question="14" data-scale="6">
+                <h2 class="question-title">14. 나는 의견 충돌 시 타인을 먼저 이해하려 노력한다.</h2>
+                <div class="flex justify-around mt-4">
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                </div>
             </div>
-            <div class="question-card" data-question="15">
-                <h2 class="question-title">15. 사업에 어려움이 닥쳤을 때, 어떻게 해결하시겠어요?</h2>
-                <div class="answer-option" data-value="A">외부 전문가에게 자문을 구합니다.</div>
-                <div class="answer-option" data-value="B">혼자서 모든 데이터를 분석하고 해결책을 찾습니다.</div>
-                <div class="answer-option" data-value="C">직원들과 함께 아이디어를 모아 공동으로 해결합니다.</div>
+            <div class="question-card" data-question="15" data-scale="1">
+                <h2 class="question-title">15. 나는 많은 사람 앞에서 내가 아는 것을 어려움 없이 말할 수 있다.</h2>
+                <div class="flex justify-around mt-4">
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                </div>
             </div>
-    
-            <!-- 4부: 재무 및 리스크 -->
-            <div class="section-title">4부: 재무 및 리스크</div>
-    
-            <div class="question-card" data-question="16">
-                <h2 class="question-title">16. 사업 자금은 어느 정도를 예상하고 계시나요?</h2>
-                <div class="answer-option" data-value="A">소자본으로 시작할 수 있는 규모</div>
-                <div class="answer-option" data-value="B">필요하다면 충분한 투자를 감행할 수 있는 규모</div>
-                <div class="answer-option" data-value="C">상황에 맞춰 유연하게 조절할 수 있는 규모</div>
+            <div class="question-card" data-question="16" data-scale="3">
+                <h2 class="question-title">16. 직원들에게 솔직한 피드백을 주며 발전하도록 돕는다.</h2>
+                <div class="flex justify-around mt-4">
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                </div>
             </div>
-            <div class="question-card" data-question="17">
-                <h2 class="question-title">17. 사업의 리스크를 어떻게 관리하시겠어요?</h2>
-                <div class="answer-option" data-value="A">리스크를 최소화하는 안정적인 방식을 추구합니다.</div>
-                <div class="answer-option" data-value="B">리스크가 있더라도 큰 성공을 위해 과감하게 도전합니다.</div>
-                <div class="answer-option" data-value="C">새로운 기술이나 전략으로 리스크를 극복합니다.</div>
+            <div class="question-card" data-question="17" data-scale="6">
+                <h2 class="question-title">17. 나는 스트레스 상황에서도 평정심을 유지한다.</h2>
+                <div class="flex justify-around mt-4">
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                </div>
             </div>
-            <div class="question-card" data-question="18">
-                <h2 class="question-title">18. 예상치 못한 재정적 손실이 발생했을 때, 당신의 반응은?</h2>
-                <div class="answer-option" data-value="A">철저한 원인 분석을 통해 재발 방지에 힘쓴다.</div>
-                <div class="answer-option" data-value="B">손실을 빠르게 만회하기 위한 새로운 아이템을 모색한다.</div>
-                <div class="answer-option" data-value="C">주변의 조언을 구하며 위기를 헤쳐나간다.</div>
+            <div class="question-card" data-question="18" data-scale="2">
+                <h2 class="question-title">18. 문제가 발생했을 때 직접 해결책을 모색한다.</h2>
+                <div class="flex justify-around mt-4">
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                </div>
             </div>
-            <div class="question-card" data-question="19">
-                <h2 class="question-title">19. 당신은 재정 관리를 어떻게 하는 편인가요?</h2>
-                <div class="answer-option" data-value="A">정기적으로 꼼꼼하게 관리합니다.</div>
-                <div class="answer-option" data-value="B">자유롭게 사용하고, 필요할 때 점검합니다.</div>
-                <div class="answer-option" data-value="C">전문가에게 맡기거나 조언을 구합니다.</div>
+            <div class="question-card" data-question="19" data-scale="1">
+                <h2 class="question-title">19. 나는 요즘 인기 있는 업종, 트렌드를 잘 알고 있다.</h2>
+                <div class="flex justify-around mt-4">
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                </div>
             </div>
-            <div class="question-card" data-question="20">
-                <h2 class="question-title">20. 대출을 받아서 사업을 시작하는 것에 대해 어떻게 생각하나요?</h2>
-                <div class="answer-option" data-value="A">꼭 필요한 경우에만 신중하게 고려합니다.</div>
-                <div class="answer-option" data-value="B">성공 가능성이 높다면 과감하게 추진할 수 있습니다.</div>
-                <div class="answer-option" data-value="C">가급적 대출 없이 사업을 시작하는 것을 선호합니다.</div>
+            <div class="question-card" data-question="20" data-scale="1">
+                <h2 class="question-title">20. 불황이나 어려움은 새로운 기회라고 생각한다.</h2>
+                <div class="flex justify-around mt-4">
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                </div>
             </div>
-    
-            <!-- 5부: 미래 및 비전 -->
-            <div class="section-title">5부: 미래 및 비전</div>
-    
-            <div class="question-card" data-question="21">
-                <h2 class="question-title">21. 당신이 가장 흥미롭게 생각하는 미래 기술이나 트렌드는 무엇인가요?</h2>
-                <div class="answer-option" data-value="A">인공지능(AI)과 자동화</div>
-                <div class="answer-option" data-value="B">친환경 기술과 지속가능성</div>
-                <div class="answer-option" data-value="C">개인의 취향을 반영하는 맞춤형 서비스</div>
+            <div class="question-card" data-question="21" data-scale="6">
+                <h2 class="question-title">21. 나는 일을 미루지 않는다.</h2>
+                <div class="flex justify-around mt-4">
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                </div>
             </div>
-            <div class="question-card" data-question="22">
-                <h2 class="question-title">22. 앞으로 5년 후, 당신은 어떤 모습으로 성장하고 싶으신가요?</h2>
-                <div class="answer-option" data-value="A">사업의 규모를 확장하고 여러 지점을 운영하는 모습</div>
-                <div class="answer-option" data-value="B">전문가로서의 입지를 굳히고 독보적인 기술을 보유하는 모습</div>
-                <div class="answer-option" data-value="C">다양한 사람들과 협력하며 새로운 가치를 창출하는 모습</div>
+            <div class="question-card" data-question="22" data-scale="1">
+                <h2 class="question-title">22. 내 사업이 실패한다면 그것은 내 책임이다.</h2>
+                <div class="flex justify-around mt-4">
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                </div>
             </div>
-            <div class="question-card" data-question="23">
-                <h2 class="question-title">23. 사업을 통해 이루고 싶은 '최종 목표'는 무엇인가요?</h2>
-                <div class="answer-option" data-value="A">경제적 자유 달성</div>
-                <div class="answer-option" data-value="B">사회에 긍정적인 영향력 행사</div>
-                <div class="answer-option" data-value="C">개인의 역량을 최대한 발휘하는 것</div>
+            <div class="question-card" data-question="23" data-scale="1">
+                <h2 class="question-title">23. 한번 결정한 일은 끝을 봐야 직성이 풀린다.</h2>
+                <div class="flex justify-around mt-4">
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                </div>
             </div>
-            <div class="question-card" data-question="24">
-                <h2 class="question-title">24. 당신에게 사업이란 어떤 의미인가요?</h2>
-                <div class="answer-option" data-value="A">목표를 향한 도전</div>
-                <div class="answer-option" data-value="B">나의 가치를 증명하는 수단</div>
-                <div class="answer-option" data-value="C">나와 타인을 잇는 연결고리</div>
+            <div class="question-card" data-question="24" data-scale="1">
+                <h2 class="question-title">24. 나는 주변 사람으로부터 성실하다는 말을 자주 듣는다.</h2>
+                <div class="flex justify-around mt-4">
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                </div>
             </div>
-    
-            <!-- 6부: 소비 및 취향 -->
-            <div class="section-title">6부: 소비 및 취향</div>
-            <div class="question-card" data-question="25">
-                <h2 class="question-title">25. 제품을 구매할 때 가장 중요하게 생각하는 것은 무엇인가요?</h2>
-                <div class="answer-option" data-value="A">가성비</div>
-                <div class="answer-option" data-value="B">브랜드 스토리와 철학</div>
-                <div class="answer-option" data-value="C">제품의 혁신성과 독특함</div>
+            <div class="question-card" data-question="25" data-scale="7">
+                <h2 class="question-title">25. 나는 본사의 지침을 따르는 것보다 나만의 방식으로 운영하고 싶다.</h2>
+                <div class="flex justify-around mt-4">
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                </div>
             </div>
-            <div class="question-card" data-question="26">
-                <h2 class="question-title">26. 주로 어떤 매체를 통해 정보를 얻으시나요?</h2>
-                <div class="answer-option" data-value="A">뉴스, 경제 신문, 전문 잡지 등</div>
-                <div class="answer-option" data-value="B">SNS, 유튜브, 인플루언서 콘텐츠 등</div>
-                <div class="answer-option" data-value="C">지인이나 전문가의 추천</div>
+            <div class="question-card" data-question="26" data-scale="2">
+                <h2 class="question-title">26. 나는 모든 것을 직접 결정하고 책임지는 것에 익숙하다.</h2>
+                <div class="flex justify-around mt-4">
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                </div>
             </div>
-            <div class="question-card" data-question="27">
-                <h2 class="question-title">27. 당신이 좋아하는 브랜드는 무엇이며, 그 이유는 무엇인가요?</h2>
-                <div class="answer-option" data-value="A">고객 서비스가 뛰어난 브랜드</div>
-                <div class="answer-option" data-value="B">독보적인 기술을 가진 브랜드</div>
-                <div class="answer-option" data-value="C">새로운 경험을 제공하는 브랜드</div>
+            <div class="question-card" data-question="27" data-scale="7">
+                <h2 class="question-title">27. 나는 예상치 못한 상황에 대비해 본사의 지원 시스템을 중시한다.</h2>
+                <div class="flex justify-around mt-4">
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                </div>
             </div>
-            <div class="question-card" data-question="28">
-                <h2 class="question-title">28. 주말이나 쉬는 날에는 주로 무엇을 하시나요?</h2>
-                <div class="answer-option" data-value="A">사람들과 함께 맛집 탐방이나 취미 활동</div>
-                <div class="answer-option" data-value="B">혼자서 조용히 책을 읽거나 영화 감상</div>
-                <div class="answer-option" data-value="C">새로운 장소나 경험을 찾아 여행</div>
+            <div class="question-card" data-question="28" data-scale="7">
+                <h2 class="question-title">28. 나는 본사의 매뉴얼에 따라 안정적으로 운영하는 것을 선호한다.</h2>
+                <div class="flex justify-around mt-4">
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                </div>
             </div>
-            <div class="question-card" data-question="29">
-                <h2 class="question-title">29. 당신이 생각하는 '성공적인 마케팅'의 비결은 무엇인가요?</h2>
-                <div class="answer-option" data-value="A">대중적인 공감을 얻는 것</div>
-                <div class="answer-option" data-value="B">진정성 있는 스토리텔링</div>
-                <div class="answer-option" data-value="C">바이럴을 일으키는 독특한 아이디어</div>
+            <div class="question-card" data-question="29" data-scale="8">
+                <h2 class="question-title">29. 나는 밤늦게까지 일하는 것에 부담을 느끼지 않는다.</h2>
+                <div class="flex justify-around mt-4">
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                </div>
             </div>
-            <div class="question-card" data-question="30">
-                <h2 class="question-title">30. 만약 당신이 사업을 한다면, 어떤 방식으로 가장 보람을 느끼시겠어요?</h2>
-                <div class="answer-option" data-value="A">고객의 긍정적인 반응을 직접 들을 때</div>
-                <div class="answer-option" data-value="B">나만의 기술이나 제품이 인정받을 때</div>
-                <div class="answer-option" data-value="C">새로운 시장을 개척하고 트렌드를 만들 때</div>
+            <div class="question-card" data-question="30" data-scale="8">
+                <h2 class="question-title">30. 나는 하루 종일 서서 일하는 것에 익숙하다.</h2>
+                <div class="flex justify-around mt-4">
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                </div>
             </div>
+            <div class="question-card" data-question="31" data-scale="8">
+                <h2 class="question-title">31. 나는 충분한 서비스 마인드와 스트레스를 극복할 노하우가 있다.</h2>
+                <div class="flex justify-around mt-4">
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                </div>
+            </div>
+            <div class="question-card" data-question="32" data-scale="2">
+                <h2 class="question-title">32. 나는 보상이 없어도 경쟁이 즐겁다.</h2>
+                <div class="flex justify-around mt-4">
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                </div>
+            </div>
+            <div class="question-card" data-question="33" data-scale="2">
+                <h2 class="question-title">33. 나는 일단 하기로 결심한 일이면 최고가 되고 싶다.</h2>
+                <div class="flex justify-around mt-4">
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                </div>
+            </div>
+            <div class="question-card" data-question="34" data-scale="2">
+                <h2 class="question-title">34. 나는 남의 지시를 듣기 싫어한다.</h2>
+                <div class="flex justify-around mt-4">
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                </div>
+            </div>
+            <div class="question-card" data-question="35" data-scale="1">
+                <h2 class="question-title">35. 나는 목표가 정해지면 내 의지대로 밀고 나간다.</h2>
+                <div class="flex justify-around mt-4">
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                </div>
+            </div>
+            <div class="question-card" data-question="36" data-scale="3">
+                <h2 class="question-title">36. 나는 직장 동료들보다 업무에 더 헌신적이다.</h2>
+                <div class="flex justify-around mt-4">
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                </div>
+            </div>
+            <div class="question-card" data-question="37" data-scale="3">
+                <h2 class="question-title">37. 나는 고객이 말할 때 귀를 기울일 필요가 있다고 생각한다.</h2>
+                <div class="flex justify-around mt-4">
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                </div>
+            </div>
+            <div class="question-card" data-question="38" data-scale="2">
+                <h2 class="question-title">38. 나는 나의 잘못이나 패배를 잘 인정하지 않는다.</h2>
+                <div class="flex justify-around mt-4">
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                </div>
+            </div>
+            <div class="question-card" data-question="39" data-scale="2">
+                <h2 class="question-title">39. 나는 사업 지식을 넓히기 위해 독서를 꾸준히 한다.</h2>
+                <div class="flex justify-around mt-4">
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                </div>
+            </div>
+            <div class="question-card" data-question="40" data-scale="2">
+                <h2 class="question-title">40. 나는 일이 완성되는 것을 꼭 봐야 한다.</h2>
+                <div class="flex justify-around mt-4">
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                </div>
+            </div>
+
             <div class="footer-buttons">
                 <div id="submit-button" class="button">결과 보기</div>
             </div>
@@ -511,19 +716,15 @@
         // Netlify Functions의 기본 URL 경로를 상수로 정의합니다.
         const NETLIFY_FUNCTIONS_URL = '/.netlify/functions/';
         
-        let myChart = null; // Chart.js 인스턴스를 저장할 변수입니다.
-        let answers = {};   // 사용자의 설문 답변을 저장하는 객체입니다.
-        const questionCount = 30; // 설문 문항의 총 개수입니다.
+        let myChart = null;
+        let answers = {};
+        const questionCount = 40;
 
         // Chart.js 데이터 레이블 플러그인을 등록합니다.
         if (typeof Chart !== 'undefined' && typeof ChartDataLabels !== 'undefined') {
             Chart.register(ChartDataLabels);
         }
 
-        /**
-         * 페이지가 완전히 로드된 후에 실행되는 초기화 함수입니다.
-         * 모든 버튼에 이벤트 리스너를 연결하여 사용자 상호작용을 처리합니다.
-         */
         window.onload = function() {
             const surveyQuestions = document.getElementById('survey-questions');
             const surveyResult = document.getElementById('survey-result');
@@ -538,6 +739,7 @@
             const modalClose = document.querySelector('.modal-close');
             const dataListBody = document.getElementById('data-list-body');
             
+            // 모든 답변 옵션에 이벤트 리스너를 추가합니다.
             document.querySelectorAll('.answer-option').forEach(option => {
                 option.addEventListener('click', handleAnswerClick);
             });
@@ -577,7 +779,7 @@
                 for (let i = 1; i <= questionCount; i++) {
                     const qId = String(i);
                     if (!answers[qId]) {
-                        answers[qId] = 'A';
+                        answers[qId] = '1';
                     }
                 }
 
@@ -598,45 +800,32 @@
                 
                 if (!analysisResult) {
                     const scores = {
-                        '서비스 지향성': 0,
-                        '창의적 독립성': 0,
-                        '안정성 추구': 0,
-                        '트렌드 혁신성': 0
+                        '모험심': 0,
+                        '독립성': 0,
+                        '안정성': 0,
+                        '성실성': 0,
+                        '사교성': 0
                     };
                     
                     const scoreMapping = {
-                        '1': {A: 2, B: 0, C: 1}, '2': {A: 2, B: 0, C: 1}, '3': {A: 1, B: 1, C: 1}, '4': {A: 1, B: 0, C: 2}, '5': {A: 1, B: 0, C: 2}, '6': {A: 2, B: 1, C: 1},
-                        '7': {A: 1, B: 2, C: 1}, '8': {A: 1, B: 2, C: 1}, '9': {A: 1, B: 2, C: 1}, '10': {A: 1, B: 0, C: 1}, '11': {A: 1, B: 2, C: 1}, '12': {A: 1, B: 2, C: 1}, '13': {A: 1, B: 2, C: 1}, '14': {A: 1, B: 2, C: 1}, '15': {A: 1, B: 2, C: 1},
-                        '16': {A: 2, B: 1, C: 1}, '17': {A: 2, B: 1, C: 1}, '18': {A: 2, B: 1, C: 1}, '19': {A: 2, B: 1, C: 1}, '20': {A: 2, B: 1, C: 1},
-                        '21': {A: 1, B: 1, C: 2}, '22': {A: 1, B: 1, C: 2}, '23': {A: 1, B: 2, C: 1}, '24': {A: 2, B: 1, C: 2}, '25': {A: 1, B: 1, C: 2}, '26': {A: 1, B: 2, C: 1}, '27': {A: 1, B: 1, C: 2}, '28': {A: 1, B: 1, C: 2}, '29': {A: 1, B: 1, C: 2}, '30': {A: 1, B: 1, C: 2}
+                        '1': (value) => value * 1, '2': (value) => value * 1, '3': (value) => value * 1, '4': (value) => value * 1, '5': (value) => value * 1, '6': (value) => value * 1,
+                        '7': (value) => value * 1, '8': (value) => value * 1, '9': (value) => value * 1, '10': (value) => value * 1, '11': (value) => value * 1, '12': (value) => value * 1, '13': (value) => value * 1, '14': (value) => value * 1, '15': (value) => value * 1,
+                        '16': (value) => value * 1, '17': (value) => value * 1, '18': (value) => value * 1, '19': (value) => value * 1, '20': (value) => value * 1,
+                        '21': (value) => value * 1, '22': (value) => value * 1, '23': (value) => value * 1, '24': (value) => value * 1, '25': (value) => value * 1, '26': (value) => value * 1, '27': (value) => value * 1, '28': (value) => value * 1, '29': (value) => value * 1, '30': (value) => value * 1,
+                        '31': (value) => value * 1, '32': (value) => value * 1, '33': (value) => value * 1, '34': (value) => value * 1, '35': (value) => value * 1, '36': (value) => value * 1, '37': (value) => value * 1, '38': (value) => value * 1, '39': (value) => value * 1, '40': (value) => value * 1
                     };
-
+                    
                     for (let i = 1; i <= questionCount; i++) {
                         const qId = String(i);
-                        const answer = currentAnswers[qId];
-                        if (answer && scoreMapping[qId] && scoreMapping[qId][answer]) {
-                            const score = scoreMapping[qId][answer];
-                            if (i <= 6) { 
-                                if (answer === 'A') scores['서비스 지향성'] += score;
-                                else if (answer === 'B') scores['창의적 독립성'] += score;
-                                else if (answer === 'C') scores['트렌드 혁신성'] += score;
-                            } else if (i <= 10) { 
-                                if (answer === 'A' || answer === 'C') scores['안정성 추구'] += score;
-                                else if (answer === 'B') scores['창의적 독립성'] += score;
-                            } else if (i <= 15) {
-                                if (answer === 'A' || answer === 'C') scores['서비스 지향성'] += score;
-                                else if (answer === 'B') scores['창의적 독립성'] += score;
-                            } else if (i <= 20) { 
-                                if (answer === 'A') scores['안정성 추구'] += score;
-                                else if (answer === 'B') scores['트렌드 혁신성'] += score;
-                                else if (answer === 'C') scores['안정성 추구'] += score;
-                            } else if (i <= 24) { 
-                                 if (answer === 'A' || answer === 'C') scores['트렌드 혁신성'] += score;
-                                 else if (answer === 'B') scores['창의적 독립성'] += score;
-                            } else if (i <= 30) { 
-                                if (answer === 'A') scores['안정성 추구'] += score;
-                                else if (answer === 'B' || answer === 'C') scores['트렌드 혁신성'] += score;
-                            }
+                        const answerValue = parseInt(currentAnswers[qId]);
+                        if (answerValue && scoreMapping[qId]) {
+                            const score = scoreMapping[qId](answerValue);
+                            // 문항별 점수 계산 로직
+                            if ([1, 2, 20, 22, 33, 35].includes(i)) scores['모험심'] += score;
+                            if ([3, 6, 18, 26, 32, 34, 38].includes(i)) scores['독립성'] += score;
+                            if ([4, 7, 10, 27, 28].includes(i)) scores['안정성'] += score;
+                            if ([8, 11, 19, 21, 23, 24, 36, 39, 40].includes(i)) scores['성실성'] += score;
+                            if ([5, 9, 12, 13, 14, 15, 16, 29, 31, 37].includes(i)) scores['사교성'] += score;
                         }
                     }
                     const totalScore = Object.values(scores).reduce((a, b) => a + b, 0);
@@ -665,7 +854,8 @@
                     'rgba(59, 130, 246, 0.7)',
                     'rgba(245, 158, 11, 0.7)',
                     'rgba(16, 185, 129, 0.7)',
-                    'rgba(239, 68, 68, 0.7)'
+                    'rgba(239, 68, 68, 0.7)',
+                    'rgba(139, 92, 246, 0.7)'
                 ];
 
                 const chartData = {
@@ -673,10 +863,11 @@
                     datasets: [{
                         data: sortedPercentages.map(item => item[1]),
                         backgroundColor: sortedPercentages.map(item => {
-                            if (item[0] === '서비스 지향성') return chartColors[0];
-                            if (item[0] === '창의적 독립성') return chartColors[1];
-                            if (item[0] === '안정성 추구') return chartColors[2];
-                            if (item[0] === '트렌드 혁신성') return chartColors[3];
+                            if (item[0] === '모험심') return chartColors[0];
+                            if (item[0] === '독립성') return chartColors[1];
+                            if (item[0] === '안정성') return chartColors[2];
+                            if (item[0] === '성실성') return chartColors[3];
+                            if (item[0] === '사교성') return chartColors[4];
                         }),
                         borderColor: '#ffffff',
                         borderWidth: 2,
@@ -691,7 +882,7 @@
                 let resultHTML = `
                     <div class="analysis-item text-center">
                         <h4 class="text-2xl font-bold mb-4">종합 분석: 당신의 비즈니스 DNA</h4>
-                        <p>위 원그래프는 당신의 비즈니스 성향을 네 가지 핵심 지표로 분석한 결과입니다. 각 영역이 차지하는 비율은 당신의 내재된 강점과 가장 잘 맞는 업종을 보여줍니다.</p>
+                        <p>위 원그래프는 당신의 비즈니스 성향을 다섯 가지 핵심 지표로 분석한 결과입니다. 각 영역이 차지하는 비율은 당신의 내재된 강점과 가장 잘 맞는 업종을 보여줍니다.</p>
                     </div>
                     
                     <div class="analysis-item">
@@ -706,7 +897,7 @@
                                     당신의 ${dominantType} 성향은 전체 성향 중 ${percentages[dominantType].toFixed(1)}%를 차지합니다.
                                 </p>
                                 <ul class="list-disc list-inside space-y-2 text-gray-700">
-                                    ${sortedPercentages.filter((item, index) => index > 0).map(item => {
+                                    ${sortedPercentages.filter((item) => item[0] !== dominantType).map(item => {
                                         const otherTrait = item[0];
                                         const otherPercentage = item[1];
                                         const difference = percentages[dominantType] - otherPercentage;
@@ -720,16 +911,16 @@
                     <div class="analysis-section">
                         <h4>당신에게 추천하는 업종</h4>
                         <div class="analysis-item">
-                            <h5 class="text-xl font-bold text-blue-800 mb-2">1. 온/오프라인 결합형 카페/공방</h5>
-                            <p>강점 활용: '서비스 지향성'과 '창의적 독립성'을 동시에 활용할 수 있는 분야입니다. 오프라인 매장에서 친절한 고객 서비스를 제공하며, 당신만의 독특한 메뉴나 수제 제품을 기획하여 차별점을 둘 수 있습니다. 온라인 채널을 통해 마케팅을 전개하고 제품을 판매하는 것도 가능합니다.</p>
+                            <h5 class="text-xl font-bold text-blue-800 mb-2">1. 맞춤형 서비스/컨설팅</h5>
+                            <p>강점 활용: '사교성'과 '성실성'이 높은 당신은 고객과의 관계 구축에 능숙하며, 꼼꼼한 일 처리로 신뢰를 얻습니다. 이를 바탕으로 고객의 니즈를 정확히 파악하여 맞춤형 서비스를 제공하는 컨설팅, 교육 사업에 적합합니다.</p>
                         </div>
                         <div class="analysis-item">
-                            <h5 class="text-xl font-bold text-blue-800 mb-2">2. 맞춤형 펫/반려동물 서비스</h5>
-                            <p>강점 활용: '서비스 지향성'과 '트렌드 혁신성'이 조화를 이룹니다. 반려동물을 사랑하는 사람들과의 소통은 물론, 펫 푸드, 펫 용품, 펫 유치원 등 끊임없이 변화하는 트렌드를 빠르게 파악하여 새로운 맞춤형 서비스를 제공할 수 있습니다.</p>
+                            <h5 class="text-xl font-bold text-blue-800 mb-2">2. 독점적 기술 기반 사업</h5>
+                            <p>강점 활용: '독립성'과 '모험심'이 강한 당신은 새로운 기술이나 독특한 아이디어를 현실로 만드는 것에 강점을 보입니다. 기술력을 기반으로 한 IT 스타트업, 특허 기반의 제조업 등 시장에 새로운 가치를 창출하는 사업에 적합합니다.</p>
                         </div>
                         <div class="analysis-item">
-                            <h5 class="text-xl font-bold text-blue-800 mb-2">3. 데이터 기반의 소규모 컨설팅/교육</h5>
-                            <p>강점 활용: '창의적 독립성'과 '안정성 추구'가 결합된 업종입니다. 당신의 전문 지식을 바탕으로 고객에게 고가치 컨설팅을 제공합니다. 꼼꼼한 계획과 데이터 분석 능력으로 리스크를 최소화하며, 안정적인 수익을 창출하는 데 적합합니다. 온라인 강의나 콘텐츠 판매로도 사업을 확장할 수 있습니다.</p>
+                            <h5 class="text-xl font-bold text-blue-800 mb-2">3. 안정적인 프랜차이즈 운영</h5>
+                            <p>강점 활용: '안정성'과 '성실성'이 뛰어난 당신은 정해진 매뉴얼에 따라 효율적으로 사업을 운영하는 것에 강점이 있습니다. 본사의 체계적인 지원을 받으면서 안정적인 수익을 창출하는 프랜차이즈 사업에 적합합니다.</p>
                         </div>
                     </div>
                 `;
@@ -789,51 +980,37 @@
                     return;
                 }
                 
-                if (Object.keys(answers).length < 30) {
+                if (Object.keys(answers).length < 40) {
                      alert('설문지를 모두 작성해야 저장할 수 있습니다.');
                      return;
                 }
                 
                 const scores = {
-                    '서비스 지향성': 0,
-                    '창의적 독립성': 0,
-                    '안정성 추구': 0,
-                    '트렌드 혁신성': 0
+                    '모험심': 0,
+                    '독립성': 0,
+                    '안정성': 0,
+                    '성실성': 0,
+                    '사교성': 0
                 };
                 
                 const scoreMapping = {
-                    '1': {A: 2, B: 0, C: 1}, '2': {A: 2, B: 0, C: 1}, '3': {A: 1, B: 1, C: 1}, '4': {A: 1, B: 0, C: 2}, '5': {A: 1, B: 0, C: 2}, '6': {A: 2, B: 1, C: 1},
-                    '7': {A: 1, B: 2, C: 1}, '8': {A: 1, B: 2, C: 1}, '9': {A: 1, B: 2, C: 1}, '10': {A: 1, B: 0, C: 1}, '11': {A: 1, B: 2, C: 1}, '12': {A: 1, B: 2, C: 1}, '13': {A: 1, B: 2, C: 1}, '14': {A: 1, B: 2, C: 1}, '15': {A: 1, B: 2, C: 1},
-                    '16': {A: 2, B: 1, C: 1}, '17': {A: 2, B: 1, C: 1}, '18': {A: 2, B: 1, C: 1}, '19': {A: 2, B: 1, C: 1}, '20': {A: 2, B: 1, C: 1},
-                    '21': {A: 1, B: 1, C: 2}, '22': {A: 1, B: 1, C: 2}, '23': {A: 1, B: 2, C: 1}, '24': {A: 2, B: 1, C: 2}, '25': {A: 1, B: 1, C: 2}, '26': {A: 1, B: 2, C: 1}, '27': {A: 1, B: 1, C: 2}, '28': {A: 1, B: 1, C: 2}, '29': {A: 1, B: 1, C: 2}, '30': {A: 1, B: 1, C: 2}
+                    '1': (value) => value * 1, '2': (value) => value * 1, '3': (value) => value * 1, '4': (value) => value * 1, '5': (value) => value * 1, '6': (value) => value * 1,
+                    '7': (value) => value * 1, '8': (value) => value * 1, '9': (value) => value * 1, '10': (value) => value * 1, '11': (value) => value * 1, '12': (value) => value * 1, '13': (value) => value * 1, '14': (value) => value * 1, '15': (value) => value * 1,
+                    '16': (value) => value * 1, '17': (value) => value * 1, '18': (value) => value * 1, '19': (value) => value * 1, '20': (value) => value * 1,
+                    '21': (value) => value * 1, '22': (value) => value * 1, '23': (value) => value * 1, '24': (value) => value * 1, '25': (value) => value * 1, '26': (value) => value * 1, '27': (value) => value * 1, '28': (value) => value * 1, '29': (value) => value * 1, '30': (value) => value * 1,
+                    '31': (value) => value * 1, '32': (value) => value * 1, '33': (value) => value * 1, '34': (value) => value * 1, '35': (value) => value * 1, '36': (value) => value * 1, '37': (value) => value * 1, '38': (value) => value * 1, '39': (value) => value * 1, '40': (value) => value * 1
                 };
 
                 for (let i = 1; i <= questionCount; i++) {
                     const qId = String(i);
-                    const answer = answers[qId];
-                    if (answer && scoreMapping[qId] && scoreMapping[qId][answer]) {
-                        const score = scoreMapping[qId][answer];
-                        if (i <= 6) { 
-                            if (answer === 'A') scores['서비스 지향성'] += score;
-                            else if (answer === 'B') scores['창의적 독립성'] += score;
-                            else if (answer === 'C') scores['트렌드 혁신성'] += score;
-                        } else if (i <= 10) { 
-                            if (answer === 'A' || answer === 'C') scores['안정성 추구'] += score;
-                            else if (answer === 'B') scores['창의적 독립성'] += score;
-                        } else if (i <= 15) {
-                            if (answer === 'A' || answer === 'C') scores['서비스 지향성'] += score;
-                            else if (answer === 'B') scores['창의적 독립성'] += score;
-                        } else if (i <= 20) { 
-                            if (answer === 'A') scores['안정성 추구'] += score;
-                            else if (answer === 'B') scores['트렌드 혁신성'] += score;
-                            else if (answer === 'C') scores['안정성 추구'] += score;
-                        } else if (i <= 24) { 
-                             if (answer === 'A' || answer === 'C') scores['트렌드 혁신성'] += score;
-                             else if (answer === 'B') scores['창의적 독립성'] += score;
-                        } else if (i <= 30) { 
-                            if (answer === 'A') scores['안정성 추구'] += score;
-                            else if (answer === 'B' || answer === 'C') scores['트렌드 혁신성'] += score;
-                        }
+                    const answerValue = parseInt(answers[qId]);
+                    if (answerValue && scoreMapping[qId]) {
+                        const score = scoreMapping[qId](answerValue);
+                        if ([1, 2, 20, 22, 33, 35].includes(i)) scores['모험심'] += score;
+                        if ([3, 6, 18, 26, 32, 34, 38].includes(i)) scores['독립성'] += score;
+                        if ([4, 7, 10, 27, 28].includes(i)) scores['안정성'] += score;
+                        if ([8, 11, 19, 21, 23, 24, 36, 39, 40].includes(i)) scores['성실성'] += score;
+                        if ([5, 9, 12, 13, 14, 15, 16, 29, 31, 37].includes(i)) scores['사교성'] += score;
                     }
                 }
                 const totalScore = Object.values(scores).reduce((a, b) => a + b, 0);
@@ -909,6 +1086,7 @@
                         
                         const maskedName = item.user_name.charAt(0) + '**';
                         const maskedPhone = '****' + item.user_phone.substring(item.user_phone.length - 4);
+                        
                         const date = new Date(item.created_at);
                         const formattedDate = `${date.getFullYear().toString().slice(-2)}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
                         
