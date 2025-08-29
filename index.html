@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>함께창업소 예비창업자 성향분석 v2.0.0</title>
+    <title>함께창업소 예비창업자 성향분석 v2.1.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
@@ -239,7 +239,7 @@
     <div class="container">
         <!-- 상단 헤더 섹션 -->
         <div class="header-section">
-            <h1 class="text-4xl font-bold text-gray-900">함께창업소 예비창업자 성향분석 <span class="text-gray-500 text-base">v2.0.0</span></h1>
+            <h1 class="text-4xl font-bold text-gray-900">함께창업소 예비창업자 성향분석 <span class="text-gray-500 text-base">v2.1.0</span></h1>
             <div class="flex space-x-4">
                 <div id="load-button" class="button bg-gray-500 hover:bg-gray-700">불러오기</div>
                 <div id="submit-button-header" class="button">결과 보기</div>
@@ -260,10 +260,9 @@
                 </div>
             </div>
             
-            <!-- 설문 항목 1부: 개인의 성향 분석 -->
+            <!-- 설문 항목: 개인 성향 분석 -->
             <div class="section-title">개인 성향 분석</div>
-            
-            <div class="question-card" data-question="1" data-scale="1">
+            <div class="question-card" data-question="1">
                 <h2 class="question-title">1. 나는 새로운 것에 도전하는 것을 즐긴다.</h2>
                 <div class="flex justify-around mt-4">
                     <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
@@ -273,7 +272,7 @@
                     <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
-            <div class="question-card" data-question="2" data-scale="1">
+            <div class="question-card" data-question="2">
                 <h2 class="question-title">2. 달성하기 힘든 목표라도 필요하면 이를 실행한다.</h2>
                 <div class="flex justify-around mt-4">
                     <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
@@ -283,7 +282,7 @@
                     <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
-            <div class="question-card" data-question="3" data-scale="2">
+            <div class="question-card" data-question="3">
                 <h2 class="question-title">3. 나는 과감하게 위험을 감수하는 것을 즐긴다.</h2>
                 <div class="flex justify-around mt-4">
                     <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
@@ -293,7 +292,7 @@
                     <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
-            <div class="question-card" data-question="4" data-scale="3">
+            <div class="question-card" data-question="4">
                 <h2 class="question-title">4. 나는 돈을 대할 때 신중한 편이다.</h2>
                 <div class="flex justify-around mt-4">
                     <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
@@ -303,7 +302,7 @@
                     <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
-            <div class="question-card" data-question="5" data-scale="3">
+            <div class="question-card" data-question="5">
                 <h2 class="question-title">5. 사업 성공의 핵심은 시장 감각이라고 생각한다.</h2>
                 <div class="flex justify-around mt-4">
                     <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
@@ -313,7 +312,7 @@
                     <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
-            <div class="question-card" data-question="6" data-scale="2">
+            <div class="question-card" data-question="6">
                 <h2 class="question-title">6. 나는 경쟁 속에서 희열을 느낀다.</h2>
                 <div class="flex justify-around mt-4">
                     <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
@@ -323,7 +322,7 @@
                     <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
-            <div class="question-card" data-question="7" data-scale="3">
+            <div class="question-card" data-question="7">
                 <h2 class="question-title">7. 나는 재무 기록표를 꼼꼼하게 작성한다.</h2>
                 <div class="flex justify-around mt-4">
                     <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
@@ -333,7 +332,7 @@
                     <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
-            <div class="question-card" data-question="8" data-scale="1">
+            <div class="question-card" data-question="8">
                 <h2 class="question-title">8. 나는 사업과 관련해 무엇을 배워야 할지 안다.</h2>
                 <div class="flex justify-around mt-4">
                     <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
@@ -343,7 +342,7 @@
                     <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
-            <div class="question-card" data-question="9" data-scale="1">
+            <div class="question-card" data-question="9">
                 <h2 class="question-title">9. 나는 업무를 잘 할 수 있는 사람들과 역할을 나누어 일을 진행한다.</h2>
                 <div class="flex justify-around mt-4">
                     <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
@@ -353,7 +352,7 @@
                     <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
-            <div class="question-card" data-question="10" data-scale="4">
+            <div class="question-card" data-question="10">
                 <h2 class="question-title">10. 나는 시스템과 데이터를 활용해 사업을 관리할 수 있다.</h2>
                 <div class="flex justify-around mt-4">
                     <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
@@ -363,7 +362,7 @@
                     <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
-            <div class="question-card" data-question="11" data-scale="3">
+            <div class="question-card" data-question="11">
                 <h2 class="question-title">11. 나는 효율적인 운영을 위해 늘 새로운 기술을 시도한다.</h2>
                 <div class="flex justify-around mt-4">
                     <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
@@ -373,7 +372,7 @@
                     <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
-            <div class="question-card" data-question="12" data-scale="3">
+            <div class="question-card" data-question="12">
                 <h2 class="question-title">12. 나는 고객이 항상 옳다고 생각한다.</h2>
                 <div class="flex justify-around mt-4">
                     <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
@@ -383,7 +382,7 @@
                     <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
-            <div class="question-card" data-question="13" data-scale="1">
+            <div class="question-card" data-question="13">
                 <h2 class="question-title">13. 나는 낯선 사람과도 쉽게 관계를 형성한다.</h2>
                 <div class="flex justify-around mt-4">
                     <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
@@ -393,7 +392,7 @@
                     <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
-            <div class="question-card" data-question="14" data-scale="6">
+            <div class="question-card" data-question="14">
                 <h2 class="question-title">14. 나는 의견 충돌 시 타인을 먼저 이해하려 노력한다.</h2>
                 <div class="flex justify-around mt-4">
                     <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
@@ -403,7 +402,7 @@
                     <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
-            <div class="question-card" data-question="15" data-scale="1">
+            <div class="question-card" data-question="15">
                 <h2 class="question-title">15. 나는 많은 사람 앞에서 내가 아는 것을 어려움 없이 말할 수 있다.</h2>
                 <div class="flex justify-around mt-4">
                     <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
@@ -413,7 +412,7 @@
                     <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
-            <div class="question-card" data-question="16" data-scale="3">
+            <div class="question-card" data-question="16">
                 <h2 class="question-title">16. 직원들에게 솔직한 피드백을 주며 발전하도록 돕는다.</h2>
                 <div class="flex justify-around mt-4">
                     <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
@@ -423,7 +422,7 @@
                     <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
-            <div class="question-card" data-question="17" data-scale="6">
+            <div class="question-card" data-question="17">
                 <h2 class="question-title">17. 나는 스트레스 상황에서도 평정심을 유지한다.</h2>
                 <div class="flex justify-around mt-4">
                     <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
@@ -433,7 +432,7 @@
                     <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
-            <div class="question-card" data-question="18" data-scale="2">
+            <div class="question-card" data-question="18">
                 <h2 class="question-title">18. 문제가 발생했을 때 직접 해결책을 모색한다.</h2>
                 <div class="flex justify-around mt-4">
                     <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
@@ -443,7 +442,7 @@
                     <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
-            <div class="question-card" data-question="19" data-scale="1">
+            <div class="question-card" data-question="19">
                 <h2 class="question-title">19. 나는 요즘 인기 있는 업종, 트렌드를 잘 알고 있다.</h2>
                 <div class="flex justify-around mt-4">
                     <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
@@ -453,7 +452,7 @@
                     <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
-            <div class="question-card" data-question="20" data-scale="1">
+            <div class="question-card" data-question="20">
                 <h2 class="question-title">20. 불황이나 어려움은 새로운 기회라고 생각한다.</h2>
                 <div class="flex justify-around mt-4">
                     <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
@@ -463,7 +462,7 @@
                     <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
-            <div class="question-card" data-question="21" data-scale="6">
+            <div class="question-card" data-question="21">
                 <h2 class="question-title">21. 나는 일을 미루지 않는다.</h2>
                 <div class="flex justify-around mt-4">
                     <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
@@ -473,7 +472,7 @@
                     <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
-            <div class="question-card" data-question="22" data-scale="1">
+            <div class="question-card" data-question="22">
                 <h2 class="question-title">22. 내 사업이 실패한다면 그것은 내 책임이다.</h2>
                 <div class="flex justify-around mt-4">
                     <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
@@ -483,7 +482,7 @@
                     <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
-            <div class="question-card" data-question="23" data-scale="1">
+            <div class="question-card" data-question="23">
                 <h2 class="question-title">23. 한번 결정한 일은 끝을 봐야 직성이 풀린다.</h2>
                 <div class="flex justify-around mt-4">
                     <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
@@ -493,7 +492,7 @@
                     <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
-            <div class="question-card" data-question="24" data-scale="1">
+            <div class="question-card" data-question="24">
                 <h2 class="question-title">24. 나는 주변 사람으로부터 성실하다는 말을 자주 듣는다.</h2>
                 <div class="flex justify-around mt-4">
                     <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
@@ -503,7 +502,7 @@
                     <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
-            <div class="question-card" data-question="25" data-scale="7">
+            <div class="question-card" data-question="25">
                 <h2 class="question-title">25. 나는 본사의 지침을 따르는 것보다 나만의 방식으로 운영하고 싶다.</h2>
                 <div class="flex justify-around mt-4">
                     <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
@@ -513,7 +512,7 @@
                     <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
-            <div class="question-card" data-question="26" data-scale="2">
+            <div class="question-card" data-question="26">
                 <h2 class="question-title">26. 나는 모든 것을 직접 결정하고 책임지는 것에 익숙하다.</h2>
                 <div class="flex justify-around mt-4">
                     <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
@@ -523,7 +522,7 @@
                     <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
-            <div class="question-card" data-question="27" data-scale="7">
+            <div class="question-card" data-question="27">
                 <h2 class="question-title">27. 나는 예상치 못한 상황에 대비해 본사의 지원 시스템을 중시한다.</h2>
                 <div class="flex justify-around mt-4">
                     <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
@@ -533,7 +532,7 @@
                     <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
-            <div class="question-card" data-question="28" data-scale="7">
+            <div class="question-card" data-question="28">
                 <h2 class="question-title">28. 나는 본사의 매뉴얼에 따라 안정적으로 운영하는 것을 선호한다.</h2>
                 <div class="flex justify-around mt-4">
                     <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
@@ -543,7 +542,7 @@
                     <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
-            <div class="question-card" data-question="29" data-scale="8">
+            <div class="question-card" data-question="29">
                 <h2 class="question-title">29. 나는 밤늦게까지 일하는 것에 부담을 느끼지 않는다.</h2>
                 <div class="flex justify-around mt-4">
                     <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
@@ -553,7 +552,7 @@
                     <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
-            <div class="question-card" data-question="30" data-scale="8">
+            <div class="question-card" data-question="30">
                 <h2 class="question-title">30. 나는 하루 종일 서서 일하는 것에 익숙하다.</h2>
                 <div class="flex justify-around mt-4">
                     <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
@@ -563,7 +562,7 @@
                     <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
-            <div class="question-card" data-question="31" data-scale="8">
+            <div class="question-card" data-question="31">
                 <h2 class="question-title">31. 나는 충분한 서비스 마인드와 스트레스를 극복할 노하우가 있다.</h2>
                 <div class="flex justify-around mt-4">
                     <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
@@ -573,7 +572,7 @@
                     <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
-            <div class="question-card" data-question="32" data-scale="2">
+            <div class="question-card" data-question="32">
                 <h2 class="question-title">32. 나는 보상이 없어도 경쟁이 즐겁다.</h2>
                 <div class="flex justify-around mt-4">
                     <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
@@ -583,7 +582,7 @@
                     <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
-            <div class="question-card" data-question="33" data-scale="2">
+            <div class="question-card" data-question="33">
                 <h2 class="question-title">33. 나는 일단 하기로 결심한 일이면 최고가 되고 싶다.</h2>
                 <div class="flex justify-around mt-4">
                     <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
@@ -593,7 +592,7 @@
                     <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
-            <div class="question-card" data-question="34" data-scale="2">
+            <div class="question-card" data-question="34">
                 <h2 class="question-title">34. 나는 남의 지시를 듣기 싫어한다.</h2>
                 <div class="flex justify-around mt-4">
                     <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
@@ -603,7 +602,7 @@
                     <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
-            <div class="question-card" data-question="35" data-scale="1">
+            <div class="question-card" data-question="35">
                 <h2 class="question-title">35. 나는 목표가 정해지면 내 의지대로 밀고 나간다.</h2>
                 <div class="flex justify-around mt-4">
                     <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
@@ -613,7 +612,7 @@
                     <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
-            <div class="question-card" data-question="36" data-scale="3">
+            <div class="question-card" data-question="36">
                 <h2 class="question-title">36. 나는 직장 동료들보다 업무에 더 헌신적이다.</h2>
                 <div class="flex justify-around mt-4">
                     <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
@@ -623,7 +622,7 @@
                     <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
-            <div class="question-card" data-question="37" data-scale="3">
+            <div class="question-card" data-question="37">
                 <h2 class="question-title">37. 나는 고객이 말할 때 귀를 기울일 필요가 있다고 생각한다.</h2>
                 <div class="flex justify-around mt-4">
                     <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
@@ -633,7 +632,7 @@
                     <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
-            <div class="question-card" data-question="38" data-scale="2">
+            <div class="question-card" data-question="38">
                 <h2 class="question-title">38. 나는 나의 잘못이나 패배를 잘 인정하지 않는다.</h2>
                 <div class="flex justify-around mt-4">
                     <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
@@ -643,7 +642,7 @@
                     <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
-            <div class="question-card" data-question="39" data-scale="2">
+            <div class="question-card" data-question="39">
                 <h2 class="question-title">39. 나는 사업 지식을 넓히기 위해 독서를 꾸준히 한다.</h2>
                 <div class="flex justify-around mt-4">
                     <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
@@ -653,7 +652,7 @@
                     <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
-            <div class="question-card" data-question="40" data-scale="2">
+            <div class="question-card" data-question="40">
                 <h2 class="question-title">40. 나는 일이 완성되는 것을 꼭 봐야 한다.</h2>
                 <div class="flex justify-around mt-4">
                     <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
@@ -716,15 +715,19 @@
         // Netlify Functions의 기본 URL 경로를 상수로 정의합니다.
         const NETLIFY_FUNCTIONS_URL = '/.netlify/functions/';
         
-        let myChart = null;
-        let answers = {};
-        const questionCount = 40;
+        let myChart = null; // Chart.js 인스턴스를 저장할 변수입니다.
+        let answers = {};   // 사용자의 설문 답변을 저장하는 객체입니다.
+        const questionCount = 40; // 설문 문항의 총 개수입니다.
 
         // Chart.js 데이터 레이블 플러그인을 등록합니다.
         if (typeof Chart !== 'undefined' && typeof ChartDataLabels !== 'undefined') {
             Chart.register(ChartDataLabels);
         }
 
+        /**
+         * 페이지가 완전히 로드된 후에 실행되는 초기화 함수입니다.
+         * 모든 버튼에 이벤트 리스너를 연결하여 사용자 상호작용을 처리합니다.
+         */
         window.onload = function() {
             const surveyQuestions = document.getElementById('survey-questions');
             const surveyResult = document.getElementById('survey-result');
@@ -739,7 +742,6 @@
             const modalClose = document.querySelector('.modal-close');
             const dataListBody = document.getElementById('data-list-body');
             
-            // 모든 답변 옵션에 이벤트 리스너를 추가합니다.
             document.querySelectorAll('.answer-option').forEach(option => {
                 option.addEventListener('click', handleAnswerClick);
             });
@@ -808,11 +810,11 @@
                     };
                     
                     const scoreMapping = {
-                        '1': (value) => value * 1, '2': (value) => value * 1, '3': (value) => value * 1, '4': (value) => value * 1, '5': (value) => value * 1, '6': (value) => value * 1,
-                        '7': (value) => value * 1, '8': (value) => value * 1, '9': (value) => value * 1, '10': (value) => value * 1, '11': (value) => value * 1, '12': (value) => value * 1, '13': (value) => value * 1, '14': (value) => value * 1, '15': (value) => value * 1,
-                        '16': (value) => value * 1, '17': (value) => value * 1, '18': (value) => value * 1, '19': (value) => value * 1, '20': (value) => value * 1,
-                        '21': (value) => value * 1, '22': (value) => value * 1, '23': (value) => value * 1, '24': (value) => value * 1, '25': (value) => value * 1, '26': (value) => value * 1, '27': (value) => value * 1, '28': (value) => value * 1, '29': (value) => value * 1, '30': (value) => value * 1,
-                        '31': (value) => value * 1, '32': (value) => value * 1, '33': (value) => value * 1, '34': (value) => value * 1, '35': (value) => value * 1, '36': (value) => value * 1, '37': (value) => value * 1, '38': (value) => value * 1, '39': (value) => value * 1, '40': (value) => value * 1
+                        '1': (value) => value, '2': (value) => value, '3': (value) => value, '4': (value) => value, '5': (value) => value, '6': (value) => value,
+                        '7': (value) => value, '8': (value) => value, '9': (value) => value, '10': (value) => value, '11': (value) => value, '12': (value) => value, '13': (value) => value, '14': (value) => value, '15': (value) => value,
+                        '16': (value) => value, '17': (value) => value, '18': (value) => value, '19': (value) => value, '20': (value) => value,
+                        '21': (value) => value, '22': (value) => value, '23': (value) => value, '24': (value) => value, '25': (value) => value, '26': (value) => value, '27': (value) => value, '28': (value) => value, '29': (value) => value, '30': (value) => value,
+                        '31': (value) => value, '32': (value) => value, '33': (value) => value, '34': (value) => value, '35': (value) => value, '36': (value) => value, '37': (value) => value, '38': (value) => value, '39': (value) => value, '40': (value) => value
                     };
                     
                     for (let i = 1; i <= questionCount; i++) {
@@ -994,11 +996,11 @@
                 };
                 
                 const scoreMapping = {
-                    '1': (value) => value * 1, '2': (value) => value * 1, '3': (value) => value * 1, '4': (value) => value * 1, '5': (value) => value * 1, '6': (value) => value * 1,
-                    '7': (value) => value * 1, '8': (value) => value * 1, '9': (value) => value * 1, '10': (value) => value * 1, '11': (value) => value * 1, '12': (value) => value * 1, '13': (value) => value * 1, '14': (value) => value * 1, '15': (value) => value * 1,
-                    '16': (value) => value * 1, '17': (value) => value * 1, '18': (value) => value * 1, '19': (value) => value * 1, '20': (value) => value * 1,
-                    '21': (value) => value * 1, '22': (value) => value * 1, '23': (value) => value * 1, '24': (value) => value * 1, '25': (value) => value * 1, '26': (value) => value * 1, '27': (value) => value * 1, '28': (value) => value * 1, '29': (value) => value * 1, '30': (value) => value * 1,
-                    '31': (value) => value * 1, '32': (value) => value * 1, '33': (value) => value * 1, '34': (value) => value * 1, '35': (value) => value * 1, '36': (value) => value * 1, '37': (value) => value * 1, '38': (value) => value * 1, '39': (value) => value * 1, '40': (value) => value * 1
+                    '1': (value) => value, '2': (value) => value, '3': (value) => value, '4': (value) => value, '5': (value) => value, '6': (value) => value,
+                    '7': (value) => value, '8': (value) => value, '9': (value) => value, '10': (value) => value, '11': (value) => value, '12': (value) => value, '13': (value) => value, '14': (value) => value, '15': (value) => value,
+                    '16': (value) => value, '17': (value) => value, '18': (value) => value, '19': (value) => value, '20': (value) => value,
+                    '21': (value) => value, '22': (value) => value, '23': (value) => value, '24': (value) => value, '25': (value) => value, '26': (value) => value, '27': (value) => value, '28': (value) => value, '29': (value) => value, '30': (value) => value,
+                    '31': (value) => value, '32': (value) => value, '33': (value) => value, '34': (value) => value, '35': (value) => value, '36': (value) => value, '37': (value) => value, '38': (value) => value, '39': (value) => value, '40': (value) => value
                 };
 
                 for (let i = 1; i <= questionCount; i++) {
@@ -1117,14 +1119,12 @@
                     answers = typeof selectedData.answers === 'string' ? JSON.parse(selectedData.answers) : selectedData.answers;
                     const analysisToLoad = typeof selectedData.analysis_result === 'string' ? JSON.parse(selectedData.analysis_result) : selectedData.analysis_result;
 
+                    // 화면 전환
+                    document.getElementById('survey-questions').style.display = 'block';
+                    document.getElementById('survey-result').classList.add('hidden');
+                    
                     document.getElementById('userName').value = selectedData.user_name || '';
                     document.getElementById('userPhone').value = selectedData.user_phone || '';
-                    
-                    const surveyQuestionsContainer = document.getElementById('survey-questions');
-                    const surveyResultContainer = document.getElementById('survey-result');
-
-                    surveyQuestionsContainer.style.display = 'block';
-                    surveyResultContainer.classList.add('hidden');
                     
                     const allOptions = document.querySelectorAll('.answer-option');
                     allOptions.forEach(opt => opt.classList.remove('selected'));
@@ -1154,8 +1154,8 @@
                 document.getElementById('userPhone').value = '';
                 const allOptions = document.querySelectorAll('.answer-option');
                 allOptions.forEach(opt => opt.classList.remove('selected'));
-                surveyQuestions.style.display = 'block';
-                surveyResult.classList.add('hidden');
+                document.getElementById('survey-questions').style.display = 'block';
+                document.getElementById('survey-result').classList.add('hidden');
                 const chartCanvas = document.getElementById('pie-chart');
                 if (chartCanvas) {
                     chartCanvas.remove();
