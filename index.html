@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>함께창업소 예비창업자 성향분석 v2.1.0</title>
+    <title>함께창업소 예비창업자 성향분석 v2.1.1</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
@@ -61,11 +61,13 @@
             cursor: pointer;
             background-color: #e9ecef;
             border-radius: 1rem;
-            padding: 1.25rem;
-            margin-bottom: 1rem;
+            padding: 0.75rem 1rem; /* 선택지 패딩 줄이기 */
+            margin-bottom: 0.5rem; /* 간격 줄이기 */
             transition: all 0.3s ease-in-out;
             color: #4a5568;
             border: 2px solid transparent;
+            font-size: 0.875rem; /* 폰트 크기 줄이기 */
+            line-height: 1.25rem;
         }
         .answer-option:hover {
             background-color: #e2e8f0;
@@ -233,13 +235,28 @@
             max-height: 400px;
             overflow-y: auto;
         }
+        .upscale-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 2rem;
+            font-size: 0.875rem;
+        }
+        .upscale-table th, .upscale-table td {
+            border: 1px solid #e2e8f0;
+            padding: 12px;
+            text-align: center;
+        }
+        .upscale-table th {
+            background-color: #f7fafc;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <!-- 상단 헤더 섹션 -->
         <div class="header-section">
-            <h1 class="text-4xl font-bold text-gray-900">함께창업소 예비창업자 성향분석 <span class="text-gray-500 text-base">v2.1.0</span></h1>
+            <h1 class="text-4xl font-bold text-gray-900">함께창업소 예비창업자 성향분석 <span class="text-gray-500 text-base">v2.1.1</span></h1>
             <div class="flex space-x-4">
                 <div id="load-button" class="button bg-gray-500 hover:bg-gray-700">불러오기</div>
                 <div id="submit-button-header" class="button">결과 보기</div>
@@ -712,22 +729,16 @@
          * Netlify Functions를 호출하여 데이터를 저장하고 불러오며, 설문 결과를 시각화하여 보여줍니다.
          */
 
-        // Netlify Functions의 기본 URL 경로를 상수로 정의합니다.
         const NETLIFY_FUNCTIONS_URL = '/.netlify/functions/';
         
-        let myChart = null; // Chart.js 인스턴스를 저장할 변수입니다.
-        let answers = {};   // 사용자의 설문 답변을 저장하는 객체입니다.
-        const questionCount = 40; // 설문 문항의 총 개수입니다.
+        let myChart = null; // Chart.js 인스턴스를 저장할 변수
+        let answers = {};   // 사용자의 설문 답변을 저장하는 객체
+        const questionCount = 40; // 설문 문항의 총 개수
 
-        // Chart.js 데이터 레이블 플러그인을 등록합니다.
         if (typeof Chart !== 'undefined' && typeof ChartDataLabels !== 'undefined') {
             Chart.register(ChartDataLabels);
         }
 
-        /**
-         * 페이지가 완전히 로드된 후에 실행되는 초기화 함수입니다.
-         * 모든 버튼에 이벤트 리스너를 연결하여 사용자 상호작용을 처리합니다.
-         */
         window.onload = function() {
             const surveyQuestions = document.getElementById('survey-questions');
             const surveyResult = document.getElementById('survey-result');
@@ -822,7 +833,6 @@
                         const answerValue = parseInt(currentAnswers[qId]);
                         if (answerValue && scoreMapping[qId]) {
                             const score = scoreMapping[qId](answerValue);
-                            // 문항별 점수 계산 로직
                             if ([1, 2, 20, 22, 33, 35].includes(i)) scores['모험심'] += score;
                             if ([3, 6, 18, 26, 32, 34, 38].includes(i)) scores['독립성'] += score;
                             if ([4, 7, 10, 27, 28].includes(i)) scores['안정성'] += score;
@@ -1119,12 +1129,10 @@
                     answers = typeof selectedData.answers === 'string' ? JSON.parse(selectedData.answers) : selectedData.answers;
                     const analysisToLoad = typeof selectedData.analysis_result === 'string' ? JSON.parse(selectedData.analysis_result) : selectedData.analysis_result;
 
-                    // 화면 전환
-                    document.getElementById('survey-questions').style.display = 'block';
-                    document.getElementById('survey-result').classList.add('hidden');
-                    
                     document.getElementById('userName').value = selectedData.user_name || '';
                     document.getElementById('userPhone').value = selectedData.user_phone || '';
+                    
+                    resetSurvey();
                     
                     const allOptions = document.querySelectorAll('.answer-option');
                     allOptions.forEach(opt => opt.classList.remove('selected'));
