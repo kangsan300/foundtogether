@@ -1,5 +1,4 @@
-```eof
-```javascript:save-survey.js:netlify/functions/save-survey.js
+// netlify/functions/save-survey.js
 // PostgreSQL 클라이언트 라이브러리를 불러옵니다.
 const { Client } = require('pg');
 
@@ -18,12 +17,10 @@ exports.handler = async (event, context) => {
     'Access-Control-Allow-Methods': 'POST, OPTIONS'
   };
 
-  // 클라이언트에서 미리 요청을 보내는 OPTIONS 메소드에 대한 응답입니다.
   if (event.httpMethod === 'OPTIONS') {
     return { statusCode: 200, headers, body: '' };
   }
 
-  // POST 요청이 아니면 405 Method Not Allowed 에러를 반환합니다.
   if (event.httpMethod !== 'POST') {
     return { 
       statusCode: 405, 
@@ -61,7 +58,7 @@ exports.handler = async (event, context) => {
     // 테이블이 없는 경우 일련번호 ID를 가진 테이블을 생성합니다.
     const createTableIfNotExists = `
       CREATE TABLE IF NOT EXISTS user_survey (
-        id SERIAL PRIMARY KEY,
+        id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
         user_name VARCHAR(100) NOT NULL,
         user_phone VARCHAR(20) NOT NULL,
         answers JSONB NOT NULL,
@@ -119,4 +116,3 @@ exports.handler = async (event, context) => {
     }
   }
 };
-```
