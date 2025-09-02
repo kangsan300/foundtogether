@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>함께창업소 예비창업자 성향분석 v2.1.2</title>
+    <title>함께창업소 예비창업자 성향분석 v2.1.3</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
@@ -225,9 +225,9 @@
             text-align: left;
             word-break: break-all;
         }
-        .data-list-table tr:hover {
-            background-color: #f0f4f8;
-            cursor: pointer;
+        .data-list-table th {
+            background-color: #f7fafc;
+            font-weight: bold;
         }
         #data-list-container {
             max-height: 400px;
@@ -984,11 +984,11 @@
                                 return `
                                     <tr>
                                         <td>${industry}</td>
-                                        <td>${industryVectors[industry]['모험심']}</td>
-                                        <td>${industryVectors[industry]['독립성']}</td>
-                                        <td>${industryVectors[industry]['안정성']}</td>
-                                        <td>${industryVectors[industry]['성실성']}</td>
-                                        <td>${industryVectors[industry]['사교성']}</td>
+                                        <td>${industryVector['모험심']}</td>
+                                        <td>${industryVector['독립성']}</td>
+                                        <td>${industryVector['안정성']}</td>
+                                        <td>${industryVector['성실성']}</td>
+                                        <td>${industryVector['사교성']}</td>
                                         <td>${percentageScore}%</td>
                                     </tr>
                                 `;
@@ -1202,17 +1202,13 @@
                     answers = typeof selectedData.answers === 'string' ? JSON.parse(selectedData.answers) : selectedData.answers;
                     const analysisToLoad = typeof selectedData.analysis_result === 'string' ? JSON.parse(selectedData.analysis_result) : selectedData.analysis_result;
 
+                    // 화면 전환: 설문 화면으로 이동
+                    document.getElementById('survey-questions').style.display = 'block';
+                    document.getElementById('survey-result').classList.add('hidden');
+                    
+                    // 이름과 전화번호 필드에 데이터 채우기
                     document.getElementById('userName').value = selectedData.user_name || '';
                     document.getElementById('userPhone').value = selectedData.user_phone || '';
-                    
-                    const surveyQuestionsContainer = document.getElementById('survey-questions');
-                    const surveyResultContainer = document.getElementById('survey-result');
-
-                    if (surveyResultContainer.classList.contains('hidden')) {
-                         // 결과 화면이 아닌 경우에만 설문 화면으로 전환하고 초기화
-                         surveyQuestionsContainer.style.display = 'block';
-                         resetSurvey();
-                    }
                     
                     // 설문 문항에 답변 상태를 복원합니다.
                     const allOptions = document.querySelectorAll('.answer-option');
