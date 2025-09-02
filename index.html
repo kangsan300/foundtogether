@@ -277,7 +277,6 @@
             
             <!-- 설문 항목: 개인 성향 분석 -->
             <div class="section-title">개인 성향 분석</div>
-            
             <div class="question-card" data-question="1">
                 <h2 class="question-title">1. 나는 새로운 것에 도전하는 것을 즐긴다.</h2>
                 <div class="flex justify-around mt-4">
@@ -734,7 +733,6 @@
         let answers = {};   // 사용자의 설문 답변을 저장하는 객체
         const questionCount = 40; // 설문 문항의 총 개수
 
-        // Chart.js 데이터 레이블 플러그인을 등록합니다.
         if (typeof Chart !== 'undefined' && typeof ChartDataLabels !== 'undefined') {
             Chart.register(ChartDataLabels);
         }
@@ -789,16 +787,11 @@
                     return;
                 }
                 
-                // 모든 문항이 답변되었는지 확인하고, 답변되지 않은 경우 랜덤으로 선택합니다.
-                for (let i = 1; i <= questionCount; i++) {
-                    const qId = String(i);
-                    const questionCard = document.querySelector(`[data-question="${qId}"]`);
-                    if (!answers[qId]) {
-                        const randomValue = Math.floor(Math.random() * 5) + 1;
-                        answers[qId] = String(randomValue);
-                        const option = questionCard.querySelector(`[data-value="${randomValue}"]`);
-                        if (option) {
-                           option.classList.add('selected');
+                if (Object.keys(answers).length < 40) {
+                    for (let i = 1; i <= questionCount; i++) {
+                        const qId = String(i);
+                        if (!answers[qId]) {
+                            answers[qId] = String(Math.floor(Math.random() * 5) + 1);
                         }
                     }
                 }
@@ -1194,9 +1187,7 @@
             }
 
             async function loadSelectedData(selectedData) {
-                console.log('불러온 데이터:', selectedData);
                 try {
-                    // answers와 analysis_result가 이미 객체 형태인지 확인하고 파싱을 한 번만 진행합니다.
                     answers = typeof selectedData.answers === 'string' ? JSON.parse(selectedData.answers) : selectedData.answers;
                     const analysisToLoad = typeof selectedData.analysis_result === 'string' ? JSON.parse(selectedData.analysis_result) : selectedData.analysis_result;
 
@@ -1206,11 +1197,13 @@
                     const surveyQuestionsContainer = document.getElementById('survey-questions');
                     const surveyResultContainer = document.getElementById('survey-result');
 
-                    // 화면 전환: 설문 화면으로 이동
-                    surveyQuestionsContainer.style.display = 'block';
-                    surveyResultContainer.classList.add('hidden');
-                    
-                    // 설문 문항에 답변 상태를 복원합니다.
+                    if (surveyResultContainer.classList.contains('hidden')) {
+                         resetSurvey();
+                    } else {
+                         surveyResultContainer.classList.add('hidden');
+                         surveyQuestionsContainer.style.display = 'block';
+                    }
+
                     const allOptions = document.querySelectorAll('.answer-option');
                     allOptions.forEach(opt => opt.classList.remove('selected'));
                     
