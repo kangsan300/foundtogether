@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>함께창업소 예비창업자 성향분석 v2.1.1</title>
+    <title>함께창업소 예비창업자 성향분석 v2.1.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
@@ -61,13 +61,14 @@
             cursor: pointer;
             background-color: #e9ecef;
             border-radius: 1rem;
-            padding: 0.75rem 1rem; /* 선택지 패딩 줄이기 */
-            margin-bottom: 0.5rem; /* 간격 줄이기 */
+            padding: 0.75rem 0.5rem;
+            margin: 0.25rem;
             transition: all 0.3s ease-in-out;
             color: #4a5568;
             border: 2px solid transparent;
-            font-size: 0.875rem; /* 폰트 크기 줄이기 */
-            line-height: 1.25rem;
+            font-size: 0.8rem;
+            line-height: 1rem;
+            white-space: nowrap;
         }
         .answer-option:hover {
             background-color: #e2e8f0;
@@ -224,9 +225,6 @@
             text-align: left;
             word-break: break-all;
         }
-        .data-list-table th {
-            background-color: #f7fafc;
-        }
         .data-list-table tr:hover {
             background-color: #f0f4f8;
             cursor: pointer;
@@ -256,7 +254,7 @@
     <div class="container">
         <!-- 상단 헤더 섹션 -->
         <div class="header-section">
-            <h1 class="text-4xl font-bold text-gray-900">함께창업소 예비창업자 성향분석 <span class="text-gray-500 text-base">v2.1.1</span></h1>
+            <h1 class="text-4xl font-bold text-gray-900">함께창업소 예비창업자 성향분석 <span class="text-gray-500 text-base">v2.1.3</span></h1>
             <div class="flex space-x-4">
                 <div id="load-button" class="button bg-gray-500 hover:bg-gray-700">불러오기</div>
                 <div id="submit-button-header" class="button">결과 보기</div>
@@ -279,6 +277,7 @@
             
             <!-- 설문 항목: 개인 성향 분석 -->
             <div class="section-title">개인 성향 분석</div>
+            
             <div class="question-card" data-question="1">
                 <h2 class="question-title">1. 나는 새로운 것에 도전하는 것을 즐긴다.</h2>
                 <div class="flex justify-around mt-4">
@@ -788,11 +787,18 @@
                     alert('이름과 전화번호를 모두 입력해주세요.');
                     return;
                 }
-
+                
+                // 답변되지 않은 문항에 랜덤 값 할당
                 for (let i = 1; i <= questionCount; i++) {
                     const qId = String(i);
+                    const questionCard = document.querySelector(`[data-question="${qId}"]`);
                     if (!answers[qId]) {
-                        answers[qId] = '1';
+                        const randomValue = Math.floor(Math.random() * 5) + 1;
+                        answers[qId] = String(randomValue);
+                        const option = questionCard.querySelector(`[data-value="${randomValue}"]`);
+                        if (option) {
+                           option.classList.add('selected');
+                        }
                     }
                 }
 
@@ -807,17 +813,40 @@
                 await analyzeAndRenderResults();
             }
 
+            // 업종별 특징 벡터 정의
+            const industryVectors = {
+                '무인 카페': {
+                    '모험심': 2, '독립성': 4, '안정성': 5, '성실성': 4, '사교성': 1
+                },
+                '한식 주점': {
+                    '모험심': 3, '독립성': 5, '안정성': 2, '성실성': 3, '사교성': 5
+                },
+                'IT 스타트업': {
+                    '모험심': 5, '독립성': 5, '안정성': 1, '성실성': 5, '사교성': 3
+                },
+                '교육/컨설팅': {
+                    '모험심': 3, '독립성': 4, '안정성': 4, '성실성': 5, '사교성': 5
+                },
+                '온라인 쇼핑몰': {
+                    '모험심': 4, '독립성': 5, '안정성': 3, '성실성': 4, '사교성': 2
+                }
+            };
+            
+            // 코사인 유사도 계산 함수
+            function cosineSimilarity(vecA, vecB) {
+                const dotProduct = Object.keys(vecA).reduce((sum, key) => sum + vecA[key] * vecB[key], 0);
+                const magnitudeA = Math.sqrt(Object.values(vecA).reduce((sum, val) => sum + val * val, 0));
+                const magnitudeB = Math.sqrt(Object.values(vecB).reduce((sum, val) => sum + val * val, 0));
+                return magnitudeA === 0 || magnitudeB === 0 ? 0 : dotProduct / (magnitudeA * magnitudeB);
+            }
+
             async function analyzeAndRenderResults(loadedAnswers = null, loadedAnalysis = null) {
                 const currentAnswers = loadedAnswers || answers;
                 let analysisResult = loadedAnalysis;
                 
                 if (!analysisResult) {
                     const scores = {
-                        '모험심': 0,
-                        '독립성': 0,
-                        '안정성': 0,
-                        '성실성': 0,
-                        '사교성': 0
+                        '모험심': 0, '독립성': 0, '안정성': 0, '성실성': 0, '사교성': 0
                     };
                     
                     const scoreMapping = {
@@ -840,17 +869,24 @@
                             if ([5, 9, 12, 13, 14, 15, 16, 29, 31, 37].includes(i)) scores['사교성'] += score;
                         }
                     }
+
                     const totalScore = Object.values(scores).reduce((a, b) => a + b, 0);
                     const percentages = {};
                     for (const key in scores) {
                         percentages[key] = totalScore > 0 ? (scores[key] / totalScore) * 100 : 0;
                     }
-                    const sortedPercentages = Object.entries(percentages).sort(([, a], [, b]) => b - a);
-                    const dominantType = sortedPercentages[0][0];
 
+                    const recommendations = Object.keys(industryVectors).map(industry => {
+                        const similarity = cosineSimilarity(scores, industryVectors[industry]);
+                        return { industry, score: similarity };
+                    }).sort((a, b) => b.score - a.score);
+
+                    const dominantType = recommendations[0].industry;
+                    
                     analysisResult = {
                         scores: scores,
-                        dominantType: dominantType
+                        dominantType: dominantType,
+                        recommendations: recommendations
                     };
                 }
                 
@@ -922,7 +958,39 @@
 
                     <div class="analysis-section">
                         <h4>당신에게 추천하는 업종</h4>
-                        <div class="analysis-item">
+                        <table class="upscale-table">
+                          <thead>
+                            <tr>
+                              <th>업종</th>
+                              <th>모험심</th>
+                              <th>독립성</th>
+                              <th>안정성</th>
+                              <th>성실성</th>
+                              <th>사교성</th>
+                              <th>추천 점수</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            ${Object.keys(industryVectors).map(industry => {
+                                const userVector = [analysisResult.scores['모험심'], analysisResult.scores['독립성'], analysisResult.scores['안정성'], analysisResult.scores['성실성'], analysisResult.scores['사교성']];
+                                const industryVector = Object.values(industryVectors[industry]);
+                                const similarityScore = cosineSimilarity(analysisResult.scores, industryVectors[industry]);
+                                const percentageScore = (similarityScore * 100).toFixed(1);
+                                return `
+                                    <tr>
+                                        <td>${industry}</td>
+                                        <td>${industryVectors[industry]['모험심']}</td>
+                                        <td>${industryVectors[industry]['독립성']}</td>
+                                        <td>${industryVectors[industry]['안정성']}</td>
+                                        <td>${industryVectors[industry]['성실성']}</td>
+                                        <td>${industryVectors[industry]['사교성']}</td>
+                                        <td>${percentageScore}%</td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                          </tbody>
+                        </table>
+                        <div class="analysis-item mt-8">
                             <h5 class="text-xl font-bold text-blue-800 mb-2">1. 맞춤형 서비스/컨설팅</h5>
                             <p>강점 활용: '사교성'과 '성실성'이 높은 당신은 고객과의 관계 구축에 능숙하며, 꼼꼼한 일 처리로 신뢰를 얻습니다. 이를 바탕으로 고객의 니즈를 정확히 파악하여 맞춤형 서비스를 제공하는 컨설팅, 교육 사업에 적합합니다.</p>
                         </div>
@@ -993,16 +1061,16 @@
                 }
                 
                 if (Object.keys(answers).length < 40) {
-                     alert('설문지를 모두 작성해야 저장할 수 있습니다.');
-                     return;
+                    for (let i = 1; i <= questionCount; i++) {
+                        const qId = String(i);
+                        if (!answers[qId]) {
+                            answers[qId] = String(Math.floor(Math.random() * 5) + 1);
+                        }
+                    }
                 }
                 
                 const scores = {
-                    '모험심': 0,
-                    '독립성': 0,
-                    '안정성': 0,
-                    '성실성': 0,
-                    '사교성': 0
+                    '모험심': 0, '독립성': 0, '안정성': 0, '성실성': 0, '사교성': 0
                 };
                 
                 const scoreMapping = {
@@ -1092,7 +1160,8 @@
                     }
                     
                     dataListBody.innerHTML = '';
-                    dataList.forEach(item => {
+                    const limitedDataList = dataList.slice(0, 5);
+                    limitedDataList.forEach(item => {
                         const row = document.createElement('tr');
                         row.dataset.id = item.id;
                         
@@ -1132,8 +1201,9 @@
                     document.getElementById('userName').value = selectedData.user_name || '';
                     document.getElementById('userPhone').value = selectedData.user_phone || '';
                     
-                    resetSurvey();
-                    
+                    document.getElementById('survey-questions').style.display = 'none';
+                    document.getElementById('survey-result').classList.remove('hidden');
+
                     const allOptions = document.querySelectorAll('.answer-option');
                     allOptions.forEach(opt => opt.classList.remove('selected'));
                     
