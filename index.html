@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>함께창업소 예비창업자 성향분석 v2.1.0</title>
+    <title>함께창업소 예비창업자 성향분석 v2.1.3</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
@@ -15,53 +15,53 @@
         }
         .container {
             max-width: 1000px;
-            margin: 2rem auto;
+            margin: 1rem auto;
             background-color: #ffffff;
             border-radius: 1.5rem;
             box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.1), 0 5px 15px -5px rgba(0, 0, 0, 0.06);
-            padding: 3rem;
+            padding: 1.5rem;
         }
         .header-section {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 2.5rem;
+            margin-bottom: 2rem;
         }
         .header-section h1 {
             flex-grow: 1;
             text-align: center;
             margin-right: 1.5rem;
-            font-size: 2.25rem;
+            font-size: 1.5rem;
             font-weight: 700;
             color: #1a365d;
         }
         .section-title {
-            font-size: 2rem;
+            font-size: 1.5rem;
             font-weight: 700;
             color: #1a365d;
-            margin-bottom: 2.5rem;
+            margin-bottom: 1.5rem;
             text-align: center;
             border-bottom: 3px solid #e2e8f0;
-            padding-bottom: 1.5rem;
+            padding-bottom: 1rem;
         }
         .question-card {
             background-color: #f7fafc;
             border-radius: 1.25rem;
-            padding: 2.5rem;
-            margin-bottom: 2rem;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
             border: 1px solid #e2e8f0;
         }
         .question-title {
-            font-size: 1.5rem;
+            font-size: 1.25rem;
             font-weight: 700;
-            margin-bottom: 1.25rem;
+            margin-bottom: 1rem;
             color: #2d3748;
         }
         .answer-option {
             cursor: pointer;
             background-color: #e9ecef;
             border-radius: 1rem;
-            padding: 0.75rem 0.5rem;
+            padding: 0.5rem;
             margin: 0.25rem;
             transition: all 0.3s ease-in-out;
             color: #4a5568;
@@ -734,6 +734,7 @@
         let answers = {};   // 사용자의 설문 답변을 저장하는 객체
         const questionCount = 40; // 설문 문항의 총 개수
 
+        // Chart.js 데이터 레이블 플러그인을 등록합니다.
         if (typeof Chart !== 'undefined' && typeof ChartDataLabels !== 'undefined') {
             Chart.register(ChartDataLabels);
         }
@@ -788,7 +789,7 @@
                     return;
                 }
                 
-                // 답변되지 않은 문항에 랜덤 값 할당
+                // 모든 문항이 답변되었는지 확인하고, 답변되지 않은 경우 랜덤으로 선택합니다.
                 for (let i = 1; i <= questionCount; i++) {
                     const qId = String(i);
                     const questionCard = document.querySelector(`[data-question="${qId}"]`);
@@ -1195,15 +1196,21 @@
             async function loadSelectedData(selectedData) {
                 console.log('불러온 데이터:', selectedData);
                 try {
+                    // answers와 analysis_result가 이미 객체 형태인지 확인하고 파싱을 한 번만 진행합니다.
                     answers = typeof selectedData.answers === 'string' ? JSON.parse(selectedData.answers) : selectedData.answers;
                     const analysisToLoad = typeof selectedData.analysis_result === 'string' ? JSON.parse(selectedData.analysis_result) : selectedData.analysis_result;
 
                     document.getElementById('userName').value = selectedData.user_name || '';
                     document.getElementById('userPhone').value = selectedData.user_phone || '';
                     
-                    document.getElementById('survey-questions').style.display = 'none';
-                    document.getElementById('survey-result').classList.remove('hidden');
+                    const surveyQuestionsContainer = document.getElementById('survey-questions');
+                    const surveyResultContainer = document.getElementById('survey-result');
 
+                    // 화면 전환: 설문 화면으로 이동
+                    surveyQuestionsContainer.style.display = 'block';
+                    surveyResultContainer.classList.add('hidden');
+                    
+                    // 설문 문항에 답변 상태를 복원합니다.
                     const allOptions = document.querySelectorAll('.answer-option');
                     allOptions.forEach(opt => opt.classList.remove('selected'));
                     
