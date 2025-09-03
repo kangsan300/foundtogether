@@ -166,7 +166,7 @@
         }
         #chart-container {
             position: relative;
-            height: 400px;
+            height: 500px;
             width: 100%;
             margin-bottom: 3rem;
         }
@@ -277,6 +277,7 @@
             
             <!-- 설문 항목: 개인 성향 분석 -->
             <div class="section-title">개인 성향 분석</div>
+            
             <div class="question-card" data-question="1">
                 <h2 class="question-title">1. 나는 새로운 것에 도전하는 것을 즐긴다.</h2>
                 <div class="flex justify-around mt-4">
@@ -940,15 +941,15 @@
                             </div>
                             <div class="w-full md:w-1/2">
                                 <p class="text-lg mb-4">
-                                    당신의 설문 답변을 종합한 결과, 가장 두드러지는 특성은 바로 ${dominantType}입니다.<br>
-                                    당신의 ${dominantType} 성향은 전체 성향 중 ${percentages[dominantType].toFixed(1)}%를 차지합니다.
+                                    당신의 설문 답변을 종합한 결과, 가장 두드러지는 특성은 바로 **${dominantType}**입니다.<br>
+                                    당신의 **${dominantType}** 성향은 전체 성향 중 **${percentages[dominantType].toFixed(1)}%**를 차지합니다.
                                 </p>
                                 <ul class="list-disc list-inside space-y-2 text-gray-700">
                                     ${sortedPercentages.filter((item) => item[0] !== dominantType).map(item => {
                                         const otherTrait = item[0];
                                         const otherPercentage = item[1];
                                         const difference = percentages[dominantType] - otherPercentage;
-                                        return `<li>${dominantType}은(는) ${otherTrait}보다 ${difference.toFixed(1)}% 더 높습니다.</li>`;
+                                        return `<li>**${dominantType}**은(는) **${otherTrait}**보다 ${difference.toFixed(1)}% 더 높습니다.</li>`;
                                     }).join('')}
                                 </ul>
                             </div>
