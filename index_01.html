@@ -1,0 +1,1291 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>프랜차이즈 창업 성향분석 전문 시스템 v3.0</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            padding: 2rem;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        .question-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .answer-option {
+            cursor: pointer;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            margin: 0.25rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: #4a5568;
+            border: 2px solid transparent;
+            font-size: 0.9rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .answer-option::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s;
+        }
+        .answer-option:hover::before {
+            left: 100%;
+        }
+        .answer-option:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e0 100%);
+        }
+        .answer-option.selected {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 15px 35px rgba(59, 130, 246, 0.4);
+            border: 2px solid #1e40af;
+        }
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin: 2rem 0;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 15px;
+            padding: 1rem;
+            backdrop-filter: blur(10px);
+        }
+        .result-section {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.05) 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 2rem 0;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+        .industry-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-left: 4px solid #3b82f6;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        .industry-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        .progress-bar {
+            background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+            height: 8px;
+            border-radius: 4px;
+            transition: width 1s ease-in-out;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            position: relative;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%);
+            margin: 5% auto;
+            padding: 2rem;
+            width: 90%;
+            max-width: 800px;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(15px);
+        }
+        .personality-radar {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            padding: 0.75rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.6);
+        }
+        .btn-secondary {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+            color: white;
+            padding: 0.75rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            box-shadow: 0 4px 15px rgba(107, 114, 128, 0.4);
+        }
+        .expertise-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin: 0.25rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">
+                프랜차이즈 창업 성향분석 전문 시스템
+                <span class="text-lg text-blue-600 font-normal">v3.0 Professional</span>
+            </h1>
+            <p class="text-gray-600 text-lg">AI 기반 심층 성향분석으로 최적의 창업 업종을 찾아드립니다</p>
+            <div class="flex justify-center space-x-4 mt-4">
+                <span class="expertise-badge">개인맞춤분석</span>
+                <span class="expertise-badge">전업종커버</span>
+                <span class="expertise-badge">위험도분석</span>
+                <span class="expertise-badge">수익성예측</span>
+            </div>
+        </div>
+
+        <!-- Personal Info Section -->
+        <div id="personal-info-section" class="glass-card">
+            <h2 class="text-2xl font-bold mb-4 text-gray-800">개인정보 입력</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-bold mb-2 text-gray-700">이름</label>
+                    <input type="text" id="userName" class="w-full p-3 rounded-lg border-2 border-gray-200 focus:border-blue-500 transition-colors" placeholder="홍길동">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold mb-2 text-gray-700">전화번호</label>
+                    <input type="tel" id="userPhone" class="w-full p-3 rounded-lg border-2 border-gray-200 focus:border-blue-500 transition-colors" placeholder="010-1234-5678">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold mb-2 text-gray-700">연령대</label>
+                    <select id="ageGroup" class="w-full p-3 rounded-lg border-2 border-gray-200 focus:border-blue-500 transition-colors">
+                        <option value="">선택해주세요</option>
+                        <option value="20s">20대</option>
+                        <option value="30s">30대</option>
+                        <option value="40s">40대</option>
+                        <option value="50s">50대</option>
+                        <option value="60s">60대 이상</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold mb-2 text-gray-700">창업 경험</label>
+                    <select id="businessExp" class="w-full p-3 rounded-lg border-2 border-gray-200 focus:border-blue-500 transition-colors">
+                        <option value="">선택해주세요</option>
+                        <option value="none">없음</option>
+                        <option value="once">1회</option>
+                        <option value="multiple">2회 이상</option>
+                        <option value="professional">전문 창업가</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold mb-2 text-gray-700">투자 가능 규모</label>
+                    <select id="investment" class="w-full p-3 rounded-lg border-2 border-gray-200 focus:border-blue-500 transition-colors">
+                        <option value="">선택해주세요</option>
+                        <option value="low">5천만원 이하</option>
+                        <option value="medium">5천만원~1억원</option>
+                        <option value="high">1억원~3억원</option>
+                        <option value="premium">3억원 이상</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold mb-2 text-gray-700">선호 근무 시간</label>
+                    <select id="workTime" class="w-full p-3 rounded-lg border-2 border-gray-200 focus:border-blue-500 transition-colors">
+                        <option value="">선택해주세요</option>
+                        <option value="flexible">유연근무</option>
+                        <option value="normal">일반근무(9-6시)</option>
+                        <option value="extended">연장근무 가능</option>
+                        <option value="intensive">집중근무(장시간)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Survey Questions -->
+        <div id="survey-questions">
+            <div class="text-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">전문 성향 분석 설문</h2>
+                <p class="text-gray-600">총 45개 문항으로 구성된 심층 분석을 진행합니다</p>
+                <div class="w-full bg-gray-200 rounded-full h-3 mt-4">
+                    <div id="progress-bar" class="progress-bar w-0"></div>
+                </div>
+                <span id="progress-text" class="text-sm text-gray-500">0/45 문항</span>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="results-section" class="hidden">
+            <div class="result-section">
+                <h2 class="text-3xl font-bold text-center mb-6 text-gray-800">전문 분석 결과</h2>
+                
+                <!-- Personality Analysis -->
+                <div class="glass-card">
+                    <h3 class="text-xl font-bold mb-4 text-gray-800">성향 분석 결과</h3>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="personality-radar">
+                            <canvas id="personality-chart"></canvas>
+                        </div>
+                        <div id="personality-summary">
+                            <!-- 성향 요약이 여기에 표시됩니다 -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Industry Recommendations -->
+                <div class="glass-card">
+                    <h3 class="text-xl font-bold mb-4 text-gray-800">추천 업종 (상위 10개)</h3>
+                    <div id="top-recommendations">
+                        <!-- 추천 업종들이 여기에 표시됩니다 -->
+                    </div>
+                </div>
+
+                <!-- Risk Analysis -->
+                <div class="glass-card">
+                    <h3 class="text-xl font-bold mb-4 text-gray-800">위험 업종 분석</h3>
+                    <div id="risk-analysis">
+                        <!-- 위험 업종 분석이 여기에 표시됩니다 -->
+                    </div>
+                </div>
+
+                <!-- Detailed Chart -->
+                <div class="glass-card">
+                    <h3 class="text-xl font-bold mb-4 text-gray-800">전체 업종 적합도 분석</h3>
+                    <div class="chart-container">
+                        <canvas id="industry-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-8 space-x-4">
+                <button id="save-results" class="btn-primary">결과 저장</button>
+                <button id="restart-survey" class="btn-secondary">다시 시작</button>
+                <button id="print-results" class="btn-secondary">결과 출력</button>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div id="action-buttons" class="text-center mt-8 space-x-4">
+            <button id="start-survey" class="btn-primary">분석 시작하기</button>
+            <button id="load-results" class="btn-secondary">이전 결과 불러오기</button>
+        </div>
+    </div>
+
+    <!-- Loading Modal -->
+    <div id="loading-modal" class="modal">
+        <div class="modal-content text-center">
+            <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <h3 class="text-xl font-bold mb-2">AI 분석 중...</h3>
+            <p class="text-gray-600">전문적인 분석을 위해 잠시만 기다려주세요</p>
+            <div class="mt-4">
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div id="analysis-progress" class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 전역 변수들
+        let currentQuestion = 0;
+        let answers = {};
+        let personalInfo = {};
+        let analysisResult = null;
+        
+        // Chart.js 플러그인 등록
+        if (typeof Chart !== 'undefined' && typeof ChartDataLabels !== 'undefined') {
+            Chart.register(ChartDataLabels);
+        }
+
+        // 설문 문항 데이터 (45개 문항으로 확장)
+        const questions = [
+            // 모험심 관련 (9문항)
+            { id: 1, text: "새로운 것에 도전하는 것을 즐긴다", category: "adventure", weight: 1.0 },
+            { id: 2, text: "실패를 두려워하지 않고 시도한다", category: "adventure", weight: 1.2 },
+            { id: 3, text: "안정적인 것보다는 흥미진진한 것을 선호한다", category: "adventure", weight: 1.1 },
+            { id: 4, text: "새로운 기술이나 트렌드를 빨리 받아들인다", category: "adventure", weight: 0.9 },
+            { id: 5, text: "과감한 투자 결정을 내릴 수 있다", category: "adventure", weight: 1.3 },
+            { id: 6, text: "불확실한 상황에서도 기회를 포착한다", category: "adventure", weight: 1.2 },
+            { id: 7, text: "변화하는 시장 환경을 즐긴다", category: "adventure", weight: 1.0 },
+            { id: 8, text: "경쟁이 치열한 분야를 선호한다", category: "adventure", weight: 1.1 },
+            { id: 9, text: "혁신적인 아이디어를 실현하고 싶다", category: "adventure", weight: 1.2 },
+
+            // 독립성 관련 (9문항)
+            { id: 10, text: "모든 결정을 스스로 내리고 싶다", category: "independence", weight: 1.3 },
+            { id: 11, text: "남의 간섭을 받지 않고 일하고 싶다", category: "independence", weight: 1.2 },
+            { id: 12, text: "자신만의 방식으로 사업을 운영하고 싶다", category: "independence", weight: 1.1 },
+            { id: 13, text: "본사의 지침보다는 개인의 판단을 중시한다", category: "independence", weight: 1.0 },
+            { id: 14, text: "창의적인 아이디어를 자유롭게 적용하고 싶다", category: "independence", weight: 1.1 },
+            { id: 15, text: "규칙이나 매뉴얼에 얽매이는 것을 싫어한다", category: "independence", weight: 1.2 },
+            { id: 16, text: "모든 책임을 지는 것에 부담이 없다", category: "independence", weight: 1.4 },
+            { id: 17, text: "자율적인 근무 환경을 중요하게 생각한다", category: "independence", weight: 0.9 },
+            { id: 18, text: "타인의 의견보다는 자신의 직감을 믿는다", category: "independence", weight: 1.0 },
+
+            // 안정성 관련 (9문항)
+            { id: 19, text: "검증된 사업 모델을 선호한다", category: "stability", weight: 1.2 },
+            { id: 20, text: "리스크를 최소화하고 싶다", category: "stability", weight: 1.3 },
+            { id: 21, text: "안정적인 수입을 가장 중요하게 생각한다", category: "stability", weight: 1.4 },
+            { id: 22, text: "본사의 체계적인 지원을 중시한다", category: "stability", weight: 1.1 },
+            { id: 23, text: "매뉴얼과 가이드라인을 따르는 것을 선호한다", category: "stability", weight: 1.0 },
+            { id: 24, text: "예측 가능한 사업 환경을 중요하게 생각한다", category: "stability", weight: 1.2 },
+            { id: 25, text: "장기적인 안정성을 단기 수익보다 우선시한다", category: "stability", weight: 1.3 },
+            { id: 26, text: "보수적인 경영 방식을 선호한다", category: "stability", weight: 1.1 },
+            { id: 27, text: "검증된 브랜드의 힘을 중요하게 생각한다", category: "stability", weight: 1.0 },
+
+            // 성실성 관련 (9문항)
+            { id: 28, text: "꼼꼼하고 세심한 관리를 잘한다", category: "diligence", weight: 1.1 },
+            { id: 29, text: "일을 끝까지 완수하는 편이다", category: "diligence", weight: 1.3 },
+            { id: 30, text: "체계적인 업무 계획을 세우고 실행한다", category: "diligence", weight: 1.2 },
+            { id: 31, text: "재무 관리를 정확하게 한다", category: "diligence", weight: 1.4 },
+            { id: 32, text: "고객과의 약속을 철저히 지킨다", category: "diligence", weight: 1.2 },
+            { id: 33, text: "품질 관리에 신경을 많이 쓴다", category: "diligence", weight: 1.1 },
+            { id: 34, text: "정해진 시간을 잘 지킨다", category: "diligence", weight: 1.0 },
+            { id: 35, text: "지속적인 학습과 개선을 추구한다", category: "diligence", weight: 1.2 },
+            { id: 36, text: "문제가 발생하면 즉시 해결하려 한다", category: "diligence", weight: 1.1 },
+
+            // 사교성 관련 (9문항)
+            { id: 37, text: "사람들과 쉽게 친해진다", category: "sociability", weight: 1.1 },
+            { id: 38, text: "고객 서비스에 자신이 있다", category: "sociability", weight: 1.3 },
+            { id: 39, text: "팀워크를 중요하게 생각한다", category: "sociability", weight: 1.0 },
+            { id: 40, text: "의사소통 능력이 뛰어나다", category: "sociability", weight: 1.2 },
+            { id: 41, text: "네트워킹을 잘 활용한다", category: "sociability", weight: 1.1 },
+            { id: 42, text: "고객의 니즈를 잘 파악한다", category: "sociability", weight: 1.4 },
+            { id: 43, text: "분쟁이나 갈등 상황을 잘 중재한다", category: "sociability", weight: 1.2 },
+            { id: 44, text: "다양한 사람들과 함께 일하는 것을 즐긴다", category: "sociability", weight: 0.9 },
+            { id: 45, text: "고객 만족을 위해 최선을 다한다", category: "sociability", weight: 1.3 }
+        ];
+
+        // 국내 주요 프랜차이즈 업종 데이터 (50개 업종으로 확장)
+        const franchiseIndustries = {
+            // 카페/음료
+            '카페': { adventure: 0.6, independence: 0.7, stability: 0.8, diligence: 0.9, sociability: 0.8, investment: 'medium', risk: 'medium', profitability: 0.7 },
+            '무인카페': { adventure: 0.8, independence: 0.9, stability: 0.7, diligence: 0.8, sociability: 0.4, investment: 'low', risk: 'medium', profitability: 0.8 },
+            '티카페': { adventure: 0.5, independence: 0.6, stability: 0.8, diligence: 0.8, sociability: 0.7, investment: 'low', risk: 'low', profitability: 0.6 },
+            '주스바': { adventure: 0.7, independence: 0.6, stability: 0.6, diligence: 0.8, sociability: 0.8, investment: 'medium', risk: 'medium', profitability: 0.7 },
+
+            // 패스트푸드
+            '치킨': { adventure: 0.5, independence: 0.6, stability: 0.7, diligence: 0.9, sociability: 0.7, investment: 'medium', risk: 'medium', profitability: 0.8 },
+            '피자': { adventure: 0.6, independence: 0.6, stability: 0.7, diligence: 0.9, sociability: 0.7, investment: 'high', risk: 'medium', profitability: 0.7 },
+            '햄버거': { adventure: 0.4, independence: 0.5, stability: 0.9, diligence: 0.9, sociability: 0.6, investment: 'high', risk: 'low', profitability: 0.6 },
+            '토스트': { adventure: 0.5, independence: 0.7, stability: 0.8, diligence: 0.8, sociability: 0.6, investment: 'low', risk: 'low', profitability: 0.7 },
+            '샌드위치': { adventure: 0.6, independence: 0.7, stability: 0.7, diligence: 0.8, sociability: 0.7, investment: 'low', risk: 'low', profitability: 0.6 },
+
+            // 한식
+            '한식뷔페': { adventure: 0.4, independence: 0.5, stability: 0.6, diligence: 0.9, sociability: 0.7, investment: 'high', risk: 'high', profitability: 0.5 },
+            '김밥': { adventure: 0.4, independence: 0.6, stability: 0.8, diligence: 0.9, sociability: 0.6, investment: 'low', risk: 'low', profitability: 0.7 },
+            '국밥': { adventure: 0.3, independence: 0.5, stability: 0.8, diligence: 0.9, sociability: 0.6, investment: 'medium', risk: 'low', profitability: 0.6 },
+            '한정식': { adventure: 0.3, independence: 0.4, stability: 0.7, diligence: 0.9, sociability: 0.8, investment: 'high', risk: 'medium', profitability: 0.5 },
+
+            // 일식/중식/양식
+            '초밥': { adventure: 0.5, independence: 0.6, stability: 0.7, diligence: 0.9, sociability: 0.7, investment: 'high', risk: 'medium', profitability: 0.6 },
+            '라멘': { adventure: 0.6, independence: 0.7, stability: 0.7, diligence: 0.8, sociability: 0.6, investment: 'medium', risk: 'medium', profitability: 0.7 },
+            '중식당': { adventure: 0.4, independence: 0.5, stability: 0.7, diligence: 0.9, sociability: 0.6, investment: 'high', risk: 'medium', profitability: 0.6 },
+            '파스타': { adventure: 0.6, independence: 0.6, stability: 0.7, diligence: 0.8, sociability: 0.7, investment: 'medium', risk: 'medium', profitability: 0.7 },
+
+            // 디저트/베이커리
+            '도넛': { adventure: 0.7, independence: 0.6, stability: 0.7, diligence: 0.8, sociability: 0.7, investment: 'medium', risk: 'medium', profitability: 0.8 },
+            '베이커리': { adventure: 0.5, independence: 0.6, stability: 0.8, diligence: 0.9, sociability: 0.7, investment: 'high', risk: 'medium', profitability: 0.6 },
+            '아이스크림': { adventure: 0.7, independence: 0.6, stability: 0.6, diligence: 0.7, sociability: 0.8, investment: 'medium', risk: 'medium', profitability: 0.8 },
+            '와플': { adventure: 0.6, independence: 0.7, stability: 0.7, diligence: 0.8, sociability: 0.7, investment: 'low', risk: 'low', profitability: 0.7 },
+
+            // 편의점/소매
+            '편의점': { adventure: 0.3, independence: 0.4, stability: 0.9, diligence: 0.9, sociability: 0.6, investment: 'high', risk: 'low', profitability: 0.5 },
+            '무인편의점': { adventure: 0.8, independence: 0.9, stability: 0.8, diligence: 0.8, sociability: 0.3, investment: 'medium', risk: 'medium', profitability: 0.7 },
+            '세탁소': { adventure: 0.2, independence: 0.5, stability: 0.9, diligence: 0.9, sociability: 0.5, investment: 'medium', risk: 'low', profitability: 0.6 },
+            '문구점': { adventure: 0.3, independence: 0.6, stability: 0.8, diligence: 0.8, sociability: 0.6, investment: 'low', risk: 'low', profitability: 0.5 },
+
+            // 교육/서비스
+            '학원': { adventure: 0.4, independence: 0.6, stability: 0.8, diligence: 0.9, sociability: 0.9, investment: 'medium', risk: 'medium', profitability: 0.7 },
+            '독서실': { adventure: 0.2, independence: 0.7, stability: 0.9, diligence: 0.8, sociability: 0.4, investment: 'medium', risk: 'low', profitability: 0.6 },
+            'PC방': { adventure: 0.5, independence: 0.7, stability: 0.7, diligence: 0.7, sociability: 0.6, investment: 'high', risk: 'medium', profitability: 0.6 },
+            '노래방': { adventure: 0.4, independence: 0.6, stability: 0.7, diligence: 0.7, sociability: 0.7, investment: 'medium', risk: 'medium', profitability: 0.6 },
+
+            // 헬스/뷰티
+            '헬스장': { adventure: 0.6, independence: 0.7, stability: 0.7, diligence: 0.8, sociability: 0.8, investment: 'high', risk: 'medium', profitability: 0.7 },
+            '네일샵': { adventure: 0.5, independence: 0.8, stability: 0.7, diligence: 0.9, sociability: 0.8, investment: 'low', risk: 'low', profitability: 0.8 },
+            '마사지샵': { adventure: 0.4, independence: 0.6, stability: 0.8, diligence: 0.8, sociability: 0.9, investment: 'medium', risk: 'low', profitability: 0.7 },
+            '미용실': { adventure: 0.5, independence: 0.8, stability: 0.7, diligence: 0.8, sociability: 0.9, investment: 'medium', risk: 'low', profitability: 0.7 },
+
+            // 반려동물
+            '펜션': { adventure: 0.6, independence: 0.8, stability: 0.6, diligence: 0.8, sociability: 0.7, investment: 'high', risk: 'high', profitability: 0.6 },
+            '애견카페': { adventure: 0.7, independence: 0.7, stability: 0.6, diligence: 0.8, sociability: 0.9, investment: 'medium', risk: 'medium', profitability: 0.7 },
+            '펫샵': { adventure: 0.5, independence: 0.7, stability: 0.7, diligence: 0.9, sociability: 0.8, investment: 'medium', risk: 'medium', profitability: 0.6 },
+
+            // 생활서비스
+            '부동산': { adventure: 0.6, independence: 0.8, stability: 0.7, diligence: 0.9, sociability: 0.9, investment: 'low', risk: 'medium', profitability: 0.8 },
+            '여행사': { adventure: 0.8, independence: 0.7, stability: 0.6, diligence: 0.8, sociability: 0.9, investment: 'low', risk: 'high', profitability: 0.6 },
+            '택배함': { adventure: 0.3, independence: 0.8, stability: 0.9, diligence: 0.7, sociability: 0.3, investment: 'medium', risk: 'low', profitability: 0.7 },
+
+            // 신규 트렌드 업종
+            'VR게임장': { adventure: 0.9, independence: 0.7, stability: 0.5, diligence: 0.7, sociability: 0.7, investment: 'high', risk: 'high', profitability: 0.8 },
+            '무인빨래방': { adventure: 0.7, independence: 0.9, stability: 0.8, diligence: 0.7, sociability: 0.3, investment: 'medium', risk: 'medium', profitability: 0.8 },
+            '셀프스튜디오': { adventure: 0.8, independence: 0.8, stability: 0.6, diligence: 0.7, sociability: 0.6, investment: 'medium', risk: 'medium', profitability: 0.9 },
+            '무인아이스크림': { adventure: 0.8, independence: 0.9, stability: 0.7, diligence: 0.6, sociability: 0.2, investment: 'low', risk: 'medium', profitability: 0.9 }
+        };
+
+        // 초기화 함수
+        document.addEventListener('DOMContentLoaded', function() {
+            setupEventListeners();
+            generateSurveyQuestions();
+        });
+
+        function setupEventListeners() {
+            document.getElementById('start-survey').addEventListener('click', startSurvey);
+            document.getElementById('load-results').addEventListener('click', loadPreviousResults);
+            document.getElementById('save-results').addEventListener('click', saveResults);
+            document.getElementById('restart-survey').addEventListener('click', restartSurvey);
+            document.getElementById('print-results').addEventListener('click', printResults);
+        }
+
+        function generateSurveyQuestions() {
+            const container = document.getElementById('survey-questions');
+            let questionsHTML = '';
+            
+            questions.forEach((question, index) => {
+                questionsHTML += `
+                    <div class="question-card hidden" id="question-${question.id}" data-category="${question.category}" data-weight="${question.weight}">
+                        <h3 class="text-lg font-bold mb-4 text-gray-800">
+                            ${question.id}. ${question.text}
+                        </h3>
+                        <div class="flex flex-wrap justify-between">
+                            ${[1,2,3,4,5].map(value => `
+                                <label class="answer-option flex-1 min-w-0 cursor-pointer" data-value="${value}">
+                                    <input type="radio" name="q${question.id}" value="${value}" class="hidden">
+                                    <div class="text-center p-2">
+                                        <div class="font-semibold">${value}</div>
+                                        <div class="text-xs text-gray-600 mt-1">
+                                            ${value === 1 ? '전혀 아니다' : value === 2 ? '아니다' : value === 3 ? '보통' : value === 4 ? '그렇다' : '매우 그렇다'}
+                                        </div>
+                                    </div>
+                                </label>
+                            `).join('')}
+                        </div>
+                        <div class="mt-6 flex justify-between">
+                            <button onclick="previousQuestion()" class="btn-secondary" ${question.id === 1 ? 'style="visibility:hidden"' : ''}>
+                                이전
+                            </button>
+                            <button onclick="nextQuestion()" class="btn-primary">
+                                ${question.id === 45 ? '분석 시작' : '다음'}
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            const questionsDiv = document.createElement('div');
+            questionsDiv.innerHTML = questionsHTML;
+            container.appendChild(questionsDiv);
+
+            // 답변 선택 이벤트 리스너 추가
+            document.querySelectorAll('.answer-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const questionCard = this.closest('.question-card');
+                    const questionId = questionCard.id.split('-')[1];
+                    const value = this.dataset.value;
+                    
+                    // 같은 질문의 다른 옵션들 선택 해제
+                    questionCard.querySelectorAll('.answer-option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    
+                    // 현재 옵션 선택
+                    this.classList.add('selected');
+                    this.querySelector('input').checked = true;
+                    
+                    // 답변 저장
+                    answers[questionId] = parseInt(value);
+                    
+                    // 진행률 업데이트
+                    updateProgress();
+                });
+            });
+        }
+
+        function startSurvey() {
+            // 개인정보 검증
+            if (!validatePersonalInfo()) {
+                alert('개인정보를 모두 입력해주세요.');
+                return;
+            }
+            
+            // 개인정보 저장
+            personalInfo = {
+                name: document.getElementById('userName').value,
+                phone: document.getElementById('userPhone').value,
+                age: document.getElementById('ageGroup').value,
+                experience: document.getElementById('businessExp').value,
+                investment: document.getElementById('investment').value,
+                workTime: document.getElementById('workTime').value
+            };
+
+            // UI 전환
+            document.getElementById('personal-info-section').style.display = 'none';
+            document.getElementById('action-buttons').style.display = 'none';
+            
+            // 첫 번째 질문 표시
+            currentQuestion = 1;
+            showQuestion(currentQuestion);
+        }
+
+        function validatePersonalInfo() {
+            const required = ['userName', 'userPhone', 'ageGroup', 'businessExp', 'investment', 'workTime'];
+            return required.every(id => document.getElementById(id).value.trim() !== '');
+        }
+
+        function showQuestion(questionNum) {
+            // 모든 질문 숨기기
+            document.querySelectorAll('.question-card').forEach(card => {
+                card.classList.add('hidden');
+            });
+            
+            // 현재 질문 표시
+            const currentCard = document.getElementById(`question-${questionNum}`);
+            if (currentCard) {
+                currentCard.classList.remove('hidden');
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < 45) {
+                currentQuestion++;
+                showQuestion(currentQuestion);
+            } else {
+                // 설문 완료 - 분석 시작
+                startAnalysis();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 1) {
+                currentQuestion--;
+                showQuestion(currentQuestion);
+            }
+        }
+
+        function updateProgress() {
+            const answeredCount = Object.keys(answers).length;
+            const percentage = (answeredCount / 45) * 100;
+            
+            document.getElementById('progress-bar').style.width = percentage + '%';
+            document.getElementById('progress-text').textContent = `${answeredCount}/45 문항`;
+        }
+
+        async function startAnalysis() {
+            // 로딩 모달 표시
+            document.getElementById('loading-modal').style.display = 'block';
+            
+            // 진행률 애니메이션
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress > 95) progress = 95;
+                document.getElementById('analysis-progress').style.width = progress + '%';
+            }, 200);
+
+            // 2초 후 분석 완료
+            setTimeout(() => {
+                clearInterval(progressInterval);
+                document.getElementById('analysis-progress').style.width = '100%';
+                
+                setTimeout(() => {
+                    document.getElementById('loading-modal').style.display = 'none';
+                    performAnalysis();
+                    showResults();
+                }, 500);
+            }, 2000);
+        }
+
+        function performAnalysis() {
+            // 성향별 점수 계산 (가중치 적용)
+            const categoryScores = {
+                adventure: 0,
+                independence: 0,
+                stability: 0,
+                diligence: 0,
+                sociability: 0
+            };
+
+            const categoryCounts = {
+                adventure: 0,
+                independence: 0,
+                stability: 0,
+                diligence: 0,
+                sociability: 0
+            };
+
+            // 각 답변에 대해 점수 계산
+            Object.entries(answers).forEach(([questionId, answer]) => {
+                const question = questions.find(q => q.id === parseInt(questionId));
+                if (question) {
+                    const score = answer * question.weight;
+                    categoryScores[question.category] += score;
+                    categoryCounts[question.category]++;
+                }
+            });
+
+            // 평균 점수 계산 (1-5 스케일로 정규화)
+            const normalizedScores = {};
+            Object.keys(categoryScores).forEach(category => {
+                normalizedScores[category] = categoryScores[category] / categoryCounts[category];
+            });
+
+            // 개인정보 기반 가중치 적용
+            applyPersonalWeights(normalizedScores);
+
+            // 업종별 적합도 계산
+            const industryScores = calculateIndustryScores(normalizedScores);
+
+            // 결과 저장
+            analysisResult = {
+                personalityScores: normalizedScores,
+                industryScores: industryScores,
+                personalInfo: personalInfo,
+                timestamp: new Date().toISOString()
+            };
+        }
+
+        function applyPersonalWeights(scores) {
+            // 연령대별 가중치
+            const ageWeights = {
+                '20s': { adventure: 1.2, independence: 1.1, stability: 0.8, diligence: 0.9, sociability: 1.1 },
+                '30s': { adventure: 1.0, independence: 1.1, stability: 1.0, diligence: 1.1, sociability: 1.0 },
+                '40s': { adventure: 0.9, independence: 1.0, stability: 1.1, diligence: 1.2, sociability: 1.0 },
+                '50s': { adventure: 0.7, independence: 0.9, stability: 1.3, diligence: 1.3, sociability: 0.9 },
+                '60s': { adventure: 0.6, independence: 0.8, stability: 1.4, diligence: 1.3, sociability: 0.8 }
+            };
+
+            // 경험별 가중치
+            const expWeights = {
+                'none': { adventure: 0.8, independence: 0.8, stability: 1.2, diligence: 1.1, sociability: 1.0 },
+                'once': { adventure: 1.0, independence: 1.0, stability: 1.0, diligence: 1.1, sociability: 1.0 },
+                'multiple': { adventure: 1.2, independence: 1.2, stability: 0.9, diligence: 1.0, sociability: 1.1 },
+                'professional': { adventure: 1.3, independence: 1.3, stability: 0.8, diligence: 1.2, sociability: 1.2 }
+            };
+
+            // 가중치 적용
+            const ageWeight = ageWeights[personalInfo.age] || {};
+            const expWeight = expWeights[personalInfo.experience] || {};
+
+            Object.keys(scores).forEach(category => {
+                scores[category] *= (ageWeight[category] || 1.0) * (expWeight[category] || 1.0);
+                // 1-5 범위로 클리핑
+                scores[category] = Math.max(1, Math.min(5, scores[category]));
+            });
+        }
+
+        function calculateIndustryScores(userScores) {
+            const results = [];
+
+            Object.entries(franchiseIndustries).forEach(([industry, profile]) => {
+                // 코사인 유사도 계산
+                const similarity = calculateCosineSimilarity(userScores, profile);
+                
+                // 개인정보 기반 추가 점수
+                let personalBonus = 0;
+                
+                // 투자 규모 매칭
+                if (personalInfo.investment === profile.investment) {
+                    personalBonus += 0.1;
+                }
+                
+                // 최종 점수 계산 (0-100%)
+                const finalScore = Math.min(100, (similarity + personalBonus) * 100);
+
+                results.push({
+                    industry: industry,
+                    score: finalScore,
+                    risk: profile.risk,
+                    profitability: profile.profitability,
+                    investment: profile.investment
+                });
+            });
+
+            return results.sort((a, b) => b.score - a.score);
+        }
+
+        function calculateCosineSimilarity(vecA, vecB) {
+            const keys = ['adventure', 'independence', 'stability', 'diligence', 'sociability'];
+            
+            let dotProduct = 0;
+            let normA = 0;
+            let normB = 0;
+
+            keys.forEach(key => {
+                const a = vecA[key] || 0;
+                const b = vecB[key] || 0;
+                dotProduct += a * b;
+                normA += a * a;
+                normB += b * b;
+            });
+
+            return normA === 0 || normB === 0 ? 0 : dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
+        }
+
+        function showResults() {
+            // 설문 섹션 숨기기
+            document.getElementById('survey-questions').style.display = 'none';
+            
+            // 결과 섹션 표시
+            document.getElementById('results-section').classList.remove('hidden');
+
+            // 성향 분석 차트 생성
+            createPersonalityChart();
+            
+            // 성향 요약 생성
+            createPersonalitySummary();
+            
+            // 상위 추천 업종 표시
+            displayTopRecommendations();
+            
+            // 위험 업종 분석 표시
+            displayRiskAnalysis();
+            
+            // 전체 업종 차트 생성
+            createIndustryChart();
+        }
+
+        function createPersonalityChart() {
+            const ctx = document.getElementById('personality-chart').getContext('2d');
+            const scores = analysisResult.personalityScores;
+
+            new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['모험심', '독립성', '안정성', '성실성', '사교성'],
+                    datasets: [{
+                        label: '개인 성향',
+                        data: [
+                            scores.adventure,
+                            scores.independence,
+                            scores.stability,
+                            scores.diligence,
+                            scores.sociability
+                        ],
+                        backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                        borderColor: 'rgba(59, 130, 246, 1)',
+                        pointBackgroundColor: 'rgba(59, 130, 246, 1)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgba(59, 130, 246, 1)',
+                        borderWidth: 2,
+                        pointRadius: 6,
+                        pointHoverRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    scales: {
+                        r: {
+                            angleLines: {
+                                display: true,
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            },
+                            suggestedMin: 0,
+                            suggestedMax: 5,
+                            ticks: {
+                                beginAtZero: true,
+                                max: 5,
+                                stepSize: 1,
+                                color: 'rgba(0, 0, 0, 0.6)'
+                            },
+                            pointLabels: {
+                                font: {
+                                    size: 12,
+                                    weight: 'bold'
+                                },
+                                color: 'rgba(0, 0, 0, 0.8)'
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+
+        function createPersonalitySummary() {
+            const scores = analysisResult.personalityScores;
+            const sortedTraits = Object.entries(scores).sort(([,a], [,b]) => b - a);
+            const dominant = sortedTraits[0];
+            const secondary = sortedTraits[1];
+
+            const traitNames = {
+                adventure: '모험심',
+                independence: '독립성',
+                stability: '안정성',
+                diligence: '성실성',
+                sociability: '사교성'
+            };
+
+            const traitDescriptions = {
+                adventure: '새로운 도전과 혁신을 추구하며, 위험을 감수하더라도 기회를 포착하려는 성향',
+                independence: '자율적인 의사결정을 선호하며, 독립적으로 사업을 운영하고 싶어하는 성향',
+                stability: '안정적이고 예측 가능한 사업 환경을 중시하며, 리스크를 최소화하려는 성향',
+                diligence: '체계적이고 꼼꼼한 업무 처리를 하며, 책임감과 성실함을 바탕으로 하는 성향',
+                sociability: '사람들과의 관계를 중시하며, 고객 서비스와 소통 능력이 뛰어난 성향'
+            };
+
+            const summaryHTML = `
+                <div class="space-y-4">
+                    <div class="p-4 bg-blue-50 rounded-lg border-l-4 border-blue-500">
+                        <h4 class="font-bold text-lg text-blue-800 mb-2">
+                            주요 성향: ${traitNames[dominant[0]]} (${dominant[1].toFixed(1)}점)
+                        </h4>
+                        <p class="text-blue-700">
+                            ${traitDescriptions[dominant[0]]}
+                        </p>
+                    </div>
+                    <div class="p-4 bg-green-50 rounded-lg border-l-4 border-green-500">
+                        <h4 class="font-bold text-lg text-green-800 mb-2">
+                            보조 성향: ${traitNames[secondary[0]]} (${secondary[1].toFixed(1)}점)
+                        </h4>
+                        <p class="text-green-700">
+                            ${traitDescriptions[secondary[0]]}
+                        </p>
+                    </div>
+                    <div class="p-4 bg-gray-50 rounded-lg">
+                        <h4 class="font-bold text-lg text-gray-800 mb-2">종합 평가</h4>
+                        <p class="text-gray-700">
+                            ${personalInfo.age}의 ${personalInfo.experience === 'none' ? '창업 초심자' : '창업 경험자'}로서, 
+                            ${traitNames[dominant[0]].toLowerCase()}이 강한 특성을 보입니다. 
+                            ${personalInfo.investment} 투자 규모에 적합한 업종을 우선적으로 추천드립니다.
+                        </p>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('personality-summary').innerHTML = summaryHTML;
+        }
+
+        function displayTopRecommendations() {
+            const top10 = analysisResult.industryScores.slice(0, 10);
+            
+            const recommendationsHTML = top10.map((item, index) => {
+                const riskColor = item.risk === 'low' ? 'text-green-600' : item.risk === 'medium' ? 'text-yellow-600' : 'text-red-600';
+                const profitColor = item.profitability > 0.7 ? 'text-green-600' : item.profitability > 0.5 ? 'text-yellow-600' : 'text-red-600';
+                
+                return `
+                    <div class="industry-card">
+                        <div class="flex justify-between items-start mb-3">
+                            <div>
+                                <h4 class="text-lg font-bold text-gray-800 mb-1">
+                                    ${index + 1}. ${item.industry}
+                                </h4>
+                                <div class="flex space-x-4 text-sm">
+                                    <span class="${riskColor}">위험도: ${item.risk}</span>
+                                    <span class="${profitColor}">수익성: ${(item.profitability * 100).toFixed(0)}%</span>
+                                    <span class="text-blue-600">투자규모: ${item.investment}</span>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-2xl font-bold text-blue-600">${item.score.toFixed(1)}%</div>
+                                <div class="text-xs text-gray-500">적합도</div>
+                            </div>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="progress-bar h-2 rounded-full" style="width: ${item.score}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('top-recommendations').innerHTML = recommendationsHTML;
+
+            // 진행률 바 애니메이션
+            setTimeout(() => {
+                document.querySelectorAll('.progress-bar').forEach(bar => {
+                    bar.style.width = bar.style.width;
+                });
+            }, 100);
+        }
+
+        function displayRiskAnalysis() {
+            const allScores = analysisResult.industryScores;
+            const lowScores = allScores.filter(item => item.score < 30).slice(0, 5);
+            
+            const riskHTML = `
+                <div class="space-y-4">
+                    <div class="p-4 bg-red-50 rounded-lg border-l-4 border-red-500">
+                        <h4 class="font-bold text-lg text-red-800 mb-2">⚠️ 주의가 필요한 업종</h4>
+                        <p class="text-red-700 mb-3">
+                            다음 업종들은 현재 귀하의 성향과 맞지 않아 성공 확률이 낮을 수 있습니다.
+                        </p>
+                        <div class="space-y-2">
+                            ${lowScores.map(item => `
+                                <div class="flex justify-between items-center p-2 bg-white rounded">
+                                    <span class="font-medium">${item.industry}</span>
+                                    <span class="text-red-600 font-bold">${item.score.toFixed(1)}%</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="p-4 bg-yellow-50 rounded-lg border-l-4 border-yellow-500">
+                        <h4 class="font-bold text-lg text-yellow-800 mb-2">💡 개선 방안</h4>
+                        <ul class="text-yellow-700 space-y-1 text-sm">
+                            <li>• 파트너십이나 공동 창업을 통해 부족한 역량 보완</li>
+                            <li>• 해당 업종 전문 교육 과정 이수</li>
+                            <li>• 경험 있는 멘토와의 협업 고려</li>
+                            <li>• 소규모 테스트 운영 후 본격 진출</li>
+                        </ul>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('risk-analysis').innerHTML = riskHTML;
+        }
+
+        function createIndustryChart() {
+            const ctx = document.getElementById('industry-chart').getContext('2d');
+            const data = analysisResult.industryScores.slice(0, 20); // 상위 20개 업종
+            
+            new Chart(ctx, {
+                type: 'horizontalBar',
+                data: {
+                    labels: data.map(item => item.industry),
+                    datasets: [{
+                        label: '적합도 (%)',
+                        data: data.map(item => item.score),
+                        backgroundColor: data.map(item => {
+                            if (item.score >= 80) return 'rgba(34, 197, 94, 0.8)';
+                            if (item.score >= 60) return 'rgba(59, 130, 246, 0.8)';
+                            if (item.score >= 40) return 'rgba(245, 158, 11, 0.8)';
+                            return 'rgba(239, 68, 68, 0.8)';
+                        }),
+                        borderColor: data.map(item => {
+                            if (item.score >= 80) return 'rgba(34, 197, 94, 1)';
+                            if (item.score >= 60) return 'rgba(59, 130, 246, 1)';
+                            if (item.score >= 40) return 'rgba(245, 158, 11, 1)';
+                            return 'rgba(239, 68, 68, 1)';
+                        }),
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const item = data[context.dataIndex];
+                                    return [
+                                        `적합도: ${context.parsed.x.toFixed(1)}%`,
+                                        `위험도: ${item.risk}`,
+                                        `수익성: ${(item.profitability * 100).toFixed(0)}%`,
+                                        `투자규모: ${item.investment}`
+                                    ];
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                font: {
+                                    size: 10
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function saveResults() {
+            if (!analysisResult) {
+                alert('저장할 분석 결과가 없습니다.');
+                return;
+            }
+
+            // 로컬 스토리지에 결과 저장 (실제 환경에서는 서버로 전송)
+            const resultData = {
+                ...analysisResult,
+                answers: answers,
+                id: Date.now(),
+                savedAt: new Date().toISOString()
+            };
+
+            // 기존 결과들 불러오기
+            const existingResults = JSON.parse(localStorage.getItem('surveyResults') || '[]');
+            existingResults.unshift(resultData);
+            
+            // 최대 10개까지만 보관
+            const limitedResults = existingResults.slice(0, 10);
+            localStorage.setItem('surveyResults', JSON.stringify(limitedResults));
+
+            alert('분석 결과가 성공적으로 저장되었습니다!');
+        }
+
+        function loadPreviousResults() {
+            const savedResults = JSON.parse(localStorage.getItem('surveyResults') || '[]');
+            
+            if (savedResults.length === 0) {
+                alert('저장된 결과가 없습니다.');
+                return;
+            }
+
+            // 간단한 선택 모달 (실제로는 더 복잡한 UI 필요)
+            let options = '저장된 결과를 선택하세요:\n\n';
+            savedResults.forEach((result, index) => {
+                const date = new Date(result.savedAt).toLocaleDateString('ko-KR');
+                options += `${index + 1}. ${result.personalInfo.name} (${date})\n`;
+            });
+
+            const selection = prompt(options + '\n번호를 입력하세요:');
+            const selectedIndex = parseInt(selection) - 1;
+
+            if (selectedIndex >= 0 && selectedIndex < savedResults.length) {
+                const selectedResult = savedResults[selectedIndex];
+                
+                // 데이터 복원
+                analysisResult = selectedResult;
+                answers = selectedResult.answers;
+                personalInfo = selectedResult.personalInfo;
+
+                // 개인정보 필드 복원
+                document.getElementById('userName').value = personalInfo.name;
+                document.getElementById('userPhone').value = personalInfo.phone;
+                document.getElementById('ageGroup').value = personalInfo.age;
+                document.getElementById('businessExp').value = personalInfo.experience;
+                document.getElementById('investment').value = personalInfo.investment;
+                document.getElementById('workTime').value = personalInfo.workTime;
+
+                // 결과 표시
+                showResults();
+                
+                alert('이전 결과를 성공적으로 불러왔습니다!');
+            }
+        }
+
+        function restartSurvey() {
+            if (confirm('설문을 다시 시작하시겠습니까? 현재 결과는 사라집니다.')) {
+                // 데이터 초기화
+                answers = {};
+                analysisResult = null;
+                personalInfo = {};
+                currentQuestion = 0;
+
+                // 폼 초기화
+                document.getElementById('userName').value = '';
+                document.getElementById('userPhone').value = '';
+                document.getElementById('ageGroup').value = '';
+                document.getElementById('businessExp').value = '';
+                document.getElementById('investment').value = '';
+                document.getElementById('workTime').value = '';
+
+                // 답변 초기화
+                document.querySelectorAll('.answer-option').forEach(option => {
+                    option.classList.remove('selected');
+                    const input = option.querySelector('input');
+                    if (input) input.checked = false;
+                });
+
+                // 진행률 초기화
+                document.getElementById('progress-bar').style.width = '0%';
+                document.getElementById('progress-text').textContent = '0/45 문항';
+
+                // UI 초기화
+                document.getElementById('personal-info-section').style.display = 'block';
+                document.getElementById('survey-questions').style.display = 'block';
+                document.getElementById('results-section').classList.add('hidden');
+                document.getElementById('action-buttons').style.display = 'block';
+
+                // 모든 질문 숨기기
+                document.querySelectorAll('.question-card').forEach(card => {
+                    card.classList.add('hidden');
+                });
+            }
+        }
+
+        function printResults() {
+            if (!analysisResult) {
+                alert('출력할 결과가 없습니다.');
+                return;
+            }
+
+            // 새 창에서 인쇄용 페이지 생성
+            const printWindow = window.open('', '_blank');
+            const printContent = generatePrintContent();
+            
+            printWindow.document.write(printContent);
+            printWindow.document.close();
+            printWindow.focus();
+            
+            setTimeout(() => {
+                printWindow.print();
+            }, 250);
+        }
+
+        function generatePrintContent() {
+            const topRecommendations = analysisResult.industryScores.slice(0, 10);
+            const scores = analysisResult.personalityScores;
+            
+            return `
+                <!DOCTYPE html>
+                <html lang="ko">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>프랜차이즈 창업 성향분석 결과</title>
+                    <style>
+                        body { font-family: 'Malgun Gothic', sans-serif; margin: 20px; }
+                        .header { text-align: center; border-bottom: 2px solid #333; padding-bottom: 20px; margin-bottom: 30px; }
+                        .section { margin-bottom: 30px; }
+                        .section h3 { background-color: #f5f5f5; padding: 10px; margin: 0 0 15px 0; }
+                        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+                        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                        th { background-color: #f2f2f2; }
+                        .score { font-weight: bold; color: #2563eb; }
+                        @media print { body { margin: 0; } }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>프랜차이즈 창업 성향분석 결과</h1>
+                        <p>분석일시: ${new Date(analysisResult.timestamp).toLocaleString('ko-KR')}</p>
+                        <p>대상자: ${personalInfo.name} (${personalInfo.age}, 경험: ${personalInfo.experience})</p>
+                    </div>
+
+                    <div class="section">
+                        <h3>성향 분석 결과</h3>
+                        <table>
+                            <tr><th>성향</th><th>점수</th><th>평가</th></tr>
+                            <tr><td>모험심</td><td class="score">${scores.adventure.toFixed(1)}/5.0</td><td>${getScoreDescription(scores.adventure)}</td></tr>
+                            <tr><td>독립성</td><td class="score">${scores.independence.toFixed(1)}/5.0</td><td>${getScoreDescription(scores.independence)}</td></tr>
+                            <tr><td>안정성</td><td class="score">${scores.stability.toFixed(1)}/5.0</td><td>${getScoreDescription(scores.stability)}</td></tr>
+                            <tr><td>성실성</td><td class="score">${scores.diligence.toFixed(1)}/5.0</td><td>${getScoreDescription(scores.diligence)}</td></tr>
+                            <tr><td>사교성</td><td class="score">${scores.sociability.toFixed(1)}/5.0</td><td>${getScoreDescription(scores.sociability)}</td></tr>
+                        </table>
+                    </div>
+
+                    <div class="section">
+                        <h3>추천 업종 (상위 10개)</h3>
+                        <table>
+                            <tr><th>순위</th><th>업종</th><th>적합도</th><th>위험도</th><th>수익성</th><th>투자규모</th></tr>
+                            ${topRecommendations.map((item, index) => `
+                                <tr>
+                                    <td>${index + 1}</td>
+                                    <td>${item.industry}</td>
+                                    <td class="score">${item.score.toFixed(1)}%</td>
+                                    <td>${item.risk}</td>
+                                    <td>${(item.profitability * 100).toFixed(0)}%</td>
+                                    <td>${item.investment}</td>
+                                </tr>
+                            `).join('')}
+                        </table>
+                    </div>
+
+                    <div class="section">
+                        <h3>종합 의견</h3>
+                        <p>본 분석 결과는 설문 응답을 바탕으로 한 참고 자료입니다. 실제 창업 시에는 시장 조사, 자금 계획, 입지 분석 등 추가적인 검토가 필요합니다.</p>
+                    </div>
+                </body>
+                </html>
+            `;
+        }
+
+        function getScoreDescription(score) {
+            if (score >= 4.0) return '매우 높음';
+            if (score >= 3.5) return '높음';
+            if (score >= 2.5) return '보통';
+            if (score >= 2.0) return '낮음';
+            return '매우 낮음';
+        }
+
+        // 차트 업데이트를 위한 Chart.js 기본 설정
+        Chart.defaults.font.family = "'Noto Sans KR', sans-serif";
+        Chart.defaults.color = '#4b5563';
+
+        // 반응형 처리
+        window.addEventListener('resize', function() {
+            // 차트 리사이즈는 Chart.js가 자동으로 처리
+        });
+
+        // 키보드 네비게이션 지원
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && currentQuestion > 0 && currentQuestion <= 45) {
+                // 현재 질문에서 선택된 답변이 있으면 다음으로
+                const currentCard = document.getElementById(`question-${currentQuestion}`);
+                if (currentCard && currentCard.querySelector('.answer-option.selected')) {
+                    nextQuestion();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
