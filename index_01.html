@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>프랜차이즈 창업 성향분석 전문 시스템 v3.6</title>
+    <title>프랜차이즈 창업 성향분석 전문 시스템 v3.7</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
@@ -40,7 +40,7 @@
         <div class="text-center mb-8">
             <h1 class="text-4xl font-bold text-gray-800 mb-2">
                 프랜차이즈 창업 성향분석 전문 시스템
-                <span class="text-lg text-blue-600 font-normal">v3.6 Professional</span>
+                <span class="text-lg text-blue-600 font-normal">v3.7 Professional</span>
             </h1>
             <p class="text-gray-600 text-lg">AI 기반 심층 성향분석으로 최적의 창업 업종을 찾아드립니다</p>
             <div class="flex justify-center space-x-4 mt-4">
@@ -234,6 +234,7 @@
         let answers = {};
         let personalInfo = {};
         let analysisResult = null;
+        const NETLIFY_FUNCTIONS_URL = '/.netlify/functions/';
         
         // Chart.js plugin registration
         if (typeof Chart !== 'undefined' && typeof ChartDataLabels !== 'undefined') {
@@ -552,7 +553,7 @@
             // 평균 점수 계산 (1-5 스케일로 정규화)
             const normalizedScores = {};
             Object.keys(categoryScores).forEach(category => {
-                normalizedScores[category] = categoryScores[category] / categoryCounts[category];
+                normalizedScores[category] = categoryCounts[category] > 0 ? categoryScores[category] / categoryCounts[category] : 0;
             });
 
             // 개인정보 기반 가중치 적용
@@ -903,75 +904,136 @@
             });
         }
 
-        function saveResults() {
+        async function saveResults() {
             if (!analysisResult) {
                 showCustomAlert('알림', '저장할 분석 결과가 없습니다.');
                 return;
             }
 
-            // 로컬 스토리지에 결과 저장 (실제 환경에서는 서버로 전송)
-            const resultData = {
-                ...analysisResult,
-                answers: answers,
-                id: Date.now(),
-                savedAt: new Date().toISOString()
-            };
-
-            // 기존 결과들 불러오기
-            const existingResults = JSON.parse(localStorage.getItem('surveyResults') || '[]');
-            existingResults.unshift(resultData);
-            
-            // 최대 10개까지만 보관
-            const limitedResults = existingResults.slice(0, 10);
-            localStorage.setItem('surveyResults', JSON.stringify(limitedResults));
-
-            showCustomAlert('알림', '분석 결과가 성공적으로 저장되었습니다!');
+            try {
+                const response = await fetch(`${NETLIFY_FUNCTIONS_URL}save-survey`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        userName: personalInfo.name, 
+                        userPhone: personalInfo.phone, 
+                        answers: answers, 
+                        analysisResult: analysisResult
+                    })
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    showCustomAlert('알림', '분석 결과가 성공적으로 저장되었습니다!');
+                } else {
+                    showCustomAlert('오류', `결과 저장 중 오류가 발생했습니다: ${result.message}\n상세: ${result.error || '알 수 없는 오류'}`);
+                }
+            } catch (e) {
+                console.error("Error saving data: ", e);
+                showCustomAlert('오류', `결과 저장 중 오류가 발생했습니다.\n네트워크 오류 또는 서버 응답 문제일 수 있습니다.\n상세: ${e.message}`);
+            }
         }
 
-        function loadPreviousResults() {
-            const savedResults = JSON.parse(localStorage.getItem('surveyResults') || '[]');
-            
-            if (savedResults.length === 0) {
-                showCustomAlert('알림', '저장된 결과가 없습니다.');
-                return;
-            }
+        async function loadPreviousResults() {
+            try {
+                const response = await fetch(`${NETLIFY_FUNCTIONS_URL}load-survey`);
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    let errorMessage = '알 수 없는 오류';
+                    try {
+                        const errorResult = JSON.parse(errorText);
+                        errorMessage = errorResult.error || errorResult.message || errorMessage;
+                    } catch (jsonError) {
+                        errorMessage = errorText;
+                    }
+                    showCustomAlert('오류', `데이터를 불러오는 중 오류가 발생했습니다.\n상세: ${errorMessage}`);
+                    return;
+                }
 
-            // 커스텀 모달에 저장된 결과 목록을 표시
-            const loadListBody = document.getElementById('load-list-body');
-            loadListBody.innerHTML = '';
-            savedResults.forEach((result, index) => {
-                const date = new Date(result.savedAt).toLocaleDateString('ko-KR');
-                const row = document.createElement('tr');
-                row.classList.add('cursor-pointer', 'hover:bg-gray-100');
-                row.innerHTML = `
-                    <td class="p-2">${result.personalInfo.name}</td>
-                    <td class="p-2">${date}</td>
-                    <td class="p-2 text-right"><button class="btn-primary text-xs px-2 py-1" data-index="${index}">불러오기</button></td>
-                `;
-                loadListBody.appendChild(row);
-                row.querySelector('button').addEventListener('click', () => {
-                    const selectedResult = savedResults[index];
-                    analysisResult = selectedResult;
-                    answers = selectedResult.answers;
-                    personalInfo = selectedResult.personalInfo;
-                    
-                    document.getElementById('userName').value = personalInfo.name;
-                    document.getElementById('userPhone').value = personalInfo.phone;
-                    document.getElementById('ageGroup').value = personalInfo.age;
-                    document.getElementById('businessExp').value = personalInfo.experience;
-                    document.getElementById('investment').value = personalInfo.investment;
-                    document.getElementById('workTime').value = personalInfo.workTime;
-                    
-                    showResults();
-                    document.getElementById('load-modal').style.display = 'none';
-                    showCustomAlert('알림', '이전 결과를 성공적으로 불러왔습니다!');
+                const dataList = await response.json();
+
+                if (dataList.length === 0) {
+                    showCustomAlert('알림', '저장된 결과가 없습니다. 설문을 진행해주세요.');
+                    return;
+                }
+                
+                const loadListBody = document.getElementById('load-list-body');
+                loadListBody.innerHTML = '';
+                dataList.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.classList.add('cursor-pointer', 'hover:bg-gray-100');
+                    row.dataset.id = item.id;
+                    row.innerHTML = `
+                        <td class="p-2">${item.user_name}</td>
+                        <td class="p-2">${new Date(item.created_at).toLocaleString()}</td>
+                        <td class="p-2 text-right"><button class="btn-primary text-xs px-2 py-1" onclick="loadSelectedData(${item.id})">불러오기</button></td>
+                    `;
+                    loadListBody.appendChild(row);
                 });
-            });
+                
+                document.getElementById('load-modal').style.display = 'block';
+                document.getElementById('load-modal-close').onclick = () => {
+                    document.getElementById('load-modal').style.display = 'none';
+                };
+            } catch (e) {
+                console.error("Error loading documents: ", e);
+                showCustomAlert('오류', `데이터를 불러오는 중 오류가 발생했습니다.\n네트워크 오류 또는 서버 응답 문제일 수 있습니다.\n상세: ${e.message}`);
+            }
+        }
 
-            document.getElementById('load-modal').style.display = 'block';
-            document.getElementById('load-modal-close').onclick = () => {
+        async function loadSelectedData(id) {
+            try {
+                const response = await fetch(`${NETLIFY_FUNCTIONS_URL}load-survey`);
+                const dataList = await response.json();
+                const selectedData = dataList.find(item => item.id === id);
+
+                if (!selectedData) {
+                    showCustomAlert('알림', '선택된 데이터를 찾을 수 없습니다.');
+                    return;
+                }
+                
+                const answersToLoad = typeof selectedData.answers === 'string' ? JSON.parse(selectedData.answers) : selectedData.answers;
+                const analysisToLoad = typeof selectedData.analysis_result === 'string' ? JSON.parse(selectedData.analysis_result) : selectedData.analysis_result;
+
+                answers = answersToLoad;
+                personalInfo = {
+                    name: selectedData.user_name,
+                    phone: selectedData.user_phone,
+                    age: analysisToLoad.personalInfo.age,
+                    experience: analysisToLoad.personalInfo.experience,
+                    investment: analysisToLoad.personalInfo.investment,
+                    workTime: analysisToLoad.personalInfo.workTime
+                };
+                analysisResult = analysisToLoad;
+
+                document.getElementById('userName').value = personalInfo.name;
+                document.getElementById('userPhone').value = personalInfo.phone;
+                document.getElementById('ageGroup').value = personalInfo.age;
+                document.getElementById('businessExp').value = personalInfo.experience;
+                document.getElementById('investment').value = personalInfo.investment;
+                document.getElementById('workTime').value = personalInfo.workTime;
+                
+                document.querySelectorAll('.answer-option').forEach(option => {
+                    option.classList.remove('selected');
+                });
+                for (const qId in answers) {
+                    const selectedValue = answers[qId];
+                    const questionCard = document.querySelector(`#question-${qId}`);
+                    if (questionCard) {
+                        const option = questionCard.querySelector(`[data-value="${selectedValue}"]`);
+                        if (option) {
+                            option.classList.add('selected');
+                        }
+                    }
+                }
+                
+                updateProgress();
+                showResults();
                 document.getElementById('load-modal').style.display = 'none';
-            };
+                showCustomAlert('알림', '이전 결과를 성공적으로 불러왔습니다!');
+            } catch (e) {
+                console.error("Error parsing loaded data:", e);
+                showCustomAlert('오류', `선택된 데이터를 처리하는 중 오류가 발생했습니다.\n상세: ${e.message}`);
+            }
         }
 
         function restartSurvey() {
