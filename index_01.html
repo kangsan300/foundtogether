@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>프랜차이즈 창업 성향분석 전문 시스템 v3.7</title>
+    <title>프랜차이즈 창업 성향분석 전문 시스템 v3.9</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
@@ -40,7 +40,7 @@
         <div class="text-center mb-8">
             <h1 class="text-4xl font-bold text-gray-800 mb-2">
                 프랜차이즈 창업 성향분석 전문 시스템
-                <span class="text-lg text-blue-600 font-normal">v3.7 Professional</span>
+                <span class="text-lg text-blue-600 font-normal">v3.9 Professional</span>
             </h1>
             <p class="text-gray-600 text-lg">AI 기반 심층 성향분석으로 최적의 창업 업종을 찾아드립니다</p>
             <div class="flex justify-center space-x-4 mt-4">
@@ -200,6 +200,21 @@
             <div class="modal-body text-gray-700 my-4" id="alert-message"></div>
             <div class="flex justify-center">
                 <button id="alert-ok-button" class="btn-primary">확인</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Confirm Modal -->
+    <div id="confirm-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="text-xl font-bold text-gray-800" id="confirm-title">확인</h4>
+                <span class="modal-close" id="confirm-close">&times;</span>
+            </div>
+            <div class="modal-body text-gray-700 my-4" id="confirm-message"></div>
+            <div class="flex justify-center space-x-4">
+                <button id="confirm-ok-button" class="btn-primary">확인</button>
+                <button id="confirm-cancel-button" class="btn-secondary">취소</button>
             </div>
         </div>
     </div>
@@ -397,7 +412,7 @@
 
         function setupEventListeners() {
             document.getElementById('start-survey').addEventListener('click', () => {
-                // 개인정보와 모든 설문 문항에 답변했는지 확인
+                // 개인정보 검증
                 if (!validatePersonalInfo()) {
                     showCustomAlert('알림', '개인정보를 모두 입력해주세요.');
                     return;
@@ -405,12 +420,13 @@
                 
                 const answeredCount = Object.keys(answers).length;
                 if (answeredCount < questions.length) {
-                    showCustomAlert('알림', `모든 설문(${questions.length}개)에 답변해야 분석을 시작할 수 있습니다. 현재 ${answeredCount}개 답변`);
-                    return;
+                    showCustomConfirm('확인', '답변하지 않은 항목이 있습니다. 임의로 값을 선택하여 분석을 진행할까요?', () => {
+                        fillMissingAnswers();
+                        startAnalysis();
+                    });
+                } else {
+                    startAnalysis();
                 }
-                
-                // 모든 조건 충족 시 분석 시작
-                startAnalysis();
             });
             document.getElementById('load-results').addEventListener('click', loadPreviousResults);
             document.getElementById('save-results').addEventListener('click', saveResults);
@@ -424,6 +440,14 @@
             document.getElementById('alert-ok-button').addEventListener('click', () => {
                 document.getElementById('alert-modal').style.display = 'none';
             });
+
+            // 커스텀 확인 모달 이벤트 리스너
+            document.getElementById('confirm-close').addEventListener('click', () => {
+                document.getElementById('confirm-modal').style.display = 'none';
+            });
+            document.getElementById('confirm-cancel-button').addEventListener('click', () => {
+                document.getElementById('confirm-modal').style.display = 'none';
+            });
         }
         
         function showCustomAlert(title, message) {
@@ -431,6 +455,30 @@
             document.getElementById('alert-title').textContent = title;
             document.getElementById('alert-message').textContent = message;
             modal.style.display = 'block';
+        }
+
+        function showCustomConfirm(title, message, onConfirm) {
+            const modal = document.getElementById('confirm-modal');
+            document.getElementById('confirm-title').textContent = title;
+            document.getElementById('confirm-message').textContent = message;
+            
+            const confirmOkButton = document.getElementById('confirm-ok-button');
+            confirmOkButton.onclick = () => {
+                document.getElementById('confirm-modal').style.display = 'none';
+                onConfirm();
+            };
+
+            modal.style.display = 'block';
+        }
+
+        function fillMissingAnswers() {
+            questions.forEach(q => {
+                if (!answers[q.id]) {
+                    const randomValue = Math.floor(Math.random() * 5) + 1; // 1~5 사이의 무작위 값
+                    answers[q.id] = randomValue;
+                }
+            });
+            updateProgress();
         }
 
         function generateSurveyQuestions() {
@@ -482,6 +530,16 @@
             
             document.getElementById('progress-bar').style.width = percentage + '%';
             document.getElementById('progress-text').textContent = `${answeredCount}/${questions.length} 문항`;
+
+            // 프로그레스 바 색상 변경 로직 추가 (선택적)
+            const progressBar = document.getElementById('progress-bar');
+            if (percentage < 30) {
+                progressBar.style.backgroundColor = 'rgba(239, 68, 68, 0.8)'; // Red
+            } else if (percentage < 70) {
+                progressBar.style.backgroundColor = 'rgba(245, 158, 11, 0.8)'; // Yellow
+            } else {
+                progressBar.style.backgroundColor = 'rgba(59, 130, 246, 0.8)'; // Blue
+            }
         }
 
         async function startAnalysis() {
@@ -1037,7 +1095,8 @@
         }
 
         function restartSurvey() {
-            if (confirm('설문을 다시 시작하시겠습니까? 현재 결과는 사라집니다.')) {
+            // 커스텀 confirm 모달로 변경
+            showCustomConfirm('확인', '설문을 다시 시작하시겠습니까? 현재 결과는 사라집니다.', () => {
                 // 데이터 초기화
                 answers = {};
                 analysisResult = null;
@@ -1070,7 +1129,7 @@
                 document.querySelectorAll('.question-card').forEach(card => {
                     card.style.display = 'block';
                 });
-            }
+            });
         }
 
         function printResults() {
