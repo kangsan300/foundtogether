@@ -3,185 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>프랜차이즈 창업 성향분석 전문 시스템 v3.0</title>
+    <title>프랜차이즈 창업 성향분석 전문 시스템 v3.6</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
-        body {
-            font-family: 'Noto Sans KR', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 2rem auto;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            padding: 2rem;
-        }
-        .glass-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            transition: all 0.3s ease;
-        }
-        .glass-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-        }
-        .question-card {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%);
-            border-radius: 15px;
-            padding: 2rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-        .answer-option {
-            cursor: pointer;
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-            border-radius: 12px;
-            padding: 0.75rem 1rem;
-            margin: 0.25rem;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            color: #4a5568;
-            border: 2px solid transparent;
-            font-size: 0.9rem;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-        .answer-option::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-            transition: left 0.5s;
-        }
-        .answer-option:hover::before {
-            left: 100%;
-        }
-        .answer-option:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-            background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e0 100%);
-        }
-        .answer-option.selected {
-            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 15px 35px rgba(59, 130, 246, 0.4);
-            border: 2px solid #1e40af;
-        }
-        .chart-container {
-            position: relative;
-            height: 400px;
-            margin: 2rem 0;
-            background: rgba(255, 255, 255, 0.8);
-            border-radius: 15px;
-            padding: 1rem;
-            backdrop-filter: blur(10px);
-        }
-        .result-section {
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.05) 100%);
-            border-radius: 20px;
-            padding: 2rem;
-            margin: 2rem 0;
-            border: 1px solid rgba(16, 185, 129, 0.2);
-        }
-        .industry-card {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%);
-            border-radius: 15px;
-            padding: 1.5rem;
-            margin: 1rem 0;
-            border-left: 4px solid #3b82f6;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-        }
-        .industry-card:hover {
-            transform: translateX(5px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-        }
-        .progress-bar {
-            background: linear-gradient(90deg, #3b82f6, #1d4ed8);
-            height: 8px;
-            border-radius: 4px;
-            transition: width 1s ease-in-out;
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(5px);
-        }
-        .modal-content {
-            position: relative;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%);
-            margin: 5% auto;
-            padding: 2rem;
-            width: 90%;
-            max-width: 800px;
-            border-radius: 20px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(15px);
-        }
-        .personality-radar {
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 15px;
-            padding: 1rem;
-            margin: 1rem 0;
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-            color: white;
-            padding: 0.75rem 2rem;
-            border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: none;
-            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
-        }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.6);
-        }
-        .btn-secondary {
-            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
-            color: white;
-            padding: 0.75rem 2rem;
-            border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: none;
-            box-shadow: 0 4px 15px rgba(107, 114, 128, 0.4);
-        }
-        .expertise-badge {
-            display: inline-block;
-            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-            color: white;
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin: 0.25rem;
-        }
+        body { font-family: 'Noto Sans KR', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
+        .container { max-width: 1200px; margin: 2rem auto; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-radius: 20px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); padding: 2rem; }
+        .glass-card { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.2); padding: 1.5rem; margin-bottom: 1.5rem; transition: all 0.3s ease; }
+        .glass-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); }
+        .question-card { background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%); border-radius: 15px; padding: 2rem; margin-bottom: 1.5rem; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); border: 1px solid rgba(255, 255, 255, 0.3); }
+        .answer-option { cursor: pointer; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); border-radius: 12px; padding: 0.75rem 1rem; margin: 0.25rem; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); color: #4a5568; border: 2px solid transparent; font-size: 0.9rem; text-align: center; position: relative; overflow: hidden; }
+        .answer-option::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent); transition: left 0.5s; }
+        .answer-option:hover::before { left: 100%; }
+        .answer-option:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15); background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e0 100%); }
+        .answer-option.selected { background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color: white; transform: translateY(-2px); box-shadow: 0 15px 35px rgba(59, 130, 246, 0.4); border: 2px solid #1e40af; }
+        .chart-container { position: relative; height: 400px; margin: 2rem 0; background: rgba(255, 255, 255, 0.8); border-radius: 15px; padding: 1rem; backdrop-filter: blur(10px); }
+        .result-section { background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.05) 100%); border-radius: 20px; padding: 2rem; margin: 2rem 0; border: 1px solid rgba(16, 185, 129, 0.2); }
+        .industry-card { background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%); border-radius: 15px; padding: 1.5rem; margin: 1rem 0; border-left: 4px solid #3b82f6; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; }
+        .industry-card:hover { transform: translateX(5px); box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15); }
+        .progress-bar { background: linear-gradient(90deg, #3b82f6, #1d4ed8); height: 8px; border-radius: 4px; transition: width 1s ease-in-out; }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px); }
+        .modal-content { position: relative; background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%); margin: 5% auto; padding: 2rem; width: 90%; max-width: 800px; border-radius: 20px; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3); backdrop-filter: blur(15px); }
+        .personality-radar { background: rgba(255, 255, 255, 0.9); border-radius: 15px; padding: 1rem; margin: 1rem 0; }
+        .btn-primary { background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color: white; padding: 0.75rem 2rem; border-radius: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; border: none; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(59, 130, 246, 0.6); }
+        .btn-secondary { background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%); color: white; padding: 0.75rem 2rem; border-radius: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; border: none; box-shadow: 0 4px 15px rgba(107, 114, 128, 0.4); }
+        .btn-secondary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(107, 114, 128, 0.6); }
+        .expertise-badge { display: inline-block; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; margin: 0.25rem; }
     </style>
 </head>
 <body>
@@ -190,7 +40,7 @@
         <div class="text-center mb-8">
             <h1 class="text-4xl font-bold text-gray-800 mb-2">
                 프랜차이즈 창업 성향분석 전문 시스템
-                <span class="text-lg text-blue-600 font-normal">v3.0 Professional</span>
+                <span class="text-lg text-blue-600 font-normal">v3.6 Professional</span>
             </h1>
             <p class="text-gray-600 text-lg">AI 기반 심층 성향분석으로 최적의 창업 업종을 찾아드립니다</p>
             <div class="flex justify-center space-x-4 mt-4">
@@ -268,7 +118,7 @@
                 <span id="progress-text" class="text-sm text-gray-500">0/45 문항</span>
             </div>
         </div>
-
+        
         <!-- Results Section -->
         <div id="results-section" class="hidden">
             <div class="result-section">
@@ -339,20 +189,58 @@
             </div>
         </div>
     </div>
+    
+    <!-- Custom Alert Modal -->
+    <div id="alert-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="text-xl font-bold text-gray-800" id="alert-title">알림</h4>
+                <span class="modal-close" id="alert-close">&times;</span>
+            </div>
+            <div class="modal-body text-gray-700 my-4" id="alert-message"></div>
+            <div class="flex justify-center">
+                <button id="alert-ok-button" class="btn-primary">확인</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load Results Modal -->
+    <div id="load-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="text-xl font-bold text-gray-800">이전 분석 결과 불러오기</h4>
+                <span class="modal-close" id="load-modal-close">&times;</span>
+            </div>
+            <div class="modal-body text-gray-700 my-4" id="load-list-container">
+                <table class="data-list-table w-full">
+                    <thead>
+                        <tr>
+                            <th class="p-2">이름</th>
+                            <th class="p-2">분석일</th>
+                            <th class="p-2"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="load-list-body">
+                        <!-- Loaded data will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
     <script>
-        // 전역 변수들
+        // Global variables
         let currentQuestion = 0;
         let answers = {};
         let personalInfo = {};
         let analysisResult = null;
         
-        // Chart.js 플러그인 등록
+        // Chart.js plugin registration
         if (typeof Chart !== 'undefined' && typeof ChartDataLabels !== 'undefined') {
             Chart.register(ChartDataLabels);
         }
 
-        // 설문 문항 데이터 (45개 문항으로 확장)
+        // Survey Questions Data (45 questions)
         const questions = [
             // 모험심 관련 (9문항)
             { id: 1, text: "새로운 것에 도전하는 것을 즐긴다", category: "adventure", weight: 1.0 },
@@ -484,28 +372,79 @@
             generateSurveyQuestions();
         });
 
+        // 사용자가 답변을 선택할 때마다 answers 객체를 업데이트하고 진행률을 계산합니다.
+        function handleAnswerClick(event) {
+            const option = event.currentTarget;
+            const questionCard = option.closest('.question-card');
+            const questionId = questionCard.id.split('-')[1];
+            const value = option.dataset.value;
+            
+            // 같은 질문의 다른 옵션들 선택 해제
+            questionCard.querySelectorAll('.answer-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            
+            // 현재 옵션 선택
+            option.classList.add('selected');
+            
+            // 답변 저장
+            answers[questionId] = parseInt(value);
+            
+            // 진행률 업데이트
+            updateProgress();
+        }
+
         function setupEventListeners() {
-            document.getElementById('start-survey').addEventListener('click', startSurvey);
+            document.getElementById('start-survey').addEventListener('click', () => {
+                // 개인정보와 모든 설문 문항에 답변했는지 확인
+                if (!validatePersonalInfo()) {
+                    showCustomAlert('알림', '개인정보를 모두 입력해주세요.');
+                    return;
+                }
+                
+                const answeredCount = Object.keys(answers).length;
+                if (answeredCount < questions.length) {
+                    showCustomAlert('알림', `모든 설문(${questions.length}개)에 답변해야 분석을 시작할 수 있습니다. 현재 ${answeredCount}개 답변`);
+                    return;
+                }
+                
+                // 모든 조건 충족 시 분석 시작
+                startAnalysis();
+            });
             document.getElementById('load-results').addEventListener('click', loadPreviousResults);
             document.getElementById('save-results').addEventListener('click', saveResults);
             document.getElementById('restart-survey').addEventListener('click', restartSurvey);
             document.getElementById('print-results').addEventListener('click', printResults);
+            
+            // 커스텀 알림 모달 이벤트 리스너
+            document.getElementById('alert-close').addEventListener('click', () => {
+                document.getElementById('alert-modal').style.display = 'none';
+            });
+            document.getElementById('alert-ok-button').addEventListener('click', () => {
+                document.getElementById('alert-modal').style.display = 'none';
+            });
+        }
+        
+        function showCustomAlert(title, message) {
+            const modal = document.getElementById('alert-modal');
+            document.getElementById('alert-title').textContent = title;
+            document.getElementById('alert-message').textContent = message;
+            modal.style.display = 'block';
         }
 
         function generateSurveyQuestions() {
             const container = document.getElementById('survey-questions');
             let questionsHTML = '';
             
-            questions.forEach((question, index) => {
+            questions.forEach((question) => {
                 questionsHTML += `
-                    <div class="question-card hidden" id="question-${question.id}" data-category="${question.category}" data-weight="${question.weight}">
+                    <div class="question-card" id="question-${question.id}" data-category="${question.category}" data-weight="${question.weight}">
                         <h3 class="text-lg font-bold mb-4 text-gray-800">
                             ${question.id}. ${question.text}
                         </h3>
-                        <div class="flex flex-wrap justify-between">
+                        <div class="flex flex-wrap">
                             ${[1,2,3,4,5].map(value => `
                                 <label class="answer-option flex-1 min-w-0 cursor-pointer" data-value="${value}">
-                                    <input type="radio" name="q${question.id}" value="${value}" class="hidden">
                                     <div class="text-center p-2">
                                         <div class="font-semibold">${value}</div>
                                         <div class="text-xs text-gray-600 mt-1">
@@ -515,55 +454,37 @@
                                 </label>
                             `).join('')}
                         </div>
-                        <div class="mt-6 flex justify-between">
-                            <button onclick="previousQuestion()" class="btn-secondary" ${question.id === 1 ? 'style="visibility:hidden"' : ''}>
-                                이전
-                            </button>
-                            <button onclick="nextQuestion()" class="btn-primary">
-                                ${question.id === 45 ? '분석 시작' : '다음'}
-                            </button>
-                        </div>
                     </div>
                 `;
             });
             
-            const questionsDiv = document.createElement('div');
-            questionsDiv.innerHTML = questionsHTML;
-            container.appendChild(questionsDiv);
+            container.innerHTML += questionsHTML;
 
-            // 답변 선택 이벤트 리스너 추가
+            // 모든 답변 옵션에 이벤트 리스너 추가
             document.querySelectorAll('.answer-option').forEach(option => {
-                option.addEventListener('click', function() {
-                    const questionCard = this.closest('.question-card');
-                    const questionId = questionCard.id.split('-')[1];
-                    const value = this.dataset.value;
-                    
-                    // 같은 질문의 다른 옵션들 선택 해제
-                    questionCard.querySelectorAll('.answer-option').forEach(opt => {
-                        opt.classList.remove('selected');
-                    });
-                    
-                    // 현재 옵션 선택
-                    this.classList.add('selected');
-                    this.querySelector('input').checked = true;
-                    
-                    // 답변 저장
-                    answers[questionId] = parseInt(value);
-                    
-                    // 진행률 업데이트
-                    updateProgress();
-                });
+                option.addEventListener('click', handleAnswerClick);
             });
+            
+            // 모든 질문 카드가 보이도록 설정 (PC 환경 최적화)
+            document.getElementById('survey-questions').style.display = 'block';
+            document.getElementById('results-section').classList.add('hidden');
         }
 
-        function startSurvey() {
-            // 개인정보 검증
-            if (!validatePersonalInfo()) {
-                alert('개인정보를 모두 입력해주세요.');
-                return;
-            }
+        function validatePersonalInfo() {
+            const required = ['userName', 'userPhone', 'ageGroup', 'businessExp', 'investment', 'workTime'];
+            return required.every(id => document.getElementById(id).value.trim() !== '');
+        }
+
+        function updateProgress() {
+            const answeredCount = Object.keys(answers).length;
+            const percentage = (answeredCount / questions.length) * 100;
             
-            // 개인정보 저장
+            document.getElementById('progress-bar').style.width = percentage + '%';
+            document.getElementById('progress-text').textContent = `${answeredCount}/${questions.length} 문항`;
+        }
+
+        async function startAnalysis() {
+            // 개인 정보 저장
             personalInfo = {
                 name: document.getElementById('userName').value,
                 phone: document.getElementById('userPhone').value,
@@ -572,61 +493,11 @@
                 investment: document.getElementById('investment').value,
                 workTime: document.getElementById('workTime').value
             };
-
-            // UI 전환
+            
+            // UI 전환 및 로딩 모달 표시
             document.getElementById('personal-info-section').style.display = 'none';
+            document.getElementById('survey-questions').style.display = 'none';
             document.getElementById('action-buttons').style.display = 'none';
-            
-            // 첫 번째 질문 표시
-            currentQuestion = 1;
-            showQuestion(currentQuestion);
-        }
-
-        function validatePersonalInfo() {
-            const required = ['userName', 'userPhone', 'ageGroup', 'businessExp', 'investment', 'workTime'];
-            return required.every(id => document.getElementById(id).value.trim() !== '');
-        }
-
-        function showQuestion(questionNum) {
-            // 모든 질문 숨기기
-            document.querySelectorAll('.question-card').forEach(card => {
-                card.classList.add('hidden');
-            });
-            
-            // 현재 질문 표시
-            const currentCard = document.getElementById(`question-${questionNum}`);
-            if (currentCard) {
-                currentCard.classList.remove('hidden');
-            }
-        }
-
-        function nextQuestion() {
-            if (currentQuestion < 45) {
-                currentQuestion++;
-                showQuestion(currentQuestion);
-            } else {
-                // 설문 완료 - 분석 시작
-                startAnalysis();
-            }
-        }
-
-        function previousQuestion() {
-            if (currentQuestion > 1) {
-                currentQuestion--;
-                showQuestion(currentQuestion);
-            }
-        }
-
-        function updateProgress() {
-            const answeredCount = Object.keys(answers).length;
-            const percentage = (answeredCount / 45) * 100;
-            
-            document.getElementById('progress-bar').style.width = percentage + '%';
-            document.getElementById('progress-text').textContent = `${answeredCount}/45 문항`;
-        }
-
-        async function startAnalysis() {
-            // 로딩 모달 표시
             document.getElementById('loading-modal').style.display = 'block';
             
             // 진행률 애니메이션
@@ -802,8 +673,10 @@
         function createPersonalityChart() {
             const ctx = document.getElementById('personality-chart').getContext('2d');
             const scores = analysisResult.personalityScores;
-
-            new Chart(ctx, {
+            if (window.personalityChartInstance) {
+                window.personalityChartInstance.destroy();
+            }
+            window.personalityChartInstance = new Chart(ctx, {
                 type: 'radar',
                 data: {
                     labels: ['모험심', '독립성', '안정성', '성실성', '사교성'],
@@ -993,75 +866,38 @@
                     </div>
                 </div>
             `;
-
-            document.getElementById('risk-analysis').innerHTML = riskHTML;
+            // 점수가 낮은 업종이 있으면 리스트를 표시하고, 없으면 숨깁니다.
+            if(lowScores.length > 0) {
+                document.getElementById('risk-analysis').innerHTML = riskHTML;
+            } else {
+                document.getElementById('risk-analysis').innerHTML = '<p class="text-center text-gray-500">위험도가 높은 업종이 없습니다. 좋은 성향을 가지고 계시네요!</p>';
+            }
         }
 
         function createIndustryChart() {
             const ctx = document.getElementById('industry-chart').getContext('2d');
-            const data = analysisResult.industryScores.slice(0, 20); // 상위 20개 업종
-            
-            new Chart(ctx, {
-                type: 'horizontalBar',
+            if (window.industryChartInstance) {
+                window.industryChartInstance.destroy();
+            }
+            const data = analysisResult.industryScores.slice(0, 20);
+            window.industryChartInstance = new Chart(ctx, {
+                type: 'bar',
                 data: {
                     labels: data.map(item => item.industry),
                     datasets: [{
                         label: '적합도 (%)',
                         data: data.map(item => item.score),
-                        backgroundColor: data.map(item => {
-                            if (item.score >= 80) return 'rgba(34, 197, 94, 0.8)';
-                            if (item.score >= 60) return 'rgba(59, 130, 246, 0.8)';
-                            if (item.score >= 40) return 'rgba(245, 158, 11, 0.8)';
-                            return 'rgba(239, 68, 68, 0.8)';
-                        }),
-                        borderColor: data.map(item => {
-                            if (item.score >= 80) return 'rgba(34, 197, 94, 1)';
-                            if (item.score >= 60) return 'rgba(59, 130, 246, 1)';
-                            if (item.score >= 40) return 'rgba(245, 158, 11, 1)';
-                            return 'rgba(239, 68, 68, 1)';
-                        }),
+                        backgroundColor: data.map(item => { if (item.score >= 80) return 'rgba(34, 197, 94, 0.8)'; if (item.score >= 60) return 'rgba(59, 130, 246, 0.8)'; if (item.score >= 40) return 'rgba(245, 158, 11, 0.8)'; return 'rgba(239, 68, 68, 0.8)'; }),
+                        borderColor: data.map(item => { if (item.score >= 80) return 'rgba(34, 197, 94, 1)'; if (item.score >= 60) return 'rgba(59, 130, 246, 1)'; if (item.score >= 40) return 'rgba(245, 158, 11, 1)'; return 'rgba(239, 68, 68, 1)'; }),
                         borderWidth: 1
                     }]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    indexAxis: 'y',
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    const item = data[context.dataIndex];
-                                    return [
-                                        `적합도: ${context.parsed.x.toFixed(1)}%`,
-                                        `위험도: ${item.risk}`,
-                                        `수익성: ${(item.profitability * 100).toFixed(0)}%`,
-                                        `투자규모: ${item.investment}`
-                                    ];
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            beginAtZero: true,
-                            max: 100,
-                            ticks: {
-                                callback: function(value) {
-                                    return value + '%';
-                                }
-                            }
-                        },
-                        y: {
-                            ticks: {
-                                font: {
-                                    size: 10
-                                }
-                            }
-                        }
+                    responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins: { legend: { display: false },
+                        tooltip: { callbacks: { label: function(context) { const item = data[context.dataIndex]; return [`적합도: ${context.parsed.x.toFixed(1)}%`, `위험도: ${item.risk}`, `수익성: ${(item.profitability * 100).toFixed(0)}%`, `투자규모: ${item.investment}`]; } } }
+                    }, scales: {
+                        x: { beginAtZero: true, max: 100, ticks: { callback: function(value) { return value + '%'; } } },
+                        y: { ticks: { font: { size: 10 } } }
                     }
                 }
             });
@@ -1069,7 +905,7 @@
 
         function saveResults() {
             if (!analysisResult) {
-                alert('저장할 분석 결과가 없습니다.');
+                showCustomAlert('알림', '저장할 분석 결과가 없습니다.');
                 return;
             }
 
@@ -1089,48 +925,53 @@
             const limitedResults = existingResults.slice(0, 10);
             localStorage.setItem('surveyResults', JSON.stringify(limitedResults));
 
-            alert('분석 결과가 성공적으로 저장되었습니다!');
+            showCustomAlert('알림', '분석 결과가 성공적으로 저장되었습니다!');
         }
 
         function loadPreviousResults() {
             const savedResults = JSON.parse(localStorage.getItem('surveyResults') || '[]');
             
             if (savedResults.length === 0) {
-                alert('저장된 결과가 없습니다.');
+                showCustomAlert('알림', '저장된 결과가 없습니다.');
                 return;
             }
 
-            // 간단한 선택 모달 (실제로는 더 복잡한 UI 필요)
-            let options = '저장된 결과를 선택하세요:\n\n';
+            // 커스텀 모달에 저장된 결과 목록을 표시
+            const loadListBody = document.getElementById('load-list-body');
+            loadListBody.innerHTML = '';
             savedResults.forEach((result, index) => {
                 const date = new Date(result.savedAt).toLocaleDateString('ko-KR');
-                options += `${index + 1}. ${result.personalInfo.name} (${date})\n`;
+                const row = document.createElement('tr');
+                row.classList.add('cursor-pointer', 'hover:bg-gray-100');
+                row.innerHTML = `
+                    <td class="p-2">${result.personalInfo.name}</td>
+                    <td class="p-2">${date}</td>
+                    <td class="p-2 text-right"><button class="btn-primary text-xs px-2 py-1" data-index="${index}">불러오기</button></td>
+                `;
+                loadListBody.appendChild(row);
+                row.querySelector('button').addEventListener('click', () => {
+                    const selectedResult = savedResults[index];
+                    analysisResult = selectedResult;
+                    answers = selectedResult.answers;
+                    personalInfo = selectedResult.personalInfo;
+                    
+                    document.getElementById('userName').value = personalInfo.name;
+                    document.getElementById('userPhone').value = personalInfo.phone;
+                    document.getElementById('ageGroup').value = personalInfo.age;
+                    document.getElementById('businessExp').value = personalInfo.experience;
+                    document.getElementById('investment').value = personalInfo.investment;
+                    document.getElementById('workTime').value = personalInfo.workTime;
+                    
+                    showResults();
+                    document.getElementById('load-modal').style.display = 'none';
+                    showCustomAlert('알림', '이전 결과를 성공적으로 불러왔습니다!');
+                });
             });
 
-            const selection = prompt(options + '\n번호를 입력하세요:');
-            const selectedIndex = parseInt(selection) - 1;
-
-            if (selectedIndex >= 0 && selectedIndex < savedResults.length) {
-                const selectedResult = savedResults[selectedIndex];
-                
-                // 데이터 복원
-                analysisResult = selectedResult;
-                answers = selectedResult.answers;
-                personalInfo = selectedResult.personalInfo;
-
-                // 개인정보 필드 복원
-                document.getElementById('userName').value = personalInfo.name;
-                document.getElementById('userPhone').value = personalInfo.phone;
-                document.getElementById('ageGroup').value = personalInfo.age;
-                document.getElementById('businessExp').value = personalInfo.experience;
-                document.getElementById('investment').value = personalInfo.investment;
-                document.getElementById('workTime').value = personalInfo.workTime;
-
-                // 결과 표시
-                showResults();
-                
-                alert('이전 결과를 성공적으로 불러왔습니다!');
-            }
+            document.getElementById('load-modal').style.display = 'block';
+            document.getElementById('load-modal-close').onclick = () => {
+                document.getElementById('load-modal').style.display = 'none';
+            };
         }
 
         function restartSurvey() {
@@ -1139,8 +980,7 @@
                 answers = {};
                 analysisResult = null;
                 personalInfo = {};
-                currentQuestion = 0;
-
+                
                 // 폼 초기화
                 document.getElementById('userName').value = '';
                 document.getElementById('userPhone').value = '';
@@ -1152,13 +992,11 @@
                 // 답변 초기화
                 document.querySelectorAll('.answer-option').forEach(option => {
                     option.classList.remove('selected');
-                    const input = option.querySelector('input');
-                    if (input) input.checked = false;
                 });
 
                 // 진행률 초기화
                 document.getElementById('progress-bar').style.width = '0%';
-                document.getElementById('progress-text').textContent = '0/45 문항';
+                document.getElementById('progress-text').textContent = `0/${questions.length} 문항`;
 
                 // UI 초기화
                 document.getElementById('personal-info-section').style.display = 'block';
@@ -1166,16 +1004,16 @@
                 document.getElementById('results-section').classList.add('hidden');
                 document.getElementById('action-buttons').style.display = 'block';
 
-                // 모든 질문 숨기기
+                // 모든 질문 카드가 보이도록 설정
                 document.querySelectorAll('.question-card').forEach(card => {
-                    card.classList.add('hidden');
+                    card.style.display = 'block';
                 });
             }
         }
 
         function printResults() {
             if (!analysisResult) {
-                alert('출력할 결과가 없습니다.');
+                showCustomAlert('알림', '출력할 결과가 없습니다.');
                 return;
             }
 
