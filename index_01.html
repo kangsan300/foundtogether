@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>프랜차이즈 창업 성향분석 전문 시스템 v4.3</title>
+    <title>프랜차이즈 창업 성향분석 전문 시스템 v5.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
@@ -40,7 +40,7 @@
         <div class="text-center mb-8">
             <h1 class="text-4xl font-bold text-gray-800 mb-2">
                 프랜차이즈 창업 성향분석 전문 시스템
-                <span class="text-lg text-blue-600 font-normal">v4.3 Professional</span>
+                <span class="text-lg text-blue-600 font-normal">v5.0 Professional</span>
             </h1>
             <p class="text-gray-600 text-lg">AI 기반 심층 성향분석으로 최적의 창업 업종을 찾아드립니다</p>
             <div class="flex justify-center space-x-4 mt-4">
@@ -242,6 +242,22 @@
             </div>
         </div>
     </div>
+    
+    <!-- Franchise Details Modal -->
+    <div id="franchise-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="text-xl font-bold text-gray-800" id="franchise-title"></h4>
+                <span class="modal-close" id="franchise-modal-close">&times;</span>
+            </div>
+            <div class="modal-body text-gray-700 my-4" id="franchise-details">
+                <!-- Franchise details will be inserted here -->
+            </div>
+            <div class="flex justify-center">
+                <button id="franchise-ok-button" class="btn-primary">닫기</button>
+            </div>
+        </div>
+    </div>
 
     <script>
         // Global variables
@@ -380,12 +396,87 @@
             '셀프스튜디오': { adventure: 0.8, independence: 0.8, stability: 0.6, diligence: 0.7, sociability: 0.6, investment: 'medium', risk: 'medium', profitability: 0.9 },
             '무인아이스크림': { adventure: 0.8, independence: 0.9, stability: 0.7, diligence: 0.6, sociability: 0.2, investment: 'low', risk: 'medium', profitability: 0.9 }
         };
+        const franchiseDetails = {
+            '카페': ['스타벅스', '이디야커피', '컴포즈커피', '메가커피', '더리터'],
+            '무인카페': ['픽업나우', '나우커피', '나우카페', '나우셀프', '나우무인'],
+            '티카페': ['공차', '팔공티', '차타임'],
+            '주스바': ['쥬씨', '떼루와', '킹스컵'],
+            '치킨': ['교촌치킨', 'BBQ', 'BHC', '푸라닭', '굽네치킨'],
+            '피자': ['도미노피자', '피자헛', '미스터피자', '청년피자'],
+            '햄버거': ['맥도날드', '롯데리아', '버거킹', '맘스터치', '프랭크버거'],
+            '토스트': ['이삭토스트', '에그드랍', '토스트럭'],
+            '샌드위치': ['써브웨이', '홍루이젠', '샌드프레소'],
+            '한식뷔페': ['자연별곡', '계절밥상', '올반'],
+            '김밥': ['김가네', '고봉민김밥인', '바르다김선생'],
+            '국밥': ['더진국', '돼지집', '삼대국밥'],
+            '한정식': ['경복궁', '백제원', '산봉반점'],
+            '초밥': ['쿠우쿠우', '스시로', '갓덴스시'],
+            '라멘': ['아오리라멘', '멘야산다이메'],
+            '중식당': ['홍콩반점', '취홍', '만리장성'],
+            '파스타': ['애슐리', '서가앤쿡', '빕스'],
+            '도넛': ['던킨도너츠', '크리스피크림도넛'],
+            '베이커리': ['파리바게뜨', '뚜레쥬르', '성심당'],
+            '아이스크림': ['배스킨라빈스', '나뚜루', '폴바셋'],
+            '와플': ['와플대학', '빈스빈스'],
+            '편의점': ['CU', 'GS25', '세븐일레븐', '이마트24', '미니스톱'],
+            '무인편의점': ['이마트24 셀프', 'GS25 스마트', 'CU 바이셀'],
+            '세탁소': ['크린토피아', '월드크리닝'],
+            '문구점': ['알파문구', '모나미'],
+            '학원': ['정상어학원', '청담어학원', '대치동학원가'],
+            '독서실': ['토즈스터디', '작심스터디', '잇올스파르타'],
+            'PC방': ['라이또PC방', '샹떼PC방', '탑텐PC방'],
+            '노래방': ['준코', 'TJ노래방'],
+            '헬스장': ['고투피트니스', '새마을휘트니스', '스포애니'],
+            '네일샵': ['네일아트', '네일마스터'],
+            '마사지샵': ['더풋샵', '미스터힐링'],
+            '미용실': ['박준뷰티랩', '이철헤어커커', '리안헤어'],
+            '펜션': ['카라반', '글램핑', '풀빌라'],
+            '애견카페': ['왈왈', '댕댕이', '멍멍이'],
+            '펫샵': ['펫마트', '도그플러스', '고양이세상'],
+            '부동산': ['공인중개사사무소', '부동산114'],
+            '여행사': ['모두투어', '하나투어', '노랑풍선'],
+            '택배함': ['무인택배함', '무인보관함'],
+            'VR게임장': ['VR스퀘어', 'VR히어로'],
+            '무인빨래방': ['워시엔조이', '크린업24', '런드리고'],
+            '셀프스튜디오': ['인생네컷', '포토이즘박스', '하루필름'],
+            '무인아이스크림': ['아이스크림할인점', '더달달', '아이스크림천국']
+        };
 
         // 초기화 함수
         document.addEventListener('DOMContentLoaded', function() {
             setupEventListeners();
             generateSurveyQuestions();
         });
+
+        function showFranchiseDetails(industry) {
+            const modal = document.getElementById('franchise-modal');
+            const title = document.getElementById('franchise-title');
+            const details = document.getElementById('franchise-details');
+            const franchises = franchiseDetails[industry];
+
+            title.textContent = `${industry} 프랜차이즈 정보`;
+            
+            let detailsHTML = `<p class="mb-4">아래는 ${industry} 업종에 대한 대표적인 프랜차이즈 예시입니다. 더 자세한 정보는 각 프랜차이즈 본사를 통해 확인해 주세요.</p>`;
+            if (franchises && franchises.length > 0) {
+                detailsHTML += '<ul class="list-disc list-inside space-y-2">';
+                franchises.forEach(brand => {
+                    detailsHTML += `<li class="font-semibold">${brand}</li>`;
+                });
+                detailsHTML += '</ul>';
+            } else {
+                detailsHTML += '<p>해당 업종에 대한 추천 프랜차이즈 정보가 없습니다.</p>';
+            }
+
+            details.innerHTML = detailsHTML;
+            modal.style.display = 'block';
+
+            document.getElementById('franchise-modal-close').onclick = () => {
+                modal.style.display = 'none';
+            };
+            document.getElementById('franchise-ok-button').onclick = () => {
+                modal.style.display = 'none';
+            };
+        }
 
         // 사용자가 답변을 선택할 때마다 answers 객체를 업데이트하고 진행률을 계산합니다.
         function handleAnswerClick(event) {
@@ -674,10 +765,12 @@
                 if (personalInfo.investment === profile.investment) {
                     personalBonus += 0.1;
                 }
+                if (personalInfo.experience === 'professional') {
+                    personalBonus += 0.05;
+                }
 
-                // 새로운 스케일링 로직 적용: 점수 분포를 넓게 퍼뜨림
-                const scaledScore = (similarity + personalBonus) * 0.5 * 100;
-                const finalScore = Math.min(100, Math.max(0, scaledScore));
+                // 새로운 스케일링 수식 적용
+                const finalScore = Math.min(100, Math.max(0, similarity * 100 + personalBonus * 100));
 
                 results.push({
                     industry: industry,
@@ -862,7 +955,7 @@
                 const profitColor = item.profitability > 0.7 ? 'text-green-600' : item.profitability > 0.5 ? 'text-yellow-600' : 'text-red-600';
                 
                 return `
-                    <div class="industry-card">
+                    <div class="industry-card cursor-pointer" onclick="showFranchiseDetails('${item.industry}')">
                         <div class="flex justify-between items-start mb-3">
                             <div>
                                 <h4 class="text-lg font-bold text-gray-800 mb-1">
