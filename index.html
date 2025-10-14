@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>함께창업소 예비창업자 성향분석 v2.1.3</title>
+    <title>함께창업소 예비창업자 성향분석 v2.1.3 (Netlify DB Edition)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Chart.js Datalabels Plugin: For displaying data labels on the chart -->
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap');
@@ -26,14 +27,15 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 2rem;
+            flex-wrap: wrap; /* 반응형 대응 */
         }
         .header-section h1 {
             flex-grow: 1;
             text-align: center;
-            margin-right: 1.5rem;
             font-size: 1.5rem;
             font-weight: 700;
             color: #1a365d;
+            padding-bottom: 10px; /* 버튼과의 공간 확보 */
         }
         .section-title {
             font-size: 1.5rem;
@@ -69,6 +71,9 @@
             font-size: 0.8rem;
             line-height: 1rem;
             white-space: nowrap;
+            display: flex; /* Flexbox 추가 */
+            justify-content: center;
+            align-items: center;
         }
         .answer-option:hover {
             background-color: #e2e8f0;
@@ -94,12 +99,6 @@
             margin-bottom: 1.5rem;
             text-align: center;
         }
-        .result-box p {
-            font-size: 1.25rem;
-            color: #1e40af;
-            line-height: 1.75;
-            text-align: center;
-        }
         .button {
             background-color: #2563eb;
             color: white;
@@ -107,14 +106,18 @@
             border-radius: 1rem;
             font-weight: 700;
             cursor: pointer;
-            transition: background-color 0.3s ease-in-out;
+            transition: background-color 0.3s ease-in-out, transform 0.1s;
             margin-top: 2rem;
             display: inline-block;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            line-height: 1; /* 높이 고정 */
         }
         .button:hover {
             background-color: #1e40af;
             transform: translateY(-2px);
+        }
+        .button:active {
+            transform: translateY(0);
         }
         .hidden {
             display: none;
@@ -129,6 +132,7 @@
             font-weight: 700;
             margin-bottom: 2rem;
             color: #1f2937;
+            text-align: center;
         }
         .analysis-item {
             background-color: #f9fafb;
@@ -150,6 +154,7 @@
             justify-content: center;
             gap: 1.5rem;
             margin-top: 2.5rem;
+            flex-wrap: wrap;
         }
         .loading-spinner {
             border: 4px solid rgba(0, 0, 0, 0.1);
@@ -158,7 +163,7 @@
             border-radius: 50%;
             border-left-color: #3b82f6;
             animation: spin 1s ease infinite;
-            margin: 0 auto;
+            margin: 3rem auto;
         }
         @keyframes spin {
             0% { transform: rotate(0deg); }
@@ -166,7 +171,7 @@
         }
         #chart-container {
             position: relative;
-            height: 500px;
+            height: 300px;
             width: 100%;
             margin-bottom: 3rem;
         }
@@ -180,44 +185,53 @@
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: rgba(0,0,0,0.4);
+            background-color: rgba(0,0,0,0.6);
             justify-content: center;
             align-items: center;
+            padding: 1rem;
         }
         .modal-content {
             background-color: #fff;
             padding: 20px;
-            border-radius: 1rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            width: 90%;
-            max-width: 800px;
+            border-radius: 1.5rem;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
+            width: 95%;
+            max-width: 900px;
+            animation: fadeIn 0.3s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
         }
         .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #e2e8f0;
-            padding-bottom: 10px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 15px;
             margin-bottom: 20px;
         }
         .modal-header h4 {
-            font-size: 1.5rem;
+            font-size: 1.75rem;
             font-weight: bold;
+            color: #1a365d;
         }
         .modal-close {
             color: #aaa;
-            font-size: 28px;
+            font-size: 32px;
             font-weight: bold;
+            transition: color 0.2s;
         }
         .modal-close:hover,
         .modal-close:focus {
-            color: #000;
+            color: #3b82f6;
             text-decoration: none;
             cursor: pointer;
         }
         .data-list-table {
             width: 100%;
             border-collapse: collapse;
+            font-size: 0.9rem;
         }
         .data-list-table th, .data-list-table td {
             border: 1px solid #e2e8f0;
@@ -225,13 +239,18 @@
             text-align: left;
             word-break: break-all;
         }
-        .data-list-table tr:hover {
+        .data-list-table th {
             background-color: #f0f4f8;
+        }
+        .data-list-table tr:hover {
+            background-color: #e9ecef;
             cursor: pointer;
         }
         #data-list-container {
-            max-height: 400px;
+            max-height: 50vh;
             overflow-y: auto;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
         }
         .upscale-table {
             width: 100%;
@@ -256,10 +275,13 @@
         <div class="header-section">
             <h1 class="text-4xl font-bold text-gray-900">함께창업소 예비창업자 성향분석 <span class="text-gray-500 text-base">v2.1.3</span></h1>
             <div class="flex space-x-4">
-                <div id="load-button" class="button bg-gray-500 hover:bg-gray-700">불러오기</div>
-                <div id="submit-button-header" class="button">결과 보기</div>
+                <div id="load-button" class="button bg-gray-500 hover:bg-gray-700 mt-0">불러오기</div>
+                <div id="submit-button-header" class="button mt-0">결과 보기</div>
             </div>
         </div>
+        
+        <!-- 파이어베이스 사용자 ID 표시 (관리 목적) - Netlify 전환으로 인해 제거됨 -->
+
         <div id="survey-questions">
             <!-- 기본 정보 입력 섹션 -->
             <div class="section-title">기본 정보 입력</div>
@@ -275,409 +297,411 @@
                 </div>
             </div>
             
-            <!-- 설문 항목: 개인 성향 분석 -->
-            <div class="section-title">개인 성향 분석</div>
+            <!-- 설문 항목: 개인 성향 분석 (40문항) -->
+            <div class="section-title">개인 성향 분석 (1점: 매우 그렇지 않다, 5점: 매우 그렇다)</div>
             
+            <!-- 질문 카드 반복 시작 -->
             <div class="question-card" data-question="1">
                 <h2 class="question-title">1. 나는 새로운 것에 도전하는 것을 즐긴다.</h2>
                 <div class="flex justify-around mt-4">
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
             <div class="question-card" data-question="2">
                 <h2 class="question-title">2. 달성하기 힘든 목표라도 필요하면 이를 실행한다.</h2>
                 <div class="flex justify-around mt-4">
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
             <div class="question-card" data-question="3">
                 <h2 class="question-title">3. 나는 과감하게 위험을 감수하는 것을 즐긴다.</h2>
                 <div class="flex justify-around mt-4">
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
             <div class="question-card" data-question="4">
                 <h2 class="question-title">4. 나는 돈을 대할 때 신중한 편이다.</h2>
                 <div class="flex justify-around mt-4">
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
             <div class="question-card" data-question="5">
                 <h2 class="question-title">5. 사업 성공의 핵심은 시장 감각이라고 생각한다.</h2>
                 <div class="flex justify-around mt-4">
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
             <div class="question-card" data-question="6">
                 <h2 class="question-title">6. 나는 경쟁 속에서 희열을 느낀다.</h2>
                 <div class="flex justify-around mt-4">
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
             <div class="question-card" data-question="7">
                 <h2 class="question-title">7. 나는 재무 기록표를 꼼꼼하게 작성한다.</h2>
                 <div class="flex justify-around mt-4">
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
             <div class="question-card" data-question="8">
                 <h2 class="question-title">8. 나는 사업과 관련해 무엇을 배워야 할지 안다.</h2>
                 <div class="flex justify-around mt-4">
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
             <div class="question-card" data-question="9">
                 <h2 class="question-title">9. 나는 업무를 잘 할 수 있는 사람들과 역할을 나누어 일을 진행한다.</h2>
                 <div class="flex justify-around mt-4">
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
             <div class="question-card" data-question="10">
                 <h2 class="question-title">10. 나는 시스템과 데이터를 활용해 사업을 관리할 수 있다.</h2>
                 <div class="flex justify-around mt-4">
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
             <div class="question-card" data-question="11">
                 <h2 class="question-title">11. 나는 효율적인 운영을 위해 늘 새로운 기술을 시도한다.</h2>
                 <div class="flex justify-around mt-4">
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
             <div class="question-card" data-question="12">
                 <h2 class="question-title">12. 나는 고객이 항상 옳다고 생각한다.</h2>
                 <div class="flex justify-around mt-4">
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
             <div class="question-card" data-question="13">
-                <h2 class="question-title">13. 나는 낯선 사람과도 쉽게 관계를 형성한다.</h2>
+                <h2 class="question-title">13. 나는 낯선 사람과도 쉽게 관계를 형성한다. </h2>
                 <div class="flex justify-around mt-4">
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
             <div class="question-card" data-question="14">
                 <h2 class="question-title">14. 나는 의견 충돌 시 타인을 먼저 이해하려 노력한다.</h2>
                 <div class="flex justify-around mt-4">
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
             <div class="question-card" data-question="15">
                 <h2 class="question-title">15. 나는 많은 사람 앞에서 내가 아는 것을 어려움 없이 말할 수 있다.</h2>
                 <div class="flex justify-around mt-4">
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
             <div class="question-card" data-question="16">
                 <h2 class="question-title">16. 직원들에게 솔직한 피드백을 주며 발전하도록 돕는다.</h2>
                 <div class="flex justify-around mt-4">
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
             <div class="question-card" data-question="17">
                 <h2 class="question-title">17. 나는 스트레스 상황에서도 평정심을 유지한다.</h2>
                 <div class="flex justify-around mt-4">
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
             <div class="question-card" data-question="18">
                 <h2 class="question-title">18. 문제가 발생했을 때 직접 해결책을 모색한다.</h2>
                 <div class="flex justify-around mt-4">
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
             <div class="question-card" data-question="19">
                 <h2 class="question-title">19. 나는 요즘 인기 있는 업종, 트렌드를 잘 알고 있다.</h2>
                 <div class="flex justify-around mt-4">
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
             <div class="question-card" data-question="20">
                 <h2 class="question-title">20. 불황이나 어려움은 새로운 기회라고 생각한다.</h2>
                 <div class="flex justify-around mt-4">
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
             <div class="question-card" data-question="21">
                 <h2 class="question-title">21. 나는 일을 미루지 않는다.</h2>
                 <div class="flex justify-around mt-4">
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
             <div class="question-card" data-question="22">
                 <h2 class="question-title">22. 내 사업이 실패한다면 그것은 내 책임이다.</h2>
                 <div class="flex justify-around mt-4">
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
             <div class="question-card" data-question="23">
                 <h2 class="question-title">23. 한번 결정한 일은 끝을 봐야 직성이 풀린다.</h2>
                 <div class="flex justify-around mt-4">
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
             <div class="question-card" data-question="24">
                 <h2 class="question-title">24. 나는 주변 사람으로부터 성실하다는 말을 자주 듣는다.</h2>
                 <div class="flex justify-around mt-4">
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
             <div class="question-card" data-question="25">
                 <h2 class="question-title">25. 나는 본사의 지침을 따르는 것보다 나만의 방식으로 운영하고 싶다.</h2>
                 <div class="flex justify-around mt-4">
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
             <div class="question-card" data-question="26">
                 <h2 class="question-title">26. 나는 모든 것을 직접 결정하고 책임지는 것에 익숙하다.</h2>
                 <div class="flex justify-around mt-4">
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
             <div class="question-card" data-question="27">
                 <h2 class="question-title">27. 나는 예상치 못한 상황에 대비해 본사의 지원 시스템을 중시한다.</h2>
                 <div class="flex justify-around mt-4">
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
             <div class="question-card" data-question="28">
                 <h2 class="question-title">28. 나는 본사의 매뉴얼에 따라 안정적으로 운영하는 것을 선호한다.</h2>
                 <div class="flex justify-around mt-4">
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
             <div class="question-card" data-question="29">
                 <h2 class="question-title">29. 나는 밤늦게까지 일하는 것에 부담을 느끼지 않는다.</h2>
                 <div class="flex justify-around mt-4">
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
             <div class="question-card" data-question="30">
                 <h2 class="question-title">30. 나는 하루 종일 서서 일하는 것에 익숙하다.</h2>
                 <div class="flex justify-around mt-4">
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
             <div class="question-card" data-question="31">
                 <h2 class="question-title">31. 나는 충분한 서비스 마인드와 스트레스를 극복할 노하우가 있다.</h2>
                 <div class="flex justify-around mt-4">
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
             <div class="question-card" data-question="32">
                 <h2 class="question-title">32. 나는 보상이 없어도 경쟁이 즐겁다.</h2>
                 <div class="flex justify-around mt-4">
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
             <div class="question-card" data-question="33">
                 <h2 class="question-title">33. 나는 일단 하기로 결심한 일이면 최고가 되고 싶다.</h2>
                 <div class="flex justify-around mt-4">
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
             <div class="question-card" data-question="34">
                 <h2 class="question-title">34. 나는 남의 지시를 듣기 싫어한다.</h2>
                 <div class="flex justify-around mt-4">
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
             <div class="question-card" data-question="35">
                 <h2 class="question-title">35. 나는 목표가 정해지면 내 의지대로 밀고 나간다.</h2>
                 <div class="flex justify-around mt-4">
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
             <div class="question-card" data-question="36">
                 <h2 class="question-title">36. 나는 직장 동료들보다 업무에 더 헌신적이다.</h2>
                 <div class="flex justify-around mt-4">
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
             <div class="question-card" data-question="37">
                 <h2 class="question-title">37. 나는 고객이 말할 때 귀를 기울일 필요가 있다고 생각한다.</h2>
                 <div class="flex justify-around mt-4">
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
             <div class="question-card" data-question="38">
                 <h2 class="question-title">38. 나는 나의 잘못이나 패배를 잘 인정하지 않는다.</h2>
                 <div class="flex justify-around mt-4">
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
             <div class="question-card" data-question="39">
                 <h2 class="question-title">39. 나는 사업 지식을 넓히기 위해 독서를 꾸준히 한다.</h2>
                 <div class="flex justify-around mt-4">
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
             <div class="question-card" data-question="40">
                 <h2 class="question-title">40. 나는 일이 완성되는 것을 꼭 봐야 한다.</h2>
                 <div class="flex justify-around mt-4">
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="2">2</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="3">3</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="4">4</label>
-                    <label class="answer-option flex-1 mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="1">1<br>매우 그렇지 않다</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="2">2</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="3">3</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="4">4</label>
+                    <label class="answer-option flex-1 mx-1 sm:mx-2 text-center" data-value="5">5<br>매우 그렇다</label>
                 </div>
             </div>
+            <!-- 질문 카드 반복 끝 -->
 
             <div class="footer-buttons">
                 <div id="submit-button" class="button">결과 보기</div>
@@ -697,11 +721,12 @@
         </div>
     </div>
     
+    <!-- 결과 불러오기 모달 -->
     <div id="modal-load" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h4>저장된 설문 결과 불러오기</h4>
-                <span class="modal-close">&times;</span>
+                <h4>저장된 설문 결과 불러오기 (최근 5개)</h4>
+                <span class="modal-close" id="modal-close-button">&times;</span>
             </div>
             <div id="data-list-container">
                 <table class="data-list-table">
@@ -714,7 +739,7 @@
                         </tr>
                     </thead>
                     <tbody id="data-list-body">
-                        <!-- Data will be inserted here -->
+                        <tr><td colspan="4" class="text-center text-gray-500">불러오기 버튼을 눌러 데이터를 로드하세요.</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -722,540 +747,529 @@
     </div>
 
     <script>
-        /**
-         * @file 함께창업소 예비창업자 성향분석 웹페이지 스크립트
-         * @description 이 스크립트는 Netlify DB를 활용한 설문 시스템의 클라이언트 측 로직을 담당합니다.
-         * Netlify Functions를 호출하여 데이터를 저장하고 불러오며, 설문 결과를 시각화하여 보여줍니다.
-         */
-
-        const NETLIFY_FUNCTIONS_URL = '/.netlify/functions/';
+        // Netlify Functions URL 정의: 상대 경로에서 현재 도메인 기반의 절대 경로로 수정
+        const NETLIFY_FUNCTIONS_BASE_URL = window.location.origin + '/.netlify/functions/';
         
-        let myChart = null; // Chart.js 인스턴스를 저장할 변수
-        let answers = {};   // 사용자의 설문 답변을 저장하는 객체
-        const questionCount = 40; // 설문 문항의 총 개수
-
+        let myChart = null; 
+        let answers = {};
+        const questionCount = 40;
+        
+        // Chart.js 플러그인 등록 확인
         if (typeof Chart !== 'undefined' && typeof ChartDataLabels !== 'undefined') {
             Chart.register(ChartDataLabels);
         }
 
-        window.onload = function() {
+        // 업종별 특징 벡터 정의: 1~5점 척도
+        const industryVectors = {
+            '무인 카페/셀프 스튜디오': {
+                '모험심': 2, '독립성': 4, '안정성': 5, '성실성': 4, '사교성': 1
+            },
+            '요식업 (한식 주점/일반 음식점)': {
+                '모험심': 3, '독립성': 5, '안정성': 2, '성실성': 3, '사교성': 5
+            },
+            'IT/기술 스타트업': {
+                '모험심': 5, '독립성': 5, '안정성': 1, '성실성': 5, '사교성': 3
+            },
+            '전문직 교육/컨설팅': {
+                '모험심': 3, '독립성': 4, '안정성': 4, '성실성': 5, '사교성': 5
+            },
+            '온라인 쇼핑몰/e-커머스': {
+                '모험심': 4, '독립성': 5, '안정성': 3, '성실성': 4, '사교성': 2
+            }
+        };
+
+        // 질문 번호별 5가지 성향 매핑 (총 40개 문항)
+        // Q: [모험심: 6문항], [독립성: 8문항], [안정성: 6문항], [성실성: 10문항], [사교성: 10문항]
+        const scoreCategories = {
+            '모험심': [1, 2, 20, 22, 33, 35],
+            '독립성': [3, 6, 18, 25, 26, 32, 34, 38],
+            '안정성': [4, 7, 10, 17, 27, 28],
+            '성실성': [8, 11, 19, 21, 23, 24, 30, 36, 39, 40],
+            '사교성': [5, 9, 12, 13, 14, 15, 16, 29, 31, 37]
+        };
+        
+        // 코사인 유사도 계산 함수
+        function cosineSimilarity(vecA, vecB) {
+            let dotProduct = 0;
+            let magnitudeA = 0;
+            let magnitudeB = 0;
+
+            for (const key in vecA) {
+                if (vecB.hasOwnProperty(key)) {
+                    dotProduct += vecA[key] * vecB[key];
+                    magnitudeA += vecA[key] * vecA[key];
+                    magnitudeB += vecB[key] * vecB[key];
+                }
+            }
+
+            magnitudeA = Math.sqrt(magnitudeA);
+            magnitudeB = Math.sqrt(magnitudeB);
+
+            return magnitudeA === 0 || magnitudeB === 0 ? 0 : dotProduct / (magnitudeA * magnitudeB);
+        }
+        
+        // --- 이벤트 핸들러 함수들 (글로벌 스코프로 이동) ---
+        function handleAnswerClick(event) {
+            const option = event.currentTarget;
+            const questionCard = option.closest('.question-card');
+            const questionId = questionCard.dataset.question;
+            const selectedValue = option.dataset.value;
+
+            const allOptionsInQuestion = questionCard.querySelectorAll('.answer-option');
+            allOptionsInQuestion.forEach(opt => opt.classList.remove('selected'));
+            option.classList.add('selected');
+            answers[questionId] = selectedValue;
+        }
+
+        // --- 점수 계산 로직 ---
+        function calculateScores(currentAnswers) {
+            const scores = { '모험심': 0, '독립성': 0, '안정성': 0, '성실성': 0, '사교성': 0 };
+
+            for (let i = 1; i <= questionCount; i++) {
+                const qId = String(i);
+                const answerValue = parseInt(currentAnswers[qId] || 0);
+
+                if (answerValue) {
+                    for (const trait in scoreCategories) {
+                        if (scoreCategories[trait].includes(i)) {
+                            scores[trait] += answerValue;
+                        }
+                    }
+                }
+            }
+            
+            // 업종 추천 점수 계산 (코사인 유사도 기반)
+            const recommendations = Object.keys(industryVectors).map(industry => {
+                const similarity = cosineSimilarity(scores, industryVectors[industry]);
+                return { industry, score: similarity };
+            }).sort((a, b) => b.score - a.score);
+            
+            const totalScore = Object.values(scores).reduce((a, b) => a + b, 0);
+            const percentages = {};
+            for (const key in scores) {
+                percentages[key] = totalScore > 0 ? (scores[key] / totalScore) * 100 : 0;
+            }
+
+            const sortedPercentages = Object.entries(percentages).sort(([, a], [, b]) => b - a);
+            const dominantType = sortedPercentages.length > 0 ? sortedPercentages[0][0] : '분석 불가';
+
+            return { scores, percentages, dominantType, recommendations };
+        }
+
+
+        // --- 결과 보기 및 렌더링 ---
+        async function analyzeAndRenderResults(loadedAnswers = null, loadedAnalysis = null) {
+            const currentAnswers = loadedAnswers || answers;
+            
+            // 1. 점수 계산 또는 불러오기
+            const analysisResult = loadedAnalysis || calculateScores(currentAnswers);
+            const { scores, percentages, dominantType, recommendations } = analysisResult;
+
+            // 2. UI 전환
             const surveyQuestions = document.getElementById('survey-questions');
             const surveyResult = document.getElementById('survey-result');
             const resultTitle = document.getElementById('result-title');
             const resultContent = document.getElementById('result-content');
-            const submitButton = document.getElementById('submit-button');
+
+            surveyQuestions.style.display = 'none';
+            surveyResult.classList.remove('hidden');
+
+            const spinner = surveyResult.querySelector('.loading-spinner');
+            if (spinner) spinner.style.display = 'none';
+            resultContent.classList.remove('hidden');
+            resultTitle.textContent = '설문 결과 분석 완료';
+
+            // 3. 차트 데이터 준비
+            const sortedPercentages = Object.entries(percentages).sort(([, a], [, b]) => b - a);
+            const chartColors = [
+                'rgba(59, 130, 246, 0.7)', 'rgba(245, 158, 11, 0.7)', 'rgba(16, 185, 129, 0.7)', 
+                'rgba(239, 68, 68, 0.7)', 'rgba(139, 92, 246, 0.7)'
+            ];
+
+            const chartData = {
+                labels: sortedPercentages.map(item => `${item[0]} (${item[1].toFixed(1)}%)`),
+                datasets: [{
+                    data: sortedPercentages.map(item => item[1]),
+                    backgroundColor: sortedPercentages.map(item => {
+                        // 순서에 따라 색상 매핑
+                        const index = sortedPercentages.findIndex(p => p[0] === item[0]);
+                        return chartColors[index % chartColors.length];
+                    }),
+                    borderColor: '#ffffff',
+                    borderWidth: 2,
+                }]
+            };
+
+            // 4. 결과 HTML 생성
+            let resultHTML = `
+                <div class="analysis-item text-center">
+                    <h4 class="text-2xl font-bold mb-4">종합 분석: 당신의 비즈니스 DNA</h4>
+                    <p>당신의 설문 답변을 종합한 결과, 가장 두드러지는 특성은 바로 **${dominantType}**입니다.</p>
+                </div>
+                
+                <div class="analysis-item">
+                    <h4 class="text-2xl font-bold mb-4">핵심 성향 시각화</h4>
+                    <div class="flex flex-col md:flex-row items-center justify-center space-y-8 md:space-y-0 md:space-x-8">
+                        <div class="w-full flex justify-center items-center">
+                            <canvas id="pie-chart" class="max-w-xs max-h-xs"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="analysis-section">
+                    <h4>당신에게 추천하는 업종 매칭 점수</h4>
+                    <table class="upscale-table">
+                        <thead>
+                            <tr>
+                                <th>업종</th>
+                                <th>모험심<br>(${scores['모험심']})</th>
+                                <th>독립성<br>(${scores['독립성']})</th>
+                                <th>안정성<br>(${scores['안정성']})</th>
+                                <th>성실성<br>(${scores['성실성']})</th>
+                                <th>사교성<br>(${scores['사교성']})</th>
+                                <th>추천 점수 (유사도)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${recommendations.map((rec, index) => {
+                                const industry = rec.industry;
+                                const vector = industryVectors[industry];
+                                const isTop = index === 0 ? 'bg-blue-100 font-bold' : '';
+                                return `
+                                    <tr class="${isTop}">
+                                        <td>${industry}</td>
+                                        <td>${vector['모험심']}</td>
+                                        <td>${vector['독립성']}</td>
+                                        <td>${vector['안정성']}</td>
+                                        <td>${vector['성실성']}</td>
+                                        <td>${vector['사교성']}</td>
+                                        <td class="${isTop ? 'text-blue-700' : ''}">${(rec.score * 100).toFixed(1)}%</td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                    
+                    <div class="analysis-item mt-8">
+                        <h5 class="text-xl font-bold text-blue-800 mb-2">1. 맞춤형 서비스/컨설팅 추천 (예: 전문직 교육/컨설팅)</h5>
+                        <p>강점 활용: '사교성'과 '성실성'이 높은 당신은 고객과의 관계 구축에 능숙하며, 꼼꼼한 일 처리로 신뢰를 얻습니다. 이를 바탕으로 고객의 니즈를 정확히 파악하여 맞춤형 서비스를 제공하는 컨설팅, 교육 사업에 적합합니다.</p>
+                    </div>
+                    <div class="analysis-item">
+                        <h5 class="text-xl font-bold text-blue-800 mb-2">2. 독점적 기술 기반 사업 추천 (예: IT/기술 스타트업)</h5>
+                        <p>강점 활용: '독립성'과 '모험심'이 강한 당신은 새로운 기술이나 독특한 아이디어를 현실로 만드는 것에 강점을 보입니다. 기술력을 기반으로 한 IT 스타트업, 특허 기반의 제조업 등 시장에 새로운 가치를 창출하는 사업에 적합합니다.</p>
+                    </div>
+                    <div class="analysis-item">
+                        <h5 class="text-xl font-bold text-blue-800 mb-2">3. 안정적인 프랜차이즈 운영 추천 (예: 무인 카페/셀프 스튜디오)</h5>
+                        <p>강점 활용: '안정성'과 '성실성'이 뛰어난 당신은 정해진 매뉴얼에 따라 효율적으로 사업을 운영하는 것에 강점이 있습니다. 본사의 체계적인 지원을 받으면서 안정적인 수익을 창출하는 프랜차이즈 사업에 적합합니다.</p>
+                    </div>
+                </div>
+            `;
+            resultContent.innerHTML = resultHTML;
+
+            // 5. 차트 렌더링
+            const canvas = document.getElementById('pie-chart');
+            if (canvas) {
+                if (myChart) {
+                    myChart.destroy();
+                }
+                myChart = new Chart(canvas.getContext('2d'), {
+                    type: 'pie',
+                    data: chartData,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    font: { size: 14, family: 'Noto Sans KR' },
+                                    color: '#4b5563',
+                                    boxWidth: 20
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: (context) => {
+                                        // 툴팁에 레이블과 퍼센트 표시
+                                        const label = context.label || '';
+                                        const value = context.parsed;
+                                        return `${label} (${value.toFixed(1)}%)`;
+                                    }
+                                }
+                            },
+                            datalabels: {
+                                color: '#fff',
+                                formatter: (value, context) => {
+                                    // 라벨에 퍼센트 표시
+                                    return value.toFixed(1) + '%';
+                                },
+                                font: {
+                                    weight: 'bold',
+                                    size: 14
+                                },
+                            }
+                        }
+                    },
+                    plugins: [ChartDataLabels]
+                });
+            }
+        }
+
+        function showResult() {
+            const userName = document.getElementById('userName').value;
+            const userPhone = document.getElementById('userPhone').value;
+
+            if (!userName || !userPhone) {
+                // 커스텀 모달 사용 (alert 대신)
+                const message = '이름과 전화번호를 모두 입력해주세요.';
+                console.error(message);
+                const resultTitle = document.getElementById('result-title');
+                resultTitle.textContent = message;
+                document.getElementById('survey-result').classList.remove('hidden');
+                document.getElementById('result-content').classList.add('hidden');
+                document.getElementById('survey-questions').style.display = 'block';
+                document.getElementById('survey-result').classList.add('hidden');
+                return;
+            }
+
+            // 답변되지 않은 문항에 랜덤 값 할당 및 UI 반영 (로딩 전)
+            for (let i = 1; i <= questionCount; i++) {
+                const qId = String(i);
+                if (!answers[qId]) {
+                    const randomValue = Math.floor(Math.random() * 5) + 1;
+                    answers[qId] = String(randomValue);
+                    const questionCard = document.querySelector(`[data-question="${qId}"]`);
+                    const option = questionCard.querySelector(`[data-value="${randomValue}"]`);
+                    if (option) {
+                       option.classList.add('selected');
+                    }
+                }
+            }
+
+            // 로딩 화면 표시
+            document.getElementById('survey-questions').style.display = 'none';
+            document.getElementById('survey-result').classList.remove('hidden');
+            const spinner = document.querySelector('.loading-spinner');
+            if (spinner) spinner.style.display = 'block';
+            document.getElementById('result-content').classList.add('hidden');
+            document.getElementById('result-title').textContent = '설문 결과 분석 중...';
+
+            // 결과 분석 및 렌더링
+            setTimeout(async () => {
+                await analyzeAndRenderResults();
+            }, 500); // 사용자 경험을 위한 짧은 지연
+        }
+
+        // --- Netlify Functions 데이터 저장 (saveData) ---
+        async function saveData() {
+            const userName = document.getElementById('userName').value;
+            const userPhone = document.getElementById('userPhone').value;
+
+            if (!userName || !userPhone) {
+                alert('이름과 전화번호를 모두 입력해주세요.');
+                return;
+            }
+            
+            // 답변이 40개가 아닐 경우, 미응답 문항은 3점으로 처리 (강제 저장 로직)
+            for (let i = 1; i <= questionCount; i++) {
+                const qId = String(i);
+                if (!answers[qId]) {
+                    answers[qId] = '3'; 
+                }
+            }
+
+            const analysisResult = calculateScores(answers);
+            
+            try {
+                // Netlify Function 호출: 절대 경로 사용
+                const url = NETLIFY_FUNCTIONS_BASE_URL + 'save-survey';
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userName,
+                        userPhone,
+                        answers,
+                        analysisResult
+                    })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    alert('설문 결과가 성공적으로 저장되었습니다! ID: ' + result.id);
+                } else {
+                    alert(`결과 저장 중 오류가 발생했습니다: ${result.message}\n상세: ${result.error || '알 수 없는 오류'}`);
+                }
+
+            } catch (e) {
+                console.error("Error saving data to Netlify Function: ", e);
+                alert(`결과 저장 중 네트워크 오류가 발생했습니다.\n상세: ${e.message}`);
+            }
+        }
+
+        // --- Netlify Functions 데이터 불러오기 (loadData) ---
+        async function loadData() {
+            const password = prompt("비밀번호를 입력하세요. (250501)");
+            if (password !== '250501') {
+                alert('비밀번호가 올바르지 않습니다.');
+                return;
+            }
+            
+            const dataListBody = document.getElementById('data-list-body');
+            dataListBody.innerHTML = '<tr><td colspan="4" class="text-center text-blue-500">데이터를 불러오는 중...</td></tr>';
+            
+            try {
+                // Netlify Function 호출: 절대 경로 사용
+                const url = NETLIFY_FUNCTIONS_BASE_URL + 'load-survey';
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    let errorMessage = '알 수 없는 오류';
+                    try {
+                        const errorResult = JSON.parse(errorText);
+                        errorMessage = errorResult.error || errorResult.message || errorMessage;
+                    } catch (jsonError) {
+                        errorMessage = errorText;
+                    }
+                    dataListBody.innerHTML = `<tr><td colspan="4" class="text-center text-red-500">로드 오류: ${errorMessage}</td></tr>`;
+                    document.getElementById('modal-load').style.display = 'flex';
+                    return;
+                }
+
+                const dataList = await response.json(); // Netlify Function은 배열 형태의 PostgreSQL 결과를 반환한다고 가정
+
+                if (dataList.length === 0) {
+                    dataListBody.innerHTML = '<tr><td colspan="4" class="text-center text-gray-500">저장된 결과가 없습니다.</td></tr>';
+                    document.getElementById('modal-load').style.display = 'flex';
+                    return;
+                }
+
+                dataListBody.innerHTML = '';
+                const limitedDataList = dataList.slice(0, 5); // 최근 5개만 표시
+                
+                limitedDataList.forEach(item => {
+                    // Netlify DB (PostgreSQL)에서 반환된 객체의 키 사용
+                    const docId = item.id; 
+                    const userName = item.user_name || '이름 없음';
+                    const userPhone = item.user_phone || '전화번호 없음';
+                    
+                    const maskedName = userName.charAt(0) + '**';
+                    const maskedPhone = '****' + userPhone.substring(userPhone.length - 4);
+                    
+                    // PostgreSQL TIMESTAMP WITH TIME ZONE을 JS Date 객체로 변환
+                    const date = new Date(item.created_at);
+                    const formattedDate = `${date.getFullYear().toString().slice(-2)}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+                    
+                    const row = document.createElement('tr');
+                    row.dataset.id = docId;
+                    
+                    row.innerHTML = `
+                        <td>${docId}</td>
+                        <td>${maskedName}</td>
+                        <td>${maskedPhone}</td>
+                        <td>${formattedDate}</td>
+                    `;
+                    row.addEventListener('dblclick', () => {
+                        loadSelectedData(item, docId);
+                        document.getElementById('modal-load').style.display = 'none';
+                    });
+                    dataListBody.appendChild(row);
+                });
+                
+                document.getElementById('modal-load').style.display = 'flex';
+
+            } catch (e) {
+                console.error("Error loading documents: ", e);
+                dataListBody.innerHTML = `<tr><td colspan="4" class="text-center text-red-500">데이터 로드 오류: ${e.message}</td></tr>`;
+                document.getElementById('modal-load').style.display = 'flex';
+            }
+        }
+
+        // --- 선택된 데이터 로드 및 적용 ---
+        async function loadSelectedData(selectedData, docId) {
+            try {
+                // PostgreSQL JSONB 필드는 문자열로 반환되므로 파싱 필요
+                answers = typeof selectedData.answers === 'string' ? JSON.parse(selectedData.answers) : selectedData.answers;
+                const analysisToLoad = typeof selectedData.analysis_result === 'string' ? JSON.parse(selectedData.analysis_result) : selectedData.analysis_result;
+
+                // 2. 화면 전환 및 기본 정보 채우기
+                document.getElementById('survey-questions').style.display = 'block';
+                document.getElementById('survey-result').classList.add('hidden');
+                
+                document.getElementById('userName').value = selectedData.user_name || '';
+                document.getElementById('userPhone').value = selectedData.user_phone || '';
+                
+                // 3. 설문 문항에 답변 상태를 복원
+                const allOptions = document.querySelectorAll('.answer-option');
+                allOptions.forEach(opt => opt.classList.remove('selected'));
+                
+                for (let i = 1; i <= questionCount; i++) {
+                    const qId = String(i);
+                    const selectedValue = answers[qId];
+                    const questionCard = document.querySelector(`[data-question="${qId}"]`);
+                    if (questionCard && selectedValue) {
+                        const option = questionCard.querySelector(`[data-value="${selectedValue}"]`);
+                        if (option) {
+                            option.classList.add('selected');
+                        }
+                    }
+                }
+                
+                // 4. 결과 분석 및 렌더링
+                await analyzeAndRenderResults(answers, analysisToLoad);
+                alert(`문서 ID: ${docId}의 설문 결과를 성공적으로 불러왔습니다!`);
+            } catch (e) {
+                console.error("Error parsing loaded data:", e);
+                alert(`선택된 데이터를 처리하는 중 오류가 발생했습니다.\n상세: ${e.message}`);
+            }
+        }
+
+        function resetSurvey() {
+            answers = {};
+            document.getElementById('userName').value = '';
+            document.getElementById('userPhone').value = '';
+            const allOptions = document.querySelectorAll('.answer-option');
+            allOptions.forEach(opt => opt.classList.remove('selected'));
+            document.getElementById('survey-questions').style.display = 'block';
+            document.getElementById('survey-result').classList.add('hidden');
+            
+            // 차트 인스턴스 정리
+            if (myChart) {
+                myChart.destroy();
+                myChart = null; 
+            }
+        }
+
+        // --- 이벤트 리스너 초기화 ---
+        window.onload = function () {
+            // 이벤트 리스너 설정
+            document.querySelectorAll('.answer-option').forEach(option => {
+                option.addEventListener('click', handleAnswerClick);
+            });
+            
             const submitButtonHeader = document.getElementById('submit-button-header');
+            const submitButton = document.getElementById('submit-button');
             const surveyResetButton = document.getElementById('survey-reset');
             const saveButton = document.getElementById('save-button');
             const loadButton = document.getElementById('load-button');
             const modalLoad = document.getElementById('modal-load');
-            const modalClose = document.querySelector('.modal-close');
-            const dataListBody = document.getElementById('data-list-body');
-            
-            document.querySelectorAll('.answer-option').forEach(option => {
-                option.addEventListener('click', handleAnswerClick);
-            });
+            const modalCloseButton = document.getElementById('modal-close-button');
+
+
             if(submitButtonHeader) submitButtonHeader.addEventListener('click', showResult);
             if(submitButton) submitButton.addEventListener('click', showResult);
             if(surveyResetButton) surveyResetButton.addEventListener('click', resetSurvey);
             if(saveButton) saveButton.addEventListener('click', saveData);
             if(loadButton) loadButton.addEventListener('click', loadData);
-            if(modalClose) modalClose.addEventListener('click', () => modalLoad.style.display = 'none');
+            
+            if(modalCloseButton) modalCloseButton.addEventListener('click', () => modalLoad.style.display = 'none');
             window.addEventListener('click', (event) => {
                 if (event.target === modalLoad) {
                     modalLoad.style.display = 'none';
                 }
             });
-
-            function handleAnswerClick(event) {
-                const option = event.target;
-                const questionCard = option.closest('.question-card');
-                const questionId = questionCard.dataset.question;
-                const selectedValue = option.dataset.value;
-
-                const allOptionsInQuestion = questionCard.querySelectorAll('.answer-option');
-                allOptionsInQuestion.forEach(opt => opt.classList.remove('selected'));
-                option.classList.add('selected');
-                answers[questionId] = selectedValue;
-            }
-
-            async function showResult() {
-                const userName = document.getElementById('userName').value;
-                const userPhone = document.getElementById('userPhone').value;
-
-                if (!userName || !userPhone) {
-                    alert('이름과 전화번호를 모두 입력해주세요.');
-                    return;
-                }
-                
-                // 답변되지 않은 문항에 랜덤 값 할당
-                for (let i = 1; i <= questionCount; i++) {
-                    const qId = String(i);
-                    const questionCard = document.querySelector(`[data-question="${qId}"]`);
-                    if (!answers[qId]) {
-                        const randomValue = Math.floor(Math.random() * 5) + 1;
-                        answers[qId] = String(randomValue);
-                        const option = questionCard.querySelector(`[data-value="${randomValue}"]`);
-                        if (option) {
-                           option.classList.add('selected');
-                        }
-                    }
-                }
-
-                surveyQuestions.style.display = 'none';
-                surveyResult.classList.remove('hidden');
-
-                const spinner = surveyResult.querySelector('.loading-spinner');
-                if (spinner) spinner.style.display = 'block';
-
-                await new Promise(resolve => setTimeout(resolve, 1500));
-                
-                await analyzeAndRenderResults();
-            }
-
-            // 업종별 특징 벡터 정의
-            const industryVectors = {
-                '무인 카페': {
-                    '모험심': 2, '독립성': 4, '안정성': 5, '성실성': 4, '사교성': 1
-                },
-                '한식 주점': {
-                    '모험심': 3, '독립성': 5, '안정성': 2, '성실성': 3, '사교성': 5
-                },
-                'IT 스타트업': {
-                    '모험심': 5, '독립성': 5, '안정성': 1, '성실성': 5, '사교성': 3
-                },
-                '교육/컨설팅': {
-                    '모험심': 3, '독립성': 4, '안정성': 4, '성실성': 5, '사교성': 5
-                },
-                '온라인 쇼핑몰': {
-                    '모험심': 4, '독립성': 5, '안정성': 3, '성실성': 4, '사교성': 2
-                }
-            };
-            
-            // 코사인 유사도 계산 함수
-            function cosineSimilarity(vecA, vecB) {
-                const dotProduct = Object.keys(vecA).reduce((sum, key) => sum + vecA[key] * vecB[key], 0);
-                const magnitudeA = Math.sqrt(Object.values(vecA).reduce((sum, val) => sum + val * val, 0));
-                const magnitudeB = Math.sqrt(Object.values(vecB).reduce((sum, val) => sum + val * val, 0));
-                return magnitudeA === 0 || magnitudeB === 0 ? 0 : dotProduct / (magnitudeA * magnitudeB);
-            }
-
-            async function analyzeAndRenderResults(loadedAnswers = null, loadedAnalysis = null) {
-                const currentAnswers = loadedAnswers || answers;
-                let analysisResult = loadedAnalysis;
-                
-                if (!analysisResult) {
-                    const scores = {
-                        '모험심': 0, '독립성': 0, '안정성': 0, '성실성': 0, '사교성': 0
-                    };
-                    
-                    const scoreMapping = {
-                        '1': (value) => value, '2': (value) => value, '3': (value) => value, '4': (value) => value, '5': (value) => value, '6': (value) => value,
-                        '7': (value) => value, '8': (value) => value, '9': (value) => value, '10': (value) => value, '11': (value) => value, '12': (value) => value, '13': (value) => value, '14': (value) => value, '15': (value) => value,
-                        '16': (value) => value, '17': (value) => value, '18': (value) => value, '19': (value) => value, '20': (value) => value,
-                        '21': (value) => value, '22': (value) => value, '23': (value) => value, '24': (value) => value, '25': (value) => value, '26': (value) => value, '27': (value) => value, '28': (value) => value, '29': (value) => value, '30': (value) => value,
-                        '31': (value) => value, '32': (value) => value, '33': (value) => value, '34': (value) => value, '35': (value) => value, '36': (value) => value, '37': (value) => value, '38': (value) => value, '39': (value) => value, '40': (value) => value
-                    };
-                    
-                    for (let i = 1; i <= questionCount; i++) {
-                        const qId = String(i);
-                        const answerValue = parseInt(currentAnswers[qId]);
-                        if (answerValue && scoreMapping[qId]) {
-                            const score = scoreMapping[qId](answerValue);
-                            if ([1, 2, 20, 22, 33, 35].includes(i)) scores['모험심'] += score;
-                            if ([3, 6, 18, 26, 32, 34, 38].includes(i)) scores['독립성'] += score;
-                            if ([4, 7, 10, 27, 28].includes(i)) scores['안정성'] += score;
-                            if ([8, 11, 19, 21, 23, 24, 36, 39, 40].includes(i)) scores['성실성'] += score;
-                            if ([5, 9, 12, 13, 14, 15, 16, 29, 31, 37].includes(i)) scores['사교성'] += score;
-                        }
-                    }
-
-                    const totalScore = Object.values(scores).reduce((a, b) => a + b, 0);
-                    const percentages = {};
-                    for (const key in scores) {
-                        percentages[key] = totalScore > 0 ? (scores[key] / totalScore) * 100 : 0;
-                    }
-
-                    const recommendations = Object.keys(industryVectors).map(industry => {
-                        const similarity = cosineSimilarity(scores, industryVectors[industry]);
-                        return { industry, score: similarity };
-                    }).sort((a, b) => b.score - a.score);
-
-                    const dominantType = recommendations[0].industry;
-                    
-                    analysisResult = {
-                        scores: scores,
-                        dominantType: dominantType,
-                        recommendations: recommendations
-                    };
-                }
-                
-                const totalScore = Object.values(analysisResult.scores).reduce((a, b) => a + b, 0);
-                const percentages = {};
-                for (const key in analysisResult.scores) {
-                    percentages[key] = totalScore > 0 ? (analysisResult.scores[key] / totalScore) * 100 : 0;
-                }
-                const sortedPercentages = Object.entries(percentages).sort(([, a], [, b]) => b - a);
-                const dominantType = analysisResult.dominantType;
-
-                const chartColors = [
-                    'rgba(59, 130, 246, 0.7)',
-                    'rgba(245, 158, 11, 0.7)',
-                    'rgba(16, 185, 129, 0.7)',
-                    'rgba(239, 68, 68, 0.7)',
-                    'rgba(139, 92, 246, 0.7)'
-                ];
-
-                const chartData = {
-                    labels: sortedPercentages.map(item => `${item[0]}`),
-                    datasets: [{
-                        data: sortedPercentages.map(item => item[1]),
-                        backgroundColor: sortedPercentages.map(item => {
-                            if (item[0] === '모험심') return chartColors[0];
-                            if (item[0] === '독립성') return chartColors[1];
-                            if (item[0] === '안정성') return chartColors[2];
-                            if (item[0] === '성실성') return chartColors[3];
-                            if (item[0] === '사교성') return chartColors[4];
-                        }),
-                        borderColor: '#ffffff',
-                        borderWidth: 2,
-                    }]
-                };
-
-                const spinner = surveyResult.querySelector('.loading-spinner');
-                if (spinner) spinner.style.display = 'none';
-                resultContent.classList.remove('hidden');
-                resultTitle.textContent = '설문 결과 분석';
-
-                let resultHTML = `
-                    <div class="analysis-item text-center">
-                        <h4 class="text-2xl font-bold mb-4">종합 분석: 당신의 비즈니스 DNA</h4>
-                        <p>위 원그래프는 당신의 비즈니스 성향을 다섯 가지 핵심 지표로 분석한 결과입니다. 각 영역이 차지하는 비율은 당신의 내재된 강점과 가장 잘 맞는 업종을 보여줍니다.</p>
-                    </div>
-                    
-                    <div class="analysis-item">
-                        <h4 class="text-2xl font-bold mb-4">핵심 성향 분석</h4>
-                        <div class="flex flex-col md:flex-row items-center justify-center space-y-8 md:space-y-0 md:space-x-8">
-                            <div class="w-full md:w-1/2 flex justify-center items-center">
-                                <canvas id="pie-chart" class="max-w-xs max-h-xs"></canvas>
-                            </div>
-                            <div class="w-full md:w-1/2">
-                                <p class="text-lg mb-4">
-                                    당신의 설문 답변을 종합한 결과, 가장 두드러지는 특성은 바로 **${dominantType}**입니다.<br>
-                                    당신의 **${dominantType}** 성향은 전체 성향 중 **${percentages[dominantType].toFixed(1)}%**를 차지합니다.
-                                </p>
-                                <ul class="list-disc list-inside space-y-2 text-gray-700">
-                                    ${sortedPercentages.filter((item) => item[0] !== dominantType).map(item => {
-                                        const otherTrait = item[0];
-                                        const otherPercentage = item[1];
-                                        const difference = percentages[dominantType] - otherPercentage;
-                                        return `<li>**${dominantType}**은(는) **${otherTrait}**보다 ${difference.toFixed(1)}% 더 높습니다.</li>`;
-                                    }).join('')}
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="analysis-section">
-                        <h4>당신에게 추천하는 업종</h4>
-                        <table class="upscale-table">
-                          <thead>
-                            <tr>
-                              <th>업종</th>
-                              <th>모험심</th>
-                              <th>독립성</th>
-                              <th>안정성</th>
-                              <th>성실성</th>
-                              <th>사교성</th>
-                              <th>추천 점수</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            ${Object.keys(industryVectors).map(industry => {
-                                const userScores = analysisResult.scores;
-                                const industryVector = industryVectors[industry];
-                                
-                                // 코사인 유사도 계산
-                                const dotProduct = Object.keys(userScores).reduce((sum, key) => sum + userScores[key] * industryVector[key], 0);
-                                const magnitudeA = Math.sqrt(Object.values(userScores).reduce((sum, val) => sum + val * val, 0));
-                                const magnitudeB = Math.sqrt(Object.values(industryVector).reduce((sum, val) => sum + val * val, 0));
-                                const similarityScore = magnitudeA === 0 || magnitudeB === 0 ? 0 : dotProduct / (magnitudeA * magnitudeB);
-                                const percentageScore = (similarityScore * 100).toFixed(1);
-
-                                return `
-                                    <tr>
-                                        <td>${industry}</td>
-                                        <td>${industryVector['모험심']}</td>
-                                        <td>${industryVector['독립성']}</td>
-                                        <td>${industryVector['안정성']}</td>
-                                        <td>${industryVector['성실성']}</td>
-                                        <td>${industryVector['사교성']}</td>
-                                        <td>${percentageScore}%</td>
-                                    </tr>
-                                `;
-                            }).join('')}
-                          </tbody>
-                        </table>
-                        <div class="analysis-item mt-8">
-                            <h5 class="text-xl font-bold text-blue-800 mb-2">1. 맞춤형 서비스/컨설팅</h5>
-                            <p>강점 활용: '사교성'과 '성실성'이 높은 당신은 고객과의 관계 구축에 능숙하며, 꼼꼼한 일 처리로 신뢰를 얻습니다. 이를 바탕으로 고객의 니즈를 정확히 파악하여 맞춤형 서비스를 제공하는 컨설팅, 교육 사업에 적합합니다.</p>
-                        </div>
-                        <div class="analysis-item">
-                            <h5 class="text-xl font-bold text-blue-800 mb-2">2. 독점적 기술 기반 사업</h5>
-                            <p>강점 활용: '독립성'과 '모험심'이 강한 당신은 새로운 기술이나 독특한 아이디어를 현실로 만드는 것에 강점을 보입니다. 기술력을 기반으로 한 IT 스타트업, 특허 기반의 제조업 등 시장에 새로운 가치를 창출하는 사업에 적합합니다.</p>
-                        </div>
-                        <div class="analysis-item">
-                            <h5 class="text-xl font-bold text-blue-800 mb-2">3. 안정적인 프랜차이즈 운영</h5>
-                            <p>강점 활용: '안정성'과 '성실성'이 뛰어난 당신은 정해진 매뉴얼에 따라 효율적으로 사업을 운영하는 것에 강점이 있습니다. 본사의 체계적인 지원을 받으면서 안정적인 수익을 창출하는 프랜차이즈 사업에 적합합니다.</p>
-                        </div>
-                    </div>
-                `;
-                resultContent.innerHTML = resultHTML;
-
-                const canvas = document.getElementById('pie-chart');
-                if (canvas) {
-                    if (myChart) {
-                        myChart.destroy();
-                    }
-                    myChart = new Chart(canvas.getContext('2d'), {
-                        type: 'pie',
-                        data: chartData,
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: {
-                                legend: {
-                                    position: 'bottom',
-                                    labels: {
-                                        font: { size: 14, family: 'Noto Sans KR' },
-                                        color: '#4b5563',
-                                        boxWidth: 20
-                                    }
-                                },
-                                tooltip: {
-                                    callbacks: {
-                                        label: (context) => {
-                                            const label = context.label || '';
-                                            return label;
-                                        }
-                                    }
-                                },
-                                datalabels: {
-                                    color: '#fff',
-                                    formatter: (value, context) => {
-                                        return value.toFixed(1) + '%';
-                                    },
-                                    font: {
-                                        weight: 'bold',
-                                        size: 14
-                                    },
-                                }
-                            }
-                        },
-                        plugins: [ChartDataLabels]
-                    });
-                }
-            }
-
-            async function saveData() {
-                const userName = document.getElementById('userName').value;
-                const userPhone = document.getElementById('userPhone').value;
-
-                if (!userName || !userPhone) {
-                    alert('이름과 전화번호를 모두 입력해주세요.');
-                    return;
-                }
-                
-                if (Object.keys(answers).length < 40) {
-                    for (let i = 1; i <= questionCount; i++) {
-                        const qId = String(i);
-                        if (!answers[qId]) {
-                            answers[qId] = String(Math.floor(Math.random() * 5) + 1);
-                        }
-                    }
-                }
-                
-                const scores = {
-                    '모험심': 0, '독립성': 0, '안정성': 0, '성실성': 0, '사교성': 0
-                };
-                
-                const scoreMapping = {
-                    '1': (value) => value, '2': (value) => value, '3': (value) => value, '4': (value) => value, '5': (value) => value, '6': (value) => value,
-                    '7': (value) => value, '8': (value) => value, '9': (value) => value, '10': (value) => value, '11': (value) => value, '12': (value) => value, '13': (value) => value, '14': (value) => value, '15': (value) => value,
-                    '16': (value) => value, '17': (value) => value, '18': (value) => value, '19': (value) => value, '20': (value) => value,
-                    '21': (value) => value, '22': (value) => value, '23': (value) => value, '24': (value) => value, '25': (value) => value, '26': (value) => value, '27': (value) => value, '28': (value) => value, '29': (value) => value, '30': (value) => value,
-                    '31': (value) => value, '32': (value) => value, '33': (value) => value, '34': (value) => value, '35': (value) => value, '36': (value) => value, '37': (value) => value, '38': (value) => value, '39': (value) => value, '40': (value) => value
-                };
-
-                for (let i = 1; i <= questionCount; i++) {
-                    const qId = String(i);
-                    const answerValue = parseInt(answers[qId]);
-                    if (answerValue && scoreMapping[qId]) {
-                        const score = scoreMapping[qId](answerValue);
-                        if ([1, 2, 20, 22, 33, 35].includes(i)) scores['모험심'] += score;
-                        if ([3, 6, 18, 26, 32, 34, 38].includes(i)) scores['독립성'] += score;
-                        if ([4, 7, 10, 27, 28].includes(i)) scores['안정성'] += score;
-                        if ([8, 11, 19, 21, 23, 24, 36, 39, 40].includes(i)) scores['성실성'] += score;
-                        if ([5, 9, 12, 13, 14, 15, 16, 29, 31, 37].includes(i)) scores['사교성'] += score;
-                    }
-                }
-                const totalScore = Object.values(scores).reduce((a, b) => a + b, 0);
-                const percentages = {};
-                for (const key in scores) {
-                    percentages[key] = totalScore > 0 ? (scores[key] / totalScore) * 100 : 0;
-                }
-                const sortedPercentages = Object.entries(percentages).sort(([, a], [, b]) => b - a);
-                const dominantType = sortedPercentages[0][0];
-
-                const analysisResult = {
-                    scores: scores,
-                    dominantType: dominantType
-                };
-
-                try {
-                    const response = await fetch(NETLIFY_FUNCTIONS_URL + 'save-survey', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ 
-                            userName, 
-                            userPhone, 
-                            answers, 
-                            analysisResult
-                        })
-                    });
-                    const result = await response.json();
-                    if (response.ok) {
-                        alert('설문 결과가 성공적으로 저장되었습니다!');
-                    } else {
-                        alert(`결과 저장 중 오류가 발생했습니다: ${result.message}\n상세: ${result.error || '알 수 없는 오류'}`);
-                    }
-                } catch (e) {
-                    console.error("Error saving data: ", e);
-                    alert(`결과 저장 중 오류가 발생했습니다.\n네트워크 오류 또는 서버 응답 문제일 수 있습니다.\n상세: ${e.message}`);
-                }
-            }
-
-            async function loadData() {
-                const password = prompt("비밀번호를 입력하세요. (250501)");
-                if (password !== '250501') {
-                    alert('비밀번호가 올바르지 않습니다.');
-                    return;
-                }
-
-                try {
-                    const response = await fetch(NETLIFY_FUNCTIONS_URL + 'load-survey');
-                    
-                    if (!response.ok) {
-                        const errorText = await response.text();
-                        let errorMessage = '알 수 없는 오류';
-                         try {
-                           const errorResult = JSON.parse(errorText);
-                           errorMessage = errorResult.error || errorResult.message || errorMessage;
-                         } catch (jsonError) {
-                           errorMessage = errorText;
-                         }
-                        alert(`데이터를 불러오는 중 오류가 발생했습니다.\n상세: ${errorMessage}`);
-                        return;
-                    }
-
-                    const dataList = await response.json();
-
-                    if (dataList.length === 0) {
-                        alert('저장된 결과가 없습니다. 설문을 진행해주세요.');
-                        return;
-                    }
-                    
-                    dataListBody.innerHTML = '';
-                    const limitedDataList = dataList.slice(0, 5);
-                    limitedDataList.forEach(item => {
-                        const row = document.createElement('tr');
-                        row.dataset.id = item.id;
-                        
-                        const maskedName = item.user_name.charAt(0) + '**';
-                        const maskedPhone = '****' + item.user_phone.substring(item.user_phone.length - 4);
-                        
-                        const date = new Date(item.created_at);
-                        const formattedDate = `${date.getFullYear().toString().slice(-2)}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
-                        
-                        row.innerHTML = `
-                            <td>${item.id}</td>
-                            <td>${maskedName}</td>
-                            <td>${maskedPhone}</td>
-                            <td>${formattedDate}</td>
-                        `;
-                        row.addEventListener('dblclick', () => {
-                            loadSelectedData(item);
-                            modalLoad.style.display = 'none';
-                        });
-                        dataListBody.appendChild(row);
-                    });
-                    
-                    modalLoad.style.display = 'flex';
-
-                } catch (e) {
-                    console.error("Error loading documents: ", e);
-                    alert(`데이터를 불러오는 중 오류가 발생했습니다.\n네트워크 오류 또는 서버 응답 문제일 수 있습니다.\n상세: ${e.message}`);
-                }
-            }
-
-            async function loadSelectedData(selectedData) {
-                try {
-                    answers = typeof selectedData.answers === 'string' ? JSON.parse(selectedData.answers) : selectedData.answers;
-                    const analysisToLoad = typeof selectedData.analysis_result === 'string' ? JSON.parse(selectedData.analysis_result) : selectedData.analysis_result;
-
-                    // 화면 전환: 설문 화면으로 이동
-                    document.getElementById('survey-questions').style.display = 'block';
-                    document.getElementById('survey-result').classList.add('hidden');
-                    
-                    // 이름과 전화번호 필드에 데이터 채우기
-                    document.getElementById('userName').value = selectedData.user_name || '';
-                    document.getElementById('userPhone').value = selectedData.user_phone || '';
-                    
-                    // 설문 문항에 답변 상태를 복원합니다.
-                    const allOptions = document.querySelectorAll('.answer-option');
-                    allOptions.forEach(opt => opt.classList.remove('selected'));
-                    
-                    for (const qId in answers) {
-                        const selectedValue = answers[qId];
-                        const questionCard = document.querySelector(`[data-question="${qId}"]`);
-                        if (questionCard) {
-                            const option = questionCard.querySelector(`[data-value="${selectedValue}"]`);
-                            if (option) {
-                                option.classList.add('selected');
-                            }
-                        }
-                    }
-                    
-                    await analyzeAndRenderResults(answers, analysisToLoad);
-                    alert('선택된 설문 결과를 성공적으로 불러왔습니다!');
-                } catch (e) {
-                    console.error("Error parsing loaded data:", e);
-                    alert(`선택된 데이터를 처리하는 중 오류가 발생했습니다.\n상세: ${e.message}`);
-                }
-            }
-
-            function resetSurvey() {
-                answers = {};
-                document.getElementById('userName').value = '';
-                document.getElementById('userPhone').value = '';
-                const allOptions = document.querySelectorAll('.answer-option');
-                allOptions.forEach(opt => opt.classList.remove('selected'));
-                document.getElementById('survey-questions').style.display = 'block';
-                document.getElementById('survey-result').classList.add('hidden');
-                const chartCanvas = document.getElementById('pie-chart');
-                if (chartCanvas) {
-                    chartCanvas.remove();
-                }
-            }
-            
-            document.querySelectorAll('.answer-option').forEach(option => {
-                option.addEventListener('click', handleAnswerClick);
-            });
-            if(submitButtonHeader) submitButtonHeader.addEventListener('click', showResult);
-            if(submitButton) submitButton.addEventListener('click', showResult);
-            if(surveyResetButton) surveyResetButton.addEventListener('click', resetSurvey);
-            if(saveButton) saveButton.addEventListener('click', saveData);
-            if(loadButton) loadButton.addEventListener('click', loadData);
         };
     </script>
 </body>
