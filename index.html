@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>함께창업소 예비창업자 성향분석 v2.1.3 (Netlify DB Edition)</title>
+    <title>더프차 예비창업자 성향분석 v2.1.3 (Netlify DB Edition)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Chart.js Datalabels Plugin: For displaying data labels on the chart -->
@@ -267,13 +267,22 @@
             background-color: #f7fafc;
             font-weight: bold;
         }
+        /* 모바일 최적화: 768px 이하 화면에서 테이블 셀 패딩 및 폰트 크기 조정 */
+        @media (max-width: 768px) {
+            .upscale-table {
+                font-size: 0.75rem; /* 폰트 크기 더 작게 */
+            }
+            .upscale-table th, .upscale-table td {
+                padding: 6px 4px; /* 패딩을 절반으로 줄여 공간 확보 */
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <!-- 상단 헤더 섹션 -->
         <div class="header-section">
-            <h1 class="text-4xl font-bold text-gray-900">함께창업소 예비창업자 성향분석 <span class="text-gray-500 text-base">v2.1.3</span></h1>
+            <h1 class="text-4xl font-bold text-gray-900">더프차 예비창업자 성향분석 <span class="text-gray-500 text-base">v2.1.3</span></h1>
             <div class="flex space-x-4">
                 <div id="load-button" class="button bg-gray-500 hover:bg-gray-700 mt-0">불러오기</div>
                 <div id="submit-button-header" class="button mt-0">결과 보기</div>
