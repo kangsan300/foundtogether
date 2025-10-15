@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>더프차 예비창업자 성향분석 v2.1.3 (Netlify DB Edition)</title>
+    <title>더프차 예비창업자 성향분석 v2.2.0 (Netlify DB Edition)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Chart.js Datalabels Plugin: For displaying data labels on the chart -->
@@ -198,8 +198,10 @@
             width: 95%;
             max-width: 900px;
             animation: fadeIn 0.3s ease-out;
-            /* 불러오기 모달 폰트 크기 조정 */
             font-size: 0.9rem; 
+        }
+        #modal-privacy .modal-content {
+            max-width: 500px; /* 개인정보 동의 모달 크기 제한 */
         }
         @keyframes fadeIn {
             from { opacity: 0; transform: scale(0.95); }
@@ -233,11 +235,11 @@
         .data-list-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.85rem; /* 테이블 전체 폰트 크기 줄임 */
+            font-size: 0.85rem;
         }
         .data-list-table th, .data-list-table td {
             border: 1px solid #e2e8f0;
-            padding: 8px; /* 테이블 패딩 줄임 */
+            padding: 8px;
             text-align: left;
             word-break: break-all;
         }
@@ -250,14 +252,14 @@
         }
         /* 선택된 행 스타일 */
         .data-list-table .selected-row {
-            background-color: #d1e0ff; /* 선택된 행 색상 */
+            background-color: #d1e0ff;
             border: 2px solid #3b82f6;
             font-weight: bold;
         }
         /* 스크롤바를 위한 테이블 컨테이너 스타일 */
         #data-list-container {
-            max-height: 50vh; /* 최대 높이 설정 */
-            overflow-y: auto; /* 내용이 넘칠 때 세로 스크롤바 표시 */
+            max-height: 50vh;
+            overflow-y: auto;
             border: 1px solid #e2e8f0;
             border-radius: 0.75rem;
         }
@@ -279,10 +281,10 @@
         /* 모바일 최적화: 768px 이하 화면에서 테이블 셀 패딩 및 폰트 크기 조정 */
         @media (max-width: 768px) {
             .upscale-table {
-                font-size: 0.75rem; /* 폰트 크기 더 작게 */
+                font-size: 0.75rem;
             }
             .upscale-table th, .upscale-table td {
-                padding: 6px 4px; /* 패딩을 절반으로 줄여 공간 확보 */
+                padding: 6px 4px;
             }
         }
     </style>
@@ -291,7 +293,7 @@
     <div class="container">
         <!-- 상단 헤더 섹션 -->
         <div class="header-section">
-            <h1 class="text-4xl font-bold text-gray-900">더프차 예비창업자 성향분석 <span class="text-gray-500 text-base">v2.1.3</span></h1>
+            <h1 class="text-4xl font-bold text-gray-900">더프차 예비창업자 성향분석 <span class="text-gray-500 text-base">v2.2.0</span></h1>
             <div class="flex space-x-4">
                 <div id="load-button" class="button bg-gray-500 hover:bg-gray-700 mt-0">불러오기</div>
                 <div id="submit-button-header" class="button mt-0">결과 보기</div>
@@ -301,8 +303,7 @@
         <!-- 파이어베이스 사용자 ID 표시 (관리 목적) - Netlify 전환으로 인해 제거됨 -->
 
         <div id="survey-questions">
-            <!-- 기본 정보 입력 섹션 -->
-            <div class="section-title">기본 정보 입력</div>
+            <!-- 기본 정보 입력 섹션 (섹션 제목만 삭제) -->
             <div class="question-card">
                 <h2 class="question-title">이름과 전화번호를 입력해주세요.</h2>
                 <div class="mb-4">
@@ -316,7 +317,7 @@
             </div>
             
             <!-- 설문 항목: 개인 성향 분석 (40문항) -->
-            <div class="section-title">개인 성향 분석 (1점: 매우 그렇지 않다, 5점: 매우 그렇다)</div>
+            <div class="section-title">개인 성향 분석</div>
             
             <!-- 질문 카드 반복 시작 -->
             <div class="question-card" data-question="1">
@@ -744,7 +745,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h4>저장된 설문 결과 불러오기 (최근 5개)</h4>
-                <span class="modal-close" id="modal-close-button">&times;</span>
+                <span class="modal-close" id="modal-load-close-button">&times;</span>
             </div>
              <!-- 1. 조회 버튼 추가 -->
             <div class="flex justify-end mb-4">
@@ -767,6 +768,54 @@
             </div>
         </div>
     </div>
+    
+    <!-- 개인정보 동의 모달 (새로 추가됨) -->
+    <div id="modal-privacy" class="modal">
+        <div class="modal-content max-w-xl">
+            <div class="modal-header">
+                <h4>개인정보 수집 및 이용 동의</h4>
+                <!-- 모달을 닫으면 미동의로 간주하여 원래 화면으로 돌아감 -->
+                <span class="modal-close" id="modal-privacy-close-button">&times;</span>
+            </div>
+            <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <h5 class="text-lg font-bold mb-3 text-red-600">[개인정보 수집 및 이용 동의서]</h5>
+                <ul class="text-sm text-gray-700 space-y-2">
+                    <li class="pl-4 relative">
+                        <span class="font-semibold text-gray-900">수집 목적:</span> 설문조사 응답자 정보 및 설문 결과로 적절한 인수창업 업체 매칭
+                    </li>
+                    <li class="pl-4 relative">
+                        <span class="font-semibold text-gray-900">수집 항목:</span> 이름, 휴대전화번호
+                    </li>
+                    <li class="pl-4 relative">
+                        <span class="font-semibold text-gray-900">이용 기간:</span> 설문조사 종료일로부터 6개월까지
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="mt-6 text-center">
+                <p class="text-base font-bold mb-4">개인정보 수집과 이용에 동의하십니까?</p>
+                <div class="flex justify-center space-x-8 text-lg">
+                    <label class="inline-flex items-center cursor-pointer">
+                        <input type="radio" id="privacy-agree" name="privacy-consent" value="agree" class="form-radio h-5 w-5 text-blue-600" checked>
+                        <span class="ml-2 text-gray-700 font-semibold">동의</span>
+                    </label>
+                    <label class="inline-flex items-center cursor-pointer">
+                        <input type="radio" id="privacy-disagree" name="privacy-consent" value="disagree" class="form-radio h-5 w-5 text-red-600">
+                        <span class="ml-2 text-gray-700 font-semibold">미동의</span>
+                    </label>
+                </div>
+            </div>
+            
+            <p class="text-xs text-red-500 mt-4 px-2 text-center">
+                ※ 위 개인정보 수집·이용에 대한 동의를 거부할 권리가 있습니다. 단, 동의하지 않으실 경우, 설문결과를 보실 수 없습니다.
+            </p>
+
+            <div class="flex justify-center mt-6">
+                <div id="privacy-confirm-button" class="button mt-0 py-2 px-6">확인</div>
+            </div>
+        </div>
+    </div>
+
 
     <script>
         const NETLIFY_FUNCTIONS_BASE_URL = window.location.origin + '/.netlify/functions/';
@@ -872,10 +921,24 @@
             return { scores, percentages, dominantType, recommendations };
         }
 
-
+        // --- 분석 결과를 화면에 렌더링하는 핵심 함수 ---
         async function analyzeAndRenderResults(loadedAnswers = null, loadedAnalysis = null) {
             const currentAnswers = loadedAnswers || answers;
             
+            // 답변되지 않은 문항에 랜덤 값 할당 (동의 후 실행)
+            for (let i = 1; i <= questionCount; i++) {
+                const qId = String(i);
+                if (!currentAnswers[qId]) {
+                    const randomValue = Math.floor(Math.random() * 5) + 1;
+                    currentAnswers[qId] = String(randomValue);
+                    const questionCard = document.querySelector(`[data-question="${qId}"]`);
+                    const option = questionCard.querySelector(`[data-value="${randomValue}"]`);
+                    if (option) {
+                       option.classList.add('selected');
+                    }
+                }
+            }
+
             const analysisResult = loadedAnalysis || calculateScores(currentAnswers);
             const { scores, percentages, dominantType, recommendations } = analysisResult;
 
@@ -1022,34 +1085,10 @@
             }
         }
 
-        function showResult() {
-            const userName = document.getElementById('userName').value;
-            const userPhone = document.getElementById('userPhone').value;
-
-            if (!userName || !userPhone) {
-                const message = '이름과 전화번호를 모두 입력해주세요.';
-                console.error(message);
-                const resultTitle = document.getElementById('result-title');
-                resultTitle.textContent = message;
-                document.getElementById('survey-result').classList.remove('hidden');
-                document.getElementById('result-content').classList.add('hidden');
-                document.getElementById('survey-questions').style.display = 'block';
-                document.getElementById('survey-result').classList.add('hidden');
-                return;
-            }
-
-            for (let i = 1; i <= questionCount; i++) {
-                const qId = String(i);
-                if (!answers[qId]) {
-                    const randomValue = Math.floor(Math.random() * 5) + 1;
-                    answers[qId] = String(randomValue);
-                    const questionCard = document.querySelector(`[data-question="${qId}"]`);
-                    const option = questionCard.querySelector(`[data-value="${randomValue}"]`);
-                    if (option) {
-                       option.classList.add('selected');
-                    }
-                }
-            }
+        // --- 분석 시작 (동의 후 호출) ---
+        async function proceedToAnalysis() {
+            // 이 함수 내에서만 showResult의 핵심 로직이 실행됨
+            document.getElementById('modal-privacy').style.display = 'none';
 
             document.getElementById('survey-questions').style.display = 'none';
             document.getElementById('survey-result').classList.remove('hidden');
@@ -1058,9 +1097,62 @@
             document.getElementById('result-content').classList.add('hidden');
             document.getElementById('result-title').textContent = '설문 결과 분석 중...';
 
-            setTimeout(async () => {
-                await analyzeAndRenderResults();
-            }, 500); 
+            await new Promise(resolve => setTimeout(resolve, 500)); 
+            await analyzeAndRenderResults();
+        }
+
+        // --- 결과 보기 버튼 클릭 시 (메인 진입점) ---
+        function showResult() {
+            const userName = document.getElementById('userName').value;
+            const userPhone = document.getElementById('userPhone').value;
+
+            if (!userName || !userPhone) {
+                // 경고 메시지를 UI에 표시 (alert 대체)
+                const resultTitle = document.getElementById('result-title');
+                resultTitle.textContent = '❗ 이름과 전화번호를 모두 입력해주세요.';
+                document.getElementById('survey-questions').style.display = 'block';
+                document.getElementById('survey-result').classList.remove('hidden');
+                document.querySelector('.loading-spinner').style.display = 'none';
+                document.getElementById('result-content').classList.add('hidden');
+                
+                // 1.5초 후 초기 상태로 되돌리기
+                setTimeout(() => {
+                    resultTitle.textContent = '설문 결과 분석 중...';
+                    document.getElementById('survey-result').classList.add('hidden');
+                }, 1500);
+                return;
+            }
+            
+            // 모든 체크가 완료되면 개인정보 동의 모달 표시
+            document.getElementById('modal-privacy').style.display = 'flex';
+            document.getElementById('privacy-agree').checked = true; // 기본값 동의로 설정
+        }
+        
+        // --- 개인정보 동의 처리 핸들러 ---
+        function handlePrivacyConsent() {
+            const agreeRadio = document.getElementById('privacy-agree');
+            document.getElementById('modal-privacy').style.display = 'none'; // 모달 닫기
+            
+            if (agreeRadio.checked) {
+                // 동의함: 분석 진행
+                proceedToAnalysis();
+            } else {
+                // 미동의: 원래 설문 화면으로 돌아가기
+                resetSurvey(); 
+                
+                // 미동의 메시지를 잠시 표시하는 기능을 추가
+                const messageElement = document.getElementById('result-title');
+                messageElement.textContent = '⚠️ 동의하지 않으셨으므로 결과를 볼 수 없습니다.';
+                document.getElementById('survey-questions').style.display = 'block';
+                document.getElementById('survey-result').classList.remove('hidden');
+                document.querySelector('.loading-spinner').style.display = 'none';
+                document.getElementById('result-content').classList.add('hidden');
+                
+                setTimeout(() => {
+                    messageElement.textContent = '설문 결과 분석 중...';
+                    document.getElementById('survey-result').classList.add('hidden');
+                }, 3000);
+            }
         }
 
         // --- Netlify Functions 데이터 저장 (saveData) ---
@@ -1069,7 +1161,9 @@
             const userPhone = document.getElementById('userPhone').value;
 
             if (!userName || !userPhone) {
-                alert('이름과 전화번호를 모두 입력해주세요.');
+                // 기존 alert 대신 UI 메시지 사용
+                document.getElementById('result-title').textContent = '⚠️ 이름과 전화번호를 모두 입력해야 저장할 수 있습니다.';
+                setTimeout(() => document.getElementById('result-title').textContent = '설문 결과 분석 완료', 3000);
                 return;
             }
             
@@ -1098,30 +1192,40 @@
                 const result = await response.json();
 
                 if (response.ok) {
-                    alert('설문 결과가 성공적으로 저장되었습니다! ID: ' + result.id);
+                    // 성공 메시지를 UI에 표시 (alert 대체)
+                    document.getElementById('result-title').textContent = `✅ 저장 완료! ID: ${result.id}`;
                 } else {
-                    alert(`결과 저장 중 오류가 발생했습니다: ${result.message}\n상세: ${result.error || '알 수 없는 오류'}`);
+                    // 오류 메시지를 UI에 표시 (alert 대체)
+                    document.getElementById('result-title').textContent = `❌ 저장 오류: ${result.message || '알 수 없는 오류'}`;
                 }
+                setTimeout(() => document.getElementById('result-title').textContent = '설문 결과 분석 완료', 5000);
+
 
             } catch (e) {
                 console.error("Error saving data to Netlify Function: ", e);
-                alert(`결과 저장 중 네트워크 오류가 발생했습니다.\n상세: ${e.message}`);
+                document.getElementById('result-title').textContent = `❌ 네트워크 오류: ${e.message}`;
+                setTimeout(() => document.getElementById('result-title').textContent = '설문 결과 분석 완료', 5000);
             }
         }
 
         // --- Netlify Functions 데이터 불러오기 (loadData) ---
         async function loadData() {
-            // 수정 요청 반영: "비밀번호를 입력하세요 (250501)" -> "비밀번호를 입력하세요"
             const password = prompt("비밀번호를 입력하세요");
             if (password !== '250501') {
-                alert('비밀번호가 올바르지 않습니다.');
+                // alert 대신 UI 메시지 사용
+                const resultTitle = document.getElementById('result-title');
+                resultTitle.textContent = '❌ 비밀번호가 올바르지 않습니다.';
+                document.getElementById('survey-questions').style.display = 'block';
+                document.getElementById('survey-result').classList.remove('hidden');
+                document.querySelector('.loading-spinner').style.display = 'none';
+                document.getElementById('result-content').classList.add('hidden');
+                setTimeout(() => document.getElementById('survey-result').classList.add('hidden'), 3000);
                 return;
             }
             
             const dataListBody = document.getElementById('data-list-body');
             dataListBody.innerHTML = '<tr><td colspan="4" class="text-center text-blue-500">데이터를 불러오는 중...</td></tr>';
             
-            // 초기화
             loadedDataList = [];
             selectedDocId = null;
 
@@ -1153,7 +1257,7 @@
 
                 dataListBody.innerHTML = '';
                 const limitedDataList = dataList.slice(0, 5);
-                loadedDataList = limitedDataList; // 글로벌 변수에 저장
+                loadedDataList = limitedDataList;
                 
                 limitedDataList.forEach(item => {
                     const docId = item.id; 
@@ -1169,7 +1273,6 @@
                     const row = document.createElement('tr');
                     row.dataset.id = docId;
                     
-                    // ID를 앞 3자리만 표시하고 나머지 생략
                     const displayedId = String(docId).substring(0, 3) + '...'; 
                     
                     row.innerHTML = `
@@ -1206,18 +1309,25 @@
         // --- 선택 항목 조회 버튼 핸들러 ---
         function querySelectedData() {
             if (!selectedDocId) {
-                alert('조회할 항목을 선택해주세요.');
+                // alert 대신 UI 메시지 사용
+                const modalContent = document.querySelector('#modal-load .modal-content');
+                const tempMsg = document.createElement('p');
+                tempMsg.className = 'text-red-500 text-center mb-4 font-bold';
+                tempMsg.textContent = '❗ 조회할 항목을 선택해주세요.';
+                modalContent.insertBefore(tempMsg, modalContent.querySelector('#data-list-container'));
+                setTimeout(() => tempMsg.remove(), 2000);
                 return;
             }
 
-            // loadedDataList에서 선택된 ID를 가진 항목 찾기
             const selectedItem = loadedDataList.find(item => String(item.id) === String(selectedDocId));
             
             if (selectedItem) {
                 loadSelectedData(selectedItem, selectedDocId);
                 document.getElementById('modal-load').style.display = 'none';
             } else {
-                alert('선택된 항목을 찾을 수 없습니다. 다시 시도해주세요.');
+                // alert 대신 UI 메시지 사용
+                document.getElementById('result-title').textContent = '❗ 선택된 항목을 찾을 수 없습니다. 다시 시도해주세요.';
+                setTimeout(() => document.getElementById('result-title').textContent = '설문 결과 분석 중...', 3000);
             }
         }
 
@@ -1249,10 +1359,15 @@
                 }
                 
                 await analyzeAndRenderResults(answers, analysisToLoad);
-                alert(`문서 ID: ${docId}의 설문 결과를 성공적으로 불러왔습니다!`);
+                // alert 대신 UI 메시지 사용
+                document.getElementById('result-title').textContent = `✅ 문서 ID: ${docId}의 결과를 성공적으로 불러왔습니다!`;
+                setTimeout(() => document.getElementById('result-title').textContent = '설문 결과 분석 완료', 3000);
+
             } catch (e) {
                 console.error("Error parsing loaded data:", e);
-                alert(`선택된 데이터를 처리하는 중 오류가 발생했습니다.\n상세: ${e.message}`);
+                // alert 대신 UI 메시지 사용
+                document.getElementById('result-title').textContent = `❌ 데이터 로드 오류: ${e.message}`;
+                setTimeout(() => document.getElementById('result-title').textContent = '설문 결과 분석 완료', 3000);
             }
         }
 
@@ -1283,8 +1398,11 @@
             const saveButton = document.getElementById('save-button');
             const loadButton = document.getElementById('load-button');
             const modalLoad = document.getElementById('modal-load');
-            const modalCloseButton = document.getElementById('modal-close-button');
-            const querySelectedButton = document.getElementById('query-selected-button'); // 새 버튼 바인딩
+            const modalLoadCloseButton = document.getElementById('modal-load-close-button');
+            const modalPrivacy = document.getElementById('modal-privacy');
+            const modalPrivacyCloseButton = document.getElementById('modal-privacy-close-button');
+            const querySelectedButton = document.getElementById('query-selected-button'); 
+            const privacyConfirmButton = document.getElementById('privacy-confirm-button'); 
 
             if(submitButtonHeader) submitButtonHeader.addEventListener('click', showResult);
             if(submitButton) submitButton.addEventListener('click', showResult);
@@ -1292,12 +1410,39 @@
             if(saveButton) saveButton.addEventListener('click', saveData);
             if(loadButton) loadButton.addEventListener('click', loadData);
             
-            if(querySelectedButton) querySelectedButton.addEventListener('click', querySelectedData); // 새 버튼 로직 연결
+            if(querySelectedButton) querySelectedButton.addEventListener('click', querySelectedData); 
+            if(privacyConfirmButton) privacyConfirmButton.addEventListener('click', handlePrivacyConsent); // 개인정보 동의 확인 버튼
             
-            if(modalCloseButton) modalCloseButton.addEventListener('click', () => modalLoad.style.display = 'none');
+            // 모달 닫기 버튼 이벤트 (불러오기 모달)
+            if(modalLoadCloseButton) modalLoadCloseButton.addEventListener('click', () => modalLoad.style.display = 'none');
+            
+            // 모달 닫기 버튼 이벤트 (개인정보 동의 모달 - 미동의와 동일하게 처리)
+            if(modalPrivacyCloseButton) modalPrivacyCloseButton.addEventListener('click', () => {
+                modalPrivacy.style.display = 'none';
+                resetSurvey();
+                // 모달 닫기 버튼을 눌렀을 때, 경고 메시지를 보여주고 싶은 경우 아래 코드 활성화 (현재는 비활성화)
+                /*
+                const messageElement = document.getElementById('result-title');
+                messageElement.textContent = '⚠️ 동의하지 않으셨으므로 결과를 볼 수 없습니다.';
+                document.getElementById('survey-questions').style.display = 'block';
+                document.getElementById('survey-result').classList.remove('hidden');
+                document.querySelector('.loading-spinner').style.display = 'none';
+                document.getElementById('result-content').classList.add('hidden');
+                setTimeout(() => {
+                    messageElement.textContent = '설문 결과 분석 중...';
+                    document.getElementById('survey-result').classList.add('hidden');
+                }, 3000);
+                */
+            });
+            
+            // 모달 외부 클릭 시 닫기
             window.addEventListener('click', (event) => {
                 if (event.target === modalLoad) {
                     modalLoad.style.display = 'none';
+                }
+                if (event.target === modalPrivacy) {
+                    modalPrivacy.style.display = 'none';
+                    resetSurvey();
                 }
             });
         };
