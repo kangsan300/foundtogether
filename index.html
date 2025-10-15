@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>더프차 예비창업자 성향분석 v2.3.0 (Netlify DB Edition)</title>
+    <title>더프차 예비창업자 성향분석 v2.4.0 (Netlify DB Edition)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Chart.js Datalabels Plugin: For displaying data labels on the chart -->
@@ -112,9 +112,15 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             line-height: 1; /* 높이 고정 */
         }
-        .button:hover {
+        .button:hover:not(.disabled) {
             background-color: #1e40af;
             transform: translateY(-2px);
+        }
+        .button.disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+            opacity: 0.7;
         }
         .button:active {
             transform: translateY(0);
@@ -302,7 +308,7 @@
     <div class="container">
         <!-- 상단 헤더 섹션 -->
         <div class="header-section">
-            <h1 class="text-4xl font-bold text-gray-900">더프차 예비창업자 성향분석 <span class="text-gray-500 text-base">v2.3.0</span></h1>
+            <h1 class="text-4xl font-bold text-gray-900">더프차 예비창업자 성향분석 <span class="text-gray-500 text-base">v2.4.0</span></h1>
             <div class="flex space-x-4">
                 <div id="load-button" class="button bg-gray-500 hover:bg-gray-700 mt-0">불러오기</div>
                 <div id="submit-button-header" class="button mt-0">결과 보기</div>
@@ -310,7 +316,7 @@
         </div>
         
         <div id="survey-questions">
-            <!-- 기본 정보 입력 섹션 (섹션 제목과 h2 제목 삭제) -->
+            <!-- 기본 정보 입력 섹션 -->
             <div class="question-card">
                 <div class="mb-4">
                     <label for="userName" class="block text-gray-700 text-sm font-bold mb-2">이름</label>
@@ -734,7 +740,7 @@
         </div>
     
         <div id="survey-result" class="result-box hidden">
-            <!-- '설문 결과 분석 완료' 텍스트를 제거하고, 분석 완료 후 h3는 비워둠 -->
+            <!-- 분석 중 메시지 (h3)는 그대로 유지, 분석 완료 메시지는 analyzeAndRenderResults에서 제거됨 -->
             <h3 id="result-title"></h3> 
             <div class="loading-spinner"></div>
             <div id="result-content" class="hidden">
@@ -751,7 +757,7 @@
     <div id="modal-load" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h4>저장된 설문 결과 불러오기 (최근 5개)</h4>
+                <h4>저장된 설문 결과 불러오기 (최근 50개 중 선택)</h4>
                 <span class="modal-close" id="modal-load-close-button">&times;</span>
             </div>
              <!-- 1. 조회 버튼 추가 -->
@@ -843,6 +849,7 @@
         
         let loadedDataList = []; // 불러온 데이터 리스트 (PostgreSQL id를 포함)
         let selectedDocId = null; // 선택된 행의 PostgreSQL id
+        let isSaving = false; // 중복 저장 방지 플래그
         
         if (typeof Chart !== 'undefined' && typeof ChartDataLabels !== 'undefined') {
             Chart.register(ChartDataLabels);
@@ -997,7 +1004,7 @@
             const spinner = surveyResult.querySelector('.loading-spinner');
             if (spinner) spinner.style.display = 'none';
             resultContent.classList.remove('hidden');
-            resultTitle.textContent = ''; // 설문 결과 분석 완료 텍스트 제거
+            resultTitle.textContent = ''; // 분석 완료 후 제목 비워둠
 
             const sortedPercentages = Object.entries(percentages).sort(([, a], [, b]) => b - a);
             const chartColors = [
@@ -1177,6 +1184,11 @@
 
         // --- Netlify Functions 데이터 저장 (saveData) ---
         async function saveData() {
+            if (isSaving) {
+                showAlert('❗ 저장 중입니다. 잠시만 기다려주세요.', false);
+                return;
+            }
+            
             const userName = document.getElementById('userName').value;
             const userPhone = document.getElementById('userPhone').value;
 
@@ -1184,6 +1196,10 @@
                 showAlert('⚠️ 이름과 전화번호를 모두 입력해야 저장할 수 있습니다.', false);
                 return;
             }
+            
+            // 중복 저장 방지 시작
+            isSaving = true;
+            document.getElementById('save-button').classList.add('disabled');
             
             for (let i = 1; i <= questionCount; i++) {
                 const qId = String(i);
@@ -1217,6 +1233,10 @@
             } catch (e) {
                 console.error("Error saving data to Netlify Function: ", e);
                 showAlert(`❌ 네트워크 오류: 데이터를 저장할 수 없습니다.`, false);
+            } finally {
+                // 중복 저장 방지 종료
+                isSaving = false;
+                document.getElementById('save-button').classList.remove('disabled');
             }
         }
 
@@ -1235,6 +1255,8 @@
             selectedDocId = null;
 
             try {
+                // Netlify Functions에서 최근 50개의 데이터만 가져오도록 쿼리 수정 (load-survey.js 파일에 반영 필요)
+                // 현재 클라이언트 측 코드는 서버가 50개를 반환한다고 가정하고 처리합니다.
                 const url = NETLIFY_FUNCTIONS_BASE_URL + 'load-survey';
                 const response = await fetch(url);
                 
@@ -1261,10 +1283,11 @@
                 }
 
                 dataListBody.innerHTML = '';
-                const limitedDataList = dataList.slice(0, 5);
-                loadedDataList = limitedDataList;
+                // 서버에서 50개를 가져오도록 했지만, 클라이언트에서 안전하게 처리
+                const displayDataList = dataList.slice(0, 50); 
+                loadedDataList = displayDataList;
                 
-                limitedDataList.forEach(item => {
+                displayDataList.forEach(item => {
                     const docId = item.id; 
                     const userName = item.user_name || '이름 없음';
                     const userPhone = item.user_phone || '전화번호 없음';
