@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>더프차 예비창업자 성향분석 v2.2.0 (Netlify DB Edition)</title>
+    <title>더프차 예비창업자 성향분석 v2.3.0 (Netlify DB Edition)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Chart.js Datalabels Plugin: For displaying data labels on the chart -->
@@ -175,7 +175,7 @@
             width: 100%;
             margin-bottom: 3rem;
         }
-        /* 모달 스타일 */
+        /* 모달 스타일 공통 */
         .modal {
             display: none;
             position: fixed;
@@ -201,7 +201,16 @@
             font-size: 0.9rem; 
         }
         #modal-privacy .modal-content {
-            max-width: 500px; /* 개인정보 동의 모달 크기 제한 */
+            max-width: 500px; 
+        }
+        #modal-alert .modal-content {
+            max-width: 350px; /* Alert 모달 크기 제한 */
+            text-align: center;
+        }
+        #modal-alert .modal-content h4 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1a365d;
         }
         @keyframes fadeIn {
             from { opacity: 0; transform: scale(0.95); }
@@ -293,19 +302,16 @@
     <div class="container">
         <!-- 상단 헤더 섹션 -->
         <div class="header-section">
-            <h1 class="text-4xl font-bold text-gray-900">더프차 예비창업자 성향분석 <span class="text-gray-500 text-base">v2.2.0</span></h1>
+            <h1 class="text-4xl font-bold text-gray-900">더프차 예비창업자 성향분석 <span class="text-gray-500 text-base">v2.3.0</span></h1>
             <div class="flex space-x-4">
                 <div id="load-button" class="button bg-gray-500 hover:bg-gray-700 mt-0">불러오기</div>
                 <div id="submit-button-header" class="button mt-0">결과 보기</div>
             </div>
         </div>
         
-        <!-- 파이어베이스 사용자 ID 표시 (관리 목적) - Netlify 전환으로 인해 제거됨 -->
-
         <div id="survey-questions">
-            <!-- 기본 정보 입력 섹션 (섹션 제목만 삭제) -->
+            <!-- 기본 정보 입력 섹션 (섹션 제목과 h2 제목 삭제) -->
             <div class="question-card">
-                <h2 class="question-title">이름과 전화번호를 입력해주세요.</h2>
                 <div class="mb-4">
                     <label for="userName" class="block text-gray-700 text-sm font-bold mb-2">이름</label>
                     <input type="text" id="userName" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="홍길동">
@@ -728,7 +734,8 @@
         </div>
     
         <div id="survey-result" class="result-box hidden">
-            <h3 id="result-title">설문 결과 분석 중...</h3>
+            <!-- '설문 결과 분석 완료' 텍스트를 제거하고, 분석 완료 후 h3는 비워둠 -->
+            <h3 id="result-title"></h3> 
             <div class="loading-spinner"></div>
             <div id="result-content" class="hidden">
                 <!-- Detailed analysis and recommendations will be inserted here -->
@@ -769,12 +776,11 @@
         </div>
     </div>
     
-    <!-- 개인정보 동의 모달 (새로 추가됨) -->
+    <!-- 개인정보 동의 모달 -->
     <div id="modal-privacy" class="modal">
         <div class="modal-content max-w-xl">
             <div class="modal-header">
                 <h4>개인정보 수집 및 이용 동의</h4>
-                <!-- 모달을 닫으면 미동의로 간주하여 원래 화면으로 돌아감 -->
                 <span class="modal-close" id="modal-privacy-close-button">&times;</span>
             </div>
             <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
@@ -812,6 +818,17 @@
 
             <div class="flex justify-center mt-6">
                 <div id="privacy-confirm-button" class="button mt-0 py-2 px-6">확인</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 커스텀 알림/확인 모달 (새로 추가됨) -->
+    <div id="modal-alert" class="modal">
+        <div class="modal-content max-w-sm">
+            <div class="p-4">
+                <h4 id="alert-title" class="mb-4">알림</h4>
+                <p id="alert-message" class="text-gray-700 mb-6"></p>
+                <button id="alert-confirm-button" class="button mt-0 py-2 px-6">확인</button>
             </div>
         </div>
     </div>
@@ -920,6 +937,33 @@
 
             return { scores, percentages, dominantType, recommendations };
         }
+        
+        /**
+         * 커스텀 알림 모달을 표시합니다.
+         * @param {string} message - 표시할 메시지
+         * @param {boolean} isSuccess - 성공 메시지(true)인지 오류 메시지(false)인지 구분
+         */
+        function showAlert(message, isSuccess = true) {
+            const modal = document.getElementById('modal-alert');
+            const titleElement = document.getElementById('alert-title');
+            const messageElement = document.getElementById('alert-message');
+            const button = document.getElementById('alert-confirm-button');
+
+            titleElement.textContent = isSuccess ? '✅ 알림' : '❌ 오류 / 경고';
+            titleElement.style.color = isSuccess ? '#10B981' : '#EF4444'; // Tailwind colors: green-500 vs red-500
+            messageElement.textContent = message;
+            
+            // 기존 스타일 초기화 후 성공/오류에 따른 버튼 스타일 적용
+            button.classList.remove('bg-red-500', 'hover:bg-red-700');
+            button.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+            if (isSuccess) {
+                button.classList.add('bg-blue-600', 'hover:bg-blue-700');
+            } else {
+                button.classList.add('bg-red-500', 'hover:bg-red-700');
+            }
+
+            modal.style.display = 'flex';
+        }
 
         // --- 분석 결과를 화면에 렌더링하는 핵심 함수 ---
         async function analyzeAndRenderResults(loadedAnswers = null, loadedAnalysis = null) {
@@ -953,7 +997,7 @@
             const spinner = surveyResult.querySelector('.loading-spinner');
             if (spinner) spinner.style.display = 'none';
             resultContent.classList.remove('hidden');
-            resultTitle.textContent = '설문 결과 분석 완료';
+            resultTitle.textContent = ''; // 설문 결과 분석 완료 텍스트 제거
 
             const sortedPercentages = Object.entries(percentages).sort(([, a], [, b]) => b - a);
             const chartColors = [
@@ -1095,7 +1139,7 @@
             const spinner = document.querySelector('.loading-spinner');
             if (spinner) spinner.style.display = 'block';
             document.getElementById('result-content').classList.add('hidden');
-            document.getElementById('result-title').textContent = '설문 결과 분석 중...';
+            document.getElementById('result-title').textContent = '분석 진행 중...'; // 분석 중 메시지 표시
 
             await new Promise(resolve => setTimeout(resolve, 500)); 
             await analyzeAndRenderResults();
@@ -1107,19 +1151,7 @@
             const userPhone = document.getElementById('userPhone').value;
 
             if (!userName || !userPhone) {
-                // 경고 메시지를 UI에 표시 (alert 대체)
-                const resultTitle = document.getElementById('result-title');
-                resultTitle.textContent = '❗ 이름과 전화번호를 모두 입력해주세요.';
-                document.getElementById('survey-questions').style.display = 'block';
-                document.getElementById('survey-result').classList.remove('hidden');
-                document.querySelector('.loading-spinner').style.display = 'none';
-                document.getElementById('result-content').classList.add('hidden');
-                
-                // 1.5초 후 초기 상태로 되돌리기
-                setTimeout(() => {
-                    resultTitle.textContent = '설문 결과 분석 중...';
-                    document.getElementById('survey-result').classList.add('hidden');
-                }, 1500);
+                showAlert('❗ 이름과 전화번호를 모두 입력해주세요.', false);
                 return;
             }
             
@@ -1137,21 +1169,9 @@
                 // 동의함: 분석 진행
                 proceedToAnalysis();
             } else {
-                // 미동의: 원래 설문 화면으로 돌아가기
+                // 미동의: 경고 메시지 표시 후 설문 화면으로 돌아가기
                 resetSurvey(); 
-                
-                // 미동의 메시지를 잠시 표시하는 기능을 추가
-                const messageElement = document.getElementById('result-title');
-                messageElement.textContent = '⚠️ 동의하지 않으셨으므로 결과를 볼 수 없습니다.';
-                document.getElementById('survey-questions').style.display = 'block';
-                document.getElementById('survey-result').classList.remove('hidden');
-                document.querySelector('.loading-spinner').style.display = 'none';
-                document.getElementById('result-content').classList.add('hidden');
-                
-                setTimeout(() => {
-                    messageElement.textContent = '설문 결과 분석 중...';
-                    document.getElementById('survey-result').classList.add('hidden');
-                }, 3000);
+                showAlert('⚠️ 동의하지 않으셨으므로 결과를 볼 수 없습니다.', false);
             }
         }
 
@@ -1161,9 +1181,7 @@
             const userPhone = document.getElementById('userPhone').value;
 
             if (!userName || !userPhone) {
-                // 기존 alert 대신 UI 메시지 사용
-                document.getElementById('result-title').textContent = '⚠️ 이름과 전화번호를 모두 입력해야 저장할 수 있습니다.';
-                setTimeout(() => document.getElementById('result-title').textContent = '설문 결과 분석 완료', 3000);
+                showAlert('⚠️ 이름과 전화번호를 모두 입력해야 저장할 수 있습니다.', false);
                 return;
             }
             
@@ -1192,19 +1210,13 @@
                 const result = await response.json();
 
                 if (response.ok) {
-                    // 성공 메시지를 UI에 표시 (alert 대체)
-                    document.getElementById('result-title').textContent = `✅ 저장 완료! ID: ${result.id}`;
+                    showAlert(`✅ 저장 완료! 문서 ID: ${result.id}`, true);
                 } else {
-                    // 오류 메시지를 UI에 표시 (alert 대체)
-                    document.getElementById('result-title').textContent = `❌ 저장 오류: ${result.message || '알 수 없는 오류'}`;
+                    showAlert(`❌ 저장 오류: ${result.message || '알 수 없는 오류'}`, false);
                 }
-                setTimeout(() => document.getElementById('result-title').textContent = '설문 결과 분석 완료', 5000);
-
-
             } catch (e) {
                 console.error("Error saving data to Netlify Function: ", e);
-                document.getElementById('result-title').textContent = `❌ 네트워크 오류: ${e.message}`;
-                setTimeout(() => document.getElementById('result-title').textContent = '설문 결과 분석 완료', 5000);
+                showAlert(`❌ 네트워크 오류: 데이터를 저장할 수 없습니다.`, false);
             }
         }
 
@@ -1212,14 +1224,7 @@
         async function loadData() {
             const password = prompt("비밀번호를 입력하세요");
             if (password !== '250501') {
-                // alert 대신 UI 메시지 사용
-                const resultTitle = document.getElementById('result-title');
-                resultTitle.textContent = '❌ 비밀번호가 올바르지 않습니다.';
-                document.getElementById('survey-questions').style.display = 'block';
-                document.getElementById('survey-result').classList.remove('hidden');
-                document.querySelector('.loading-spinner').style.display = 'none';
-                document.getElementById('result-content').classList.add('hidden');
-                setTimeout(() => document.getElementById('survey-result').classList.add('hidden'), 3000);
+                showAlert('❌ 비밀번호가 올바르지 않습니다.', false);
                 return;
             }
             
@@ -1301,21 +1306,15 @@
 
             } catch (e) {
                 console.error("Error loading documents: ", e);
-                dataListBody.innerHTML = `<tr><td colspan="4" class="text-center text-red-500">데이터 로드 오류: ${e.message}</td></tr>`;
-                document.getElementById('modal-load').style.display = 'flex';
+                showAlert(`❌ 네트워크 오류: 데이터를 불러올 수 없습니다.`, false);
+                document.getElementById('modal-load').style.display = 'none'; // 오류 발생 시 모달 숨김
             }
         }
         
         // --- 선택 항목 조회 버튼 핸들러 ---
         function querySelectedData() {
             if (!selectedDocId) {
-                // alert 대신 UI 메시지 사용
-                const modalContent = document.querySelector('#modal-load .modal-content');
-                const tempMsg = document.createElement('p');
-                tempMsg.className = 'text-red-500 text-center mb-4 font-bold';
-                tempMsg.textContent = '❗ 조회할 항목을 선택해주세요.';
-                modalContent.insertBefore(tempMsg, modalContent.querySelector('#data-list-container'));
-                setTimeout(() => tempMsg.remove(), 2000);
+                showAlert('❗ 조회할 항목을 선택해주세요.', false);
                 return;
             }
 
@@ -1325,9 +1324,7 @@
                 loadSelectedData(selectedItem, selectedDocId);
                 document.getElementById('modal-load').style.display = 'none';
             } else {
-                // alert 대신 UI 메시지 사용
-                document.getElementById('result-title').textContent = '❗ 선택된 항목을 찾을 수 없습니다. 다시 시도해주세요.';
-                setTimeout(() => document.getElementById('result-title').textContent = '설문 결과 분석 중...', 3000);
+                showAlert('❗ 선택된 항목을 찾을 수 없습니다. 다시 시도해주세요.', false);
             }
         }
 
@@ -1359,15 +1356,11 @@
                 }
                 
                 await analyzeAndRenderResults(answers, analysisToLoad);
-                // alert 대신 UI 메시지 사용
-                document.getElementById('result-title').textContent = `✅ 문서 ID: ${docId}의 결과를 성공적으로 불러왔습니다!`;
-                setTimeout(() => document.getElementById('result-title').textContent = '설문 결과 분석 완료', 3000);
+                showAlert(`✅ 문서 ID: ${docId}의 결과를 성공적으로 불러왔습니다!`, true);
 
             } catch (e) {
                 console.error("Error parsing loaded data:", e);
-                // alert 대신 UI 메시지 사용
-                document.getElementById('result-title').textContent = `❌ 데이터 로드 오류: ${e.message}`;
-                setTimeout(() => document.getElementById('result-title').textContent = '설문 결과 분석 완료', 3000);
+                showAlert(`❌ 데이터 로드 오류: ${e.message}`, false);
             }
         }
 
@@ -1403,6 +1396,8 @@
             const modalPrivacyCloseButton = document.getElementById('modal-privacy-close-button');
             const querySelectedButton = document.getElementById('query-selected-button'); 
             const privacyConfirmButton = document.getElementById('privacy-confirm-button'); 
+            const alertConfirmButton = document.getElementById('alert-confirm-button'); // Alert 모달 확인 버튼
+            const modalAlert = document.getElementById('modal-alert');
 
             if(submitButtonHeader) submitButtonHeader.addEventListener('click', showResult);
             if(submitButton) submitButton.addEventListener('click', showResult);
@@ -1413,6 +1408,9 @@
             if(querySelectedButton) querySelectedButton.addEventListener('click', querySelectedData); 
             if(privacyConfirmButton) privacyConfirmButton.addEventListener('click', handlePrivacyConsent); // 개인정보 동의 확인 버튼
             
+            // Alert 모달 확인 버튼 닫기
+            if(alertConfirmButton) alertConfirmButton.addEventListener('click', () => modalAlert.style.display = 'none');
+            
             // 모달 닫기 버튼 이벤트 (불러오기 모달)
             if(modalLoadCloseButton) modalLoadCloseButton.addEventListener('click', () => modalLoad.style.display = 'none');
             
@@ -1420,19 +1418,6 @@
             if(modalPrivacyCloseButton) modalPrivacyCloseButton.addEventListener('click', () => {
                 modalPrivacy.style.display = 'none';
                 resetSurvey();
-                // 모달 닫기 버튼을 눌렀을 때, 경고 메시지를 보여주고 싶은 경우 아래 코드 활성화 (현재는 비활성화)
-                /*
-                const messageElement = document.getElementById('result-title');
-                messageElement.textContent = '⚠️ 동의하지 않으셨으므로 결과를 볼 수 없습니다.';
-                document.getElementById('survey-questions').style.display = 'block';
-                document.getElementById('survey-result').classList.remove('hidden');
-                document.querySelector('.loading-spinner').style.display = 'none';
-                document.getElementById('result-content').classList.add('hidden');
-                setTimeout(() => {
-                    messageElement.textContent = '설문 결과 분석 중...';
-                    document.getElementById('survey-result').classList.add('hidden');
-                }, 3000);
-                */
             });
             
             // 모달 외부 클릭 시 닫기
@@ -1443,6 +1428,9 @@
                 if (event.target === modalPrivacy) {
                     modalPrivacy.style.display = 'none';
                     resetSurvey();
+                }
+                if (event.target === modalAlert) {
+                    modalAlert.style.display = 'none';
                 }
             });
         };
